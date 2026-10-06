@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Site content lives in src/lib/pelican.ts as the single factual source; pages read from it so facts stay consistent and un-invented.
