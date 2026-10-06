@@ -9,7 +9,7 @@ export const Route = createFileRoute("/tailor-made")({
 });
 
 function TailorMade() {
-  const [where, setWhere] = useState(destinations[0].name);
+  const [where, setWhere] = useState(destinations[0]?.name ?? "");
   const [people, setPeople] = useState("2");
   const [date, setDate] = useState("");
   const msg = `Hello Pelican, I'd like to plan a safari to ${where} for ${people} people${date ? ` around ${date}` : ""}.`;

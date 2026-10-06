@@ -18,7 +18,7 @@ function Destinations() {
         <Section key={c} className="grid gap-8 border-t border-border/60 md:grid-cols-12">
           <div className="md:col-span-4">
             <h2 className="text-4xl font-bold tracking-tight md:text-5xl">{c}</h2>
-            <Strip src={["savanna-plains-sunset", "zebra", "oryx"][ci]} shape={ci % 2 ? "left" : "right"} className="mt-6 h-28 w-full md:h-36" />
+            <Strip src={["savanna-plains-sunset", "zebra", "oryx"][ci] ?? "zebra"} shape={ci % 2 ? "left" : "right"} className="mt-6 h-28 w-full md:h-36" />
           </div>
           <ul className="md:col-span-7 md:col-start-6">
             {destinations.filter((d) => d.country === c).map((d) => (
