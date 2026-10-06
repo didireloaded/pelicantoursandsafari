@@ -46,7 +46,7 @@ export const company = {
   payment: ["Cash", "EFT"],
 };
 
-export const whatsapp = (text?: string, tel = company.contacts[0].tel) =>
+export const whatsapp = (text?: string, tel = company.contacts[0]!.tel) =>
   `https://api.whatsapp.com/send?phone=${tel}${text ? `&text=${encodeURIComponent(text)}` : ""}`;
 
 export type Destination = { slug: string; name: string; country: string; image: string; note?: string };

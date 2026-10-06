@@ -32,7 +32,7 @@ export function Header() {
           <Link to="/tailor-made" className="hidden rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground md:inline-block">
             Plan Your Safari
           </Link>
-          <a href={`tel:+${company.contacts[0].tel}`} aria-label="Call Pelican" className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground md:hidden">
+          <a href={`tel:+${company.contacts[0]!.tel}`} aria-label="Call Pelican" className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground md:hidden">
             <Phone className="h-4 w-4" />
           </a>
           <button aria-label="Menu" onClick={() => setOpen(!open)} className="grid h-10 w-10 place-items-center lg:hidden">
@@ -80,7 +80,7 @@ export function MobileActions() {
     <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-background text-[11px] font-medium md:hidden">
       <Link to="/safaris" className="py-3 text-center">Safaris</Link>
       <a href={whatsapp()} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 py-3"><MessageCircle className="h-3.5 w-3.5" />WhatsApp</a>
-      <a href={`tel:+${company.contacts[0].tel}`} className="flex items-center justify-center gap-1 py-3"><Phone className="h-3.5 w-3.5" />Call</a>
+      <a href={`tel:+${company.contacts[0]!.tel}`} className="flex items-center justify-center gap-1 py-3"><Phone className="h-3.5 w-3.5" />Call</a>
       <Link to="/tailor-made" className="bg-primary py-3 text-center text-primary-foreground">Plan Safari</Link>
     </div>
   );
