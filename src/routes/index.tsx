@@ -11,19 +11,19 @@ function Home() {
   return (
     <>
       <section className="mx-auto max-w-[1440px] px-5 pb-16 pt-10 md:px-10 md:pb-24 md:pt-16">
-        <h1 className="text-[15vw] font-bold leading-[1.02] tracking-tight md:text-[7.5vw] xl:text-[7.5rem]">
+        <h1 className="text-5xl font-bold leading-[1.02] md:text-7xl xl:text-[7.5rem]">
           <div className="flex items-center gap-5">
             <span>Discover <span className="text-clay">Namibia</span></span>
             <Strip src="rhino" className="hidden h-[0.85em] flex-1 md:block" />
           </div>
           <div className="mt-2 flex items-center gap-5">
             <Strip src="zebra" shape="left" className="hidden h-[0.85em] flex-1 md:block" />
-            <span>safari</span>
+            <span>through</span>
           </div>
           <div className="mt-2 flex items-center gap-5">
-            <span className="text-clay">tour</span>
+            <span className="text-clay">wild</span>
             <Strip src="leopard" shape="both" className="hidden h-[0.85em] flex-1 md:block" />
-            <span>story</span>
+            <span>places.</span>
           </div>
         </h1>
         <Strip src="leopard" className="mt-6 h-40 w-full md:hidden" />

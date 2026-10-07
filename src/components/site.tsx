@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Phone, Sun, Menu, X, MessageCircle } from "lucide-react";
+import { Phone, Menu, X, MessageCircle } from "lucide-react";
 import { company, img, whatsapp } from "@/lib/pelican";
+import logo from "@/assets/pelican-logo.png.asset.json";
+import { Button } from "@/components/ui/button";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -19,7 +21,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 md:h-20 md:px-10">
         <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setOpen(false)}>
-          <Sun className="h-5 w-5 text-clay" /> Pelican
+          <img src={logo.url} alt="" className="h-11 w-11 object-contain" /> Pelican
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium lg:flex">
           {nav.slice(1).map((n) => (
@@ -32,12 +34,12 @@ export function Header() {
           <Link to="/tailor-made" className="hidden rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground md:inline-block">
             Plan Your Safari
           </Link>
-          <a href={`tel:+${company.contacts[0]!.tel}`} aria-label="Call Pelican" className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground md:hidden">
+          <a href={`tel:+${company.contacts[0]?.tel ?? ""}`} aria-label="Call Pelican" className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground md:hidden">
             <Phone className="h-4 w-4" />
           </a>
-          <button aria-label="Menu" onClick={() => setOpen(!open)} className="grid h-10 w-10 place-items-center lg:hidden">
+          <Button variant="ghost" size="icon" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)} className="lg:hidden">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          </Button>
         </div>
       </div>
       {open && (
@@ -58,7 +60,7 @@ export function Footer() {
     <footer className="border-t border-border/60 bg-background pb-24 md:pb-0">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-14 md:grid-cols-4 md:px-10">
         <div className="md:col-span-2">
-          <p className="flex items-center gap-2 text-lg font-semibold"><Sun className="h-5 w-5 text-clay" />{company.name}</p>
+          <p className="flex items-center gap-3 text-lg font-semibold"><img src={logo.url} alt="" className="h-12 w-12 object-contain" />{company.name}</p>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">Proudly Namibian, professionally guided safaris and tours.</p>
         </div>
         <div className="text-sm leading-7">
@@ -80,7 +82,7 @@ export function MobileActions() {
     <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-background text-[11px] font-medium md:hidden">
       <Link to="/safaris" className="py-3 text-center">Safaris</Link>
       <a href={whatsapp()} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 py-3"><MessageCircle className="h-3.5 w-3.5" />WhatsApp</a>
-      <a href={`tel:+${company.contacts[0]!.tel}`} className="flex items-center justify-center gap-1 py-3"><Phone className="h-3.5 w-3.5" />Call</a>
+      <a href={`tel:+${company.contacts[0]?.tel ?? ""}`} className="flex items-center justify-center gap-1 py-3"><Phone className="h-3.5 w-3.5" />Call</a>
       <Link to="/tailor-made" className="bg-primary py-3 text-center text-primary-foreground">Plan Safari</Link>
     </div>
   );

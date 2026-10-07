@@ -46,7 +46,7 @@ export const company = {
   payment: ["Cash", "EFT"],
 };
 
-export const whatsapp = (text?: string, tel = company.contacts[0]!.tel) =>
+export const whatsapp = (text?: string, tel = company.contacts[0]?.tel ?? "") =>
   `https://api.whatsapp.com/send?phone=${tel}${text ? `&text=${encodeURIComponent(text)}` : ""}`;
 
 export type Destination = { slug: string; name: string; country: string; image: string; note?: string };
@@ -95,3 +95,12 @@ export const safaris: Safari[] = [
 export const getSafari = (slug: string) => safaris.find((s) => s.slug === slug);
 export const getDestination = (slug: string) => destinations.find((d) => d.slug === slug);
 export const safarisFor = (destSlug: string) => safaris.filter((s) => s.destinations.includes(destSlug));
+
+// Discovery labels describe the existing overview, not guaranteed package inclusions.
+export const safariInterests: Record<string, string[]> = {
+  "big-five-etosha": ["Wildlife"],
+  "windhoek-city-tour": ["City", "Culture"],
+  "namibian-highlights": ["Wildlife", "Desert", "Coast"],
+  "cross-border": ["Wildlife", "Cross-border"],
+};
+export const planningInterests = ["Wildlife", "Desert", "Coast", "Culture", "Photography", "Adventure", "Family", "Landscape"];
