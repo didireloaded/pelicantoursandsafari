@@ -30,7 +30,7 @@ function Safaris() {
           <label className="text-sm">Experience<select aria-label="Experience" className={field} value={interest} onChange={(e) => setInterest(e.target.value)}><option value="">All experiences</option>{Array.from(new Set(Object.values(safariInterests).flat())).map((x) => <option key={x}>{x}</option>)}</select></label>
         </div>
         <p aria-live="polite" className="mb-5 text-sm text-muted-foreground">{matches.length} {matches.length === 1 ? "journey" : "journeys"}</p>
-        {!matches.length && <div className="border-y border-border py-12"><h2 className="text-2xl font-semibold">A journey shaped around you.</h2><Button asChild className="mt-6"><Link to="/tailor-made" search={{ destinations: destination || undefined }}>Ask us to build it</Link></Button><Button variant="ghost" className="ml-3" onClick={() => { setCountry(""); setDestination(""); setInterest(""); }}>Clear filters</Button></div>}
+        {!matches.length && <div className="border-y border-border py-12"><h2 className="text-2xl font-semibold">A journey shaped around you.</h2><Button asChild className="mt-6"><Link to="/tailor-made" search={destination ? { destinations: destination } : {}}>Ask us to build it</Link></Button><Button variant="ghost" className="ml-3" onClick={() => { setCountry(""); setDestination(""); setInterest(""); }}>Clear filters</Button></div>}
         {matches.map((s, i) => (
           <article key={s.slug} className="group grid gap-6 border-t border-border/70 py-10 md:grid-cols-12 md:gap-10 md:py-14">
             <Strip src={s.image} shape={i % 2 ? "left" : "right"} className={`h-56 w-full md:col-span-7 md:h-80 ${i % 2 ? "md:order-2" : ""}`} />
