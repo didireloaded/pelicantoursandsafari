@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, MessageCircle, Mail, ChevronUp, ChevronDown, X, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHero, Section, meta } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { company, destinations, getSafari, planningInterests, whatsapp } from "@/lib/pelican";
 import { planningSearch } from "@/lib/safari-discovery";
+import { parseJourney, readJourney, journeySummary } from "@/lib/journey";
 
 export const Route = createFileRoute("/tailor-made")({
   validateSearch: planningSearch,
@@ -18,6 +19,14 @@ function TailorMade() {
   const safari = search.safari ? getSafari(search.safari) : undefined;
   const [step, setStep] = useState(0);
   const [places, setPlaces] = useState<string[]>(() => search.destinations ? search.destinations.split(",").filter((slug) => destinations.some((d) => d.slug === slug)) : safari?.destinations ?? []);
+  const [journey, setJourney] = useState(() => parseJourney(search.journey));
+  useEffect(() => {
+    if (!search.journey && !search.safari && !search.destinations) {
+      const saved = readJourney();
+      setJourney(saved);
+      setPlaces([...new Set(saved.map((stop) => stop.destination))]);
+    }
+  }, [search.journey, search.safari, search.destinations]);
   const [countries, setCountries] = useState<string[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
   const [start, setStart] = useState("");
@@ -44,6 +53,7 @@ function TailorMade() {
   const move = (index: number, change: number) => setPlaces((prev) => { const next = [...prev]; const target = index + change; const value = next[index]; const other = next[target]; if (value && other) { next[index] = other; next[target] = value; } return next; });
   const summary = [
     safari ? `Safari inspiration: ${safari.name}` : "Tailor-made safari",
+    ...journeySummary(journey.filter((s) => places.includes(s.destination)).sort((a, b) => places.indexOf(a.destination) - places.indexOf(b.destination))).split("\n").filter(Boolean).map((line) => `Accommodation / nights preference: ${line}`),
     `Journey preferences: ${places.map((slug) => destinations.find((d) => d.slug === slug)?.name).join(" → ") || "Please recommend"}`,
     `Countries: ${countries.join(", ") || "Based on destinations"}`,
     `Interests: ${interests.join(", ") || "Open to suggestions"}`,
@@ -58,13 +68,24 @@ function TailorMade() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const pendingRequest = useRef<{ fingerprint: string; id: string } | null>(null);
+  const submitLock = useRef(false);
   const submit = async () => {
+    if (submitLock.current || sent) return;
     setError("");
     if (!name.trim() || (!email.trim() && !phone.trim())) { setError("Please add your name and an email or phone number."); return; }
+    if (name.length > 200 || email.length > 255 || phone.length > 50 || residence.length > 120 || summary.length > 8000 || (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) { setError("Please check your email and shorten any unusually long details before sending."); return; }
+    const body = { name: name.trim(), email: email.trim() || null, phone: phone.trim() || null, residence: residence.trim() || null, contact_preference: contact, safari_slug: safari?.slug ?? null, brief: summary };
+    const fingerprint = JSON.stringify(body);
+    if (!pendingRequest.current || pendingRequest.current.fingerprint !== fingerprint) pendingRequest.current = { fingerprint, id: crypto.randomUUID() };
+    submitLock.current = true;
     setSending(true);
-    const { error: err } = await supabase.from("enquiries").insert({ name: name.trim().slice(0, 200), email: email.trim().slice(0, 255) || null, phone: phone.trim().slice(0, 50) || null, residence: residence.trim().slice(0, 120) || null, contact_preference: contact, safari_slug: safari?.slug ?? null, brief: summary.slice(0, 8000) });
-    setSending(false);
-    if (err) setError("Sorry, the brief could not be sent. Please try WhatsApp or email instead."); else setSent(true);
+    try {
+      const { data, error: err } = await supabase.functions.invoke("submit-enquiry", { body: { ...body, request_id: pendingRequest.current.id } });
+      if (err || !data?.reference) throw new Error("Submission failed");
+      setSent(true);
+    } catch { setError("Sorry, the brief could not be sent. Please try WhatsApp or email instead."); }
+    finally { submitLock.current = false; setSending(false); }
   };
   return <>
     <PageHero eyebrow="Tailor-made" title="Your safari." accent="Your way." image="car-safari-scene">{company.specialty}</PageHero>

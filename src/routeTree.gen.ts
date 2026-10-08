@@ -15,12 +15,15 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as DestinationsIndexRouteImport } from './routes/destinations.index'
 import { Route as DestinationsSlugRouteImport } from './routes/destinations.$slug'
 import { Route as SafarisIndexRouteImport } from './routes/safaris.index'
 import { Route as SafarisSlugRouteImport } from './routes/safaris.$slug'
+import { Route as StayIndexRouteImport } from './routes/stay.index'
+import { Route as StaySlugRouteImport } from './routes/stay.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -49,6 +52,11 @@ const ContactRoute = ContactRouteImport.update({
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JourneyRoute = JourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TailorMadeRoute = TailorMadeRouteImport.update({
@@ -81,6 +89,16 @@ const SafarisSlugRoute = SafarisSlugRouteImport.update({
   path: '/safaris/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StayIndexRoute = StayIndexRouteImport.update({
+  id: '/stay/',
+  path: '/stay/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaySlugRoute = StaySlugRouteImport.update({
+  id: '/stay/$slug',
+  path: '/stay/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,12 +106,15 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/journey': typeof JourneyRoute
   '/tailor-made': typeof TailorMadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
   '/safaris/$slug': typeof SafarisSlugRoute
+  '/stay/$slug': typeof StaySlugRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/safaris/': typeof SafarisIndexRoute
+  '/stay/': typeof StayIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,12 +122,15 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/journey': typeof JourneyRoute
   '/tailor-made': typeof TailorMadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
   '/safaris/$slug': typeof SafarisSlugRoute
+  '/stay/$slug': typeof StaySlugRoute
   '/destinations': typeof DestinationsIndexRoute
   '/safaris': typeof SafarisIndexRoute
+  '/stay': typeof StayIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,12 +140,15 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/journey': typeof JourneyRoute
   '/tailor-made': typeof TailorMadeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
   '/safaris/$slug': typeof SafarisSlugRoute
+  '/stay/$slug': typeof StaySlugRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/safaris/': typeof SafarisIndexRoute
+  '/stay/': typeof StayIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,12 +158,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/gallery'
+    | '/journey'
     | '/tailor-made'
     | '/dashboard'
     | '/destinations/$slug'
     | '/safaris/$slug'
+    | '/stay/$slug'
     | '/destinations/'
     | '/safaris/'
+    | '/stay/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,12 +174,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/gallery'
+    | '/journey'
     | '/tailor-made'
     | '/dashboard'
     | '/destinations/$slug'
     | '/safaris/$slug'
+    | '/stay/$slug'
     | '/destinations'
     | '/safaris'
+    | '/stay'
   id:
     | '__root__'
     | '/'
@@ -158,12 +191,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/gallery'
+    | '/journey'
     | '/tailor-made'
     | '/_authenticated/dashboard'
     | '/destinations/$slug'
     | '/safaris/$slug'
+    | '/stay/$slug'
     | '/destinations/'
     | '/safaris/'
+    | '/stay/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -173,11 +209,14 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
+  JourneyRoute: typeof JourneyRoute
   TailorMadeRoute: typeof TailorMadeRoute
   DestinationsSlugRoute: typeof DestinationsSlugRoute
   SafarisSlugRoute: typeof SafarisSlugRoute
+  StaySlugRoute: typeof StaySlugRoute
   DestinationsIndexRoute: typeof DestinationsIndexRoute
   SafarisIndexRoute: typeof SafarisIndexRoute
+  StayIndexRoute: typeof StayIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -224,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/journey': {
+      id: '/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tailor-made': {
       id: '/tailor-made'
       path: '/tailor-made'
@@ -266,6 +312,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SafarisSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stay/': {
+      id: '/stay/'
+      path: '/stay'
+      fullPath: '/stay/'
+      preLoaderRoute: typeof StayIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stay/$slug': {
+      id: '/stay/$slug'
+      path: '/stay/$slug'
+      fullPath: '/stay/$slug'
+      preLoaderRoute: typeof StaySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -287,11 +347,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
+  JourneyRoute: JourneyRoute,
   TailorMadeRoute: TailorMadeRoute,
   DestinationsSlugRoute: DestinationsSlugRoute,
   SafarisSlugRoute: SafarisSlugRoute,
+  StaySlugRoute: StaySlugRoute,
   DestinationsIndexRoute: DestinationsIndexRoute,
   SafarisIndexRoute: SafarisIndexRoute,
+  StayIndexRoute: StayIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

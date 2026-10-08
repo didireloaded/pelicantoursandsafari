@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero, Section, Strip, PlanCTA, meta } from "@/components/site";
-import { getDestination, safarisFor, whatsapp } from "@/lib/pelican";
+import { getDestination, safarisFor, stays, whatsapp } from "@/lib/pelican";
 
 export const Route = createFileRoute("/destinations/$slug")({
   loader: ({ params }) => {
@@ -35,6 +35,7 @@ function DestinationPage() {
         </div>
         <a href={whatsapp(`Hello Pelican, I'd like to travel to ${d.name}.`)} target="_blank" rel="noreferrer" className="mt-10 inline-block rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground">Ask about {d.name}</a>
       </Section>
+      <Section className="pt-0 md:pt-0"><h2 className="text-3xl font-semibold">Places to stay</h2>{stays.filter((stay) => stay.destination === d.slug).map((stay) => <Link key={stay.slug} to="/stay/$slug" params={{ slug: stay.slug }} className="mt-4 block text-primary">{stay.name} →</Link>)}<Link to="/journey" className="mt-6 inline-block text-primary">Explore and build your journey →</Link></Section>
       <PlanCTA />
     </>
   );

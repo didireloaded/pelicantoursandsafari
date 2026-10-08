@@ -51,7 +51,7 @@ export const whatsapp = (text?: string, tel = company.contacts[0]?.tel ?? "") =>
 
 export type Destination = { slug: string; name: string; country: string; image: string; note?: string };
 export const destinations: Destination[] = [
-  { slug: "etosha", name: "Etosha National Park", country: "Namibia", image: "rhino", note: "Home to Pelican's Big Five safari experiences — lions, elephants, rhinos, leopards and buffalo in their natural habitat." },
+  { slug: "etosha", name: "Etosha National Park", country: "Namibia", image: "rhino", note: "Explore Etosha's wildlife, including lions, elephants, rhinos and leopards. Sightings are never guaranteed." },
   { slug: "sossusvlei-deadvlei", name: "Sossusvlei & Deadvlei", country: "Namibia", image: "nature-landscape" },
   { slug: "swakopmund-walvis-bay", name: "Swakopmund & Walvis Bay", country: "Namibia", image: "sea-lions" },
   { slug: "spitzkoppe", name: "Spitzkoppe", country: "Namibia", image: "quiver-tree-sunset" },
@@ -69,9 +69,9 @@ export type Safari = {
 };
 export const safaris: Safari[] = [
   {
-    slug: "big-five-etosha", name: "Big Five Safari", image: "rhino", destinations: ["etosha"],
-    short: "Lions, elephants, rhinos, leopards and buffalo in Etosha.",
-    overview: "Safaris focused on Namibia's world-famous wildlife, especially within Etosha National Park, giving guests the opportunity to encounter lions, elephants, rhinos, leopards and buffalo in their natural habitat.",
+    slug: "big-five-etosha", name: "Etosha Wildlife Safari", image: "rhino", destinations: ["etosha"],
+    short: "Explore Etosha's wildlife and waterholes.",
+    overview: "Discover wildlife in Etosha National Park, with opportunities to observe lions, elephants, rhinos and leopards. Buffalo are not naturally present in Etosha, and wildlife sightings cannot be guaranteed.",
   },
   {
     slug: "windhoek-city-tour", name: "Windhoek City Tour", image: "car-safari-scene", destinations: ["windhoek"],
@@ -104,3 +104,12 @@ export const safariInterests: Record<string, string[]> = {
   "cross-border": ["Wildlife", "Cross-border"],
 };
 export const planningInterests = ["Wildlife", "Desert", "Coast", "Culture", "Photography", "Adventure", "Family", "Landscape"];
+
+export type Stay = { slug: string; name: string; destination: string; collection: string; type: "Lodge" | "Hotel" | "Resort"; description: string; amenities: string[]; source: string; verifiedAt: string; bookingMode: "request"; checkIn?: string; checkOut?: string };
+export const stays: Stay[] = [
+  { slug: "the-desert-grace", name: "The Desert Grace", destination: "sossusvlei-deadvlei", collection: "Gondwana Collection", type: "Lodge", description: "A Namib Desert lodge with twin, double and family bungalows, each with a private plunge pool.", amenities: ["Restaurant", "Bar", "Wi-Fi", "Private plunge pools"], checkIn: "14:00", checkOut: "10:00", source: "https://gondwana-collection.com/accommodation/desert-grace", verifiedAt: "2026-10-08", bookingMode: "request" },
+  { slug: "mokuti-etosha", name: "Mokuti Etosha", destination: "etosha", collection: "O&L Leisure", type: "Lodge", description: "An Etosha-area lodge with gardens, a pool bar and a range of activities. Ask Pelican to confirm the room and activities for your dates.", amenities: ["Spa", "Tennis court", "Gym"], source: "https://trade.ol-leisure.com/mokuti-etosha", verifiedAt: "2026-10-08", bookingMode: "request" },
+  { slug: "strand-hotel-swakopmund", name: "Strand Hotel Swakopmund", destination: "swakopmund-walvis-bay", collection: "O&L Leisure", type: "Hotel", description: "Beachside accommodation in Swakopmund with ocean views and several dining venues, providing a base for exploring the coast.", amenities: ["Brewer & Butcher", "Farmhouse Deli", "Ocean Cellar"], source: "https://trade.ol-leisure.com/strand-hotel-swakopmund", verifiedAt: "2026-10-08", bookingMode: "request" },
+  { slug: "okaukuejo-resort", name: "Okaukuejo Resort", destination: "etosha", collection: "Namibia Wildlife Resorts", type: "Resort", description: "An Etosha resort known for its floodlit waterhole, where visitors can watch wildlife during the day and at night. NWR currently directs booking requests to its reservations team.", amenities: ["Floodlit waterhole", "Camping", "Guided drives available on request"], source: "https://www.nwr.com.na/resorts/okaukuejo-resort/", verifiedAt: "2026-10-08", bookingMode: "request" },
+];
+export const getStay = (slug: string) => stays.find((stay) => stay.slug === slug);

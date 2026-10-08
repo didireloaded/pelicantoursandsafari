@@ -9,6 +9,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import { Header, Footer, MobileActions } from "../components/site";
 import appCss from "../styles.css?url";
@@ -127,6 +128,7 @@ function RootComponent() {
       </main>
       <Footer />
       <MobileActions />
+      <Toaster />
     </QueryClientProvider>
   );
 }

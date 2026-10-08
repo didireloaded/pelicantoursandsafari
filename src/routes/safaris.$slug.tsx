@@ -37,7 +37,7 @@ function SafariPage() {
           </ul>
           <div className="mt-8 flex flex-col gap-3">
             <a href={whatsapp(`Hello Pelican, I'm interested in the ${safari.name}.`)} target="_blank" rel="noreferrer" className="rounded-lg bg-primary px-6 py-3.5 text-center text-sm font-semibold text-primary-foreground">Enquire on WhatsApp</a>
-            <Link to="/tailor-made" className="rounded-lg border border-foreground/20 px-6 py-3.5 text-center text-sm font-semibold">Plan this Safari</Link>
+            <Link to="/tailor-made" search={{ safari: safari.slug }} className="rounded-lg border border-foreground/20 px-6 py-3.5 text-center text-sm font-semibold">Plan this Safari</Link>
           </div>
         </aside>
       </Section>

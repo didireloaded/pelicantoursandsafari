@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Phone, Menu, X, MessageCircle } from "lucide-react";
 import { company, img, whatsapp } from "@/lib/pelican";
-import logo from "@/assets/pelican-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 
 const nav = [
@@ -21,7 +20,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 md:h-20 md:px-10">
         <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setOpen(false)}>
-          <img src={logo.url} alt="" className="h-11 w-11 object-contain" /> Pelican
+          <img src="/pelican-logo.png" alt="" className="h-11 w-11 object-contain" /> Pelican
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium lg:flex">
           {nav.slice(1).map((n) => (
@@ -60,7 +59,7 @@ export function Footer() {
     <footer className="border-t border-border/60 bg-background pb-24 md:pb-0">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-14 md:grid-cols-4 md:px-10">
         <div className="md:col-span-2">
-          <p className="flex items-center gap-3 text-lg font-semibold"><img src={logo.url} alt="" className="h-12 w-12 object-contain" />{company.name}</p>
+          <p className="flex items-center gap-3 text-lg font-semibold"><img src="/pelican-logo.png" alt="" className="h-12 w-12 object-contain" />{company.name}</p>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">Proudly Namibian, professionally guided safaris and tours.</p>
         </div>
         <div className="text-sm leading-7">
@@ -72,6 +71,7 @@ export function Footer() {
           <a href={`mailto:${company.email}`} className="block">{company.email}</a>
         </div>
       </div>
+      <div className="mx-auto flex max-w-[1440px] flex-wrap gap-6 px-5 pb-8 text-sm md:px-10"><Link to="/stay" className="text-primary">Places to stay</Link><Link to="/journey" className="text-primary">Build my journey</Link></div>
       <p className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} {company.legal} · Windhoek, Namibia</p>
     </footer>
   );

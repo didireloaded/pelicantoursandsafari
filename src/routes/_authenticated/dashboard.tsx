@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site";
+import { toast } from "sonner";
+import { useRef } from "react";
 
 type Enquiry = Database["public"]["Tables"]["enquiries"]["Row"];
 type Status = Database["public"]["Enums"]["enquiry_status"];
@@ -23,19 +25,27 @@ function Dashboard() {
   const [staff, setStaff] = useState<boolean | null>(null);
   const [filter, setFilter] = useState<Status | "all">("all");
   const [open, setOpen] = useState<string | null>(null);
+  const saving = useRef(new Set<string>());
 
   useEffect(() => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user?.id ?? "");
       const ok = !!roles?.length; setStaff(ok);
-      if (ok) { const { data } = await supabase.from("enquiries").select("*").order("created_at", { ascending: false }).limit(500); setRows(data ?? []); }
+      if (ok) { const { data, error } = await supabase.from("enquiries").select("*").order("created_at", { ascending: false }).limit(500); if (error) toast.error("Enquiries could not be loaded. Please reload to try again."); else setRows(data ?? []); }
     })();
   }, []);
 
   const update = async (id: string, patch: Partial<Pick<Enquiry, "status" | "staff_notes">>) => {
-    setRows((r) => r.map((x) => x.id === id ? { ...x, ...patch } : x));
-    await supabase.from("enquiries").update(patch).eq("id", id);
+    const previous = rows.find((r) => r.id === id);
+    if (!previous || saving.current.has(id)) { toast.error("A save is already in progress. Please try again shortly."); return; }
+    saving.current.add(id);
+    try {
+      const { data, error } = await supabase.from("enquiries").update(patch).eq("id", id).eq("updated_at", previous.updated_at).select().single();
+      if (error || !data) { toast.error("This change was not saved. Reload to check for changes by another team member."); return; }
+      setRows((r) => r.map((x) => x.id === id ? data : x));
+    } catch { toast.error("This change was not saved. Check your connection and try again."); }
+    finally { saving.current.delete(id); }
   };
   const signOut = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
 
