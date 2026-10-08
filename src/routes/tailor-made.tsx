@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, MessageCircle, Mail, ChevronUp, ChevronDown, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, MessageCircle, Mail, ChevronUp, ChevronDown, X, Send } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { PageHero, Section, meta } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { company, destinations, getSafari, planningInterests, whatsapp } from "@/lib/pelican";
@@ -54,6 +55,17 @@ function TailorMade() {
     name ? `Name: ${name}` : "", email ? `Email: ${email}` : "", phone ? `Phone: ${phone}` : "", residence ? `Country of residence: ${residence}` : "", `Preferred contact: ${contact}`,
   ].filter(Boolean).join("\n");
   const message = `Hello Pelican, here is my Safari Brief.\n\n${summary}`;
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const submit = async () => {
+    setError("");
+    if (!name.trim() || (!email.trim() && !phone.trim())) { setError("Please add your name and an email or phone number."); return; }
+    setSending(true);
+    const { error: err } = await supabase.from("enquiries").insert({ name: name.trim().slice(0, 200), email: email.trim().slice(0, 255) || null, phone: phone.trim().slice(0, 50) || null, residence: residence.trim().slice(0, 120) || null, contact_preference: contact, safari_slug: safari?.slug ?? null, brief: summary.slice(0, 8000) });
+    setSending(false);
+    if (err) setError("Sorry, the brief could not be sent. Please try WhatsApp or email instead."); else setSent(true);
+  };
   return <>
     <PageHero eyebrow="Tailor-made" title="Your safari." accent="Your way." image="car-safari-scene">{company.specialty}</PageHero>
     <Section className="border-t border-border/60 pt-8 md:pt-10">
@@ -85,8 +97,8 @@ function TailorMade() {
         </div>}
         {step === 3 && <div className="space-y-8"><dl className="divide-y divide-border border-y border-border">{summary.split("\n").map((line, i) => { const split = line.indexOf(":"); return <div key={i} className="grid gap-2 py-4 sm:grid-cols-[160px_1fr]"><dt className="text-sm text-muted-foreground">{split < 0 ? "Brief" : line.slice(0, split)}</dt><dd className="break-words">{split < 0 ? line : line.slice(split + 1)}</dd></div>; })}</dl>
           <div className="grid gap-6 sm:grid-cols-2"><label>Your name<input autoComplete="name" className={field} value={name} onChange={(e) => setName(e.target.value)} /></label><label>Email<input type="email" autoComplete="email" className={field} value={email} onChange={(e) => setEmail(e.target.value)} /></label><label>Phone / WhatsApp<input type="tel" autoComplete="tel" className={field} value={phone} onChange={(e) => setPhone(e.target.value)} /></label><label>Country of residence<input autoComplete="country-name" className={field} value={residence} onChange={(e) => setResidence(e.target.value)} /></label><label>Preferred contact<select className={field} value={contact} onChange={(e) => setContact(e.target.value)}>{["WhatsApp", "Email", "Phone"].map((x) => <option key={x}>{x}</option>)}</select></label></div>
-          <div className="flex flex-wrap gap-3"><Button asChild size="lg"><a href={whatsapp(message)} target="_blank" rel="noreferrer" onClick={() => setPrepared(true)}><MessageCircle />Send brief via WhatsApp</a></Button><Button asChild variant="outline" size="lg"><a href={`mailto:${company.email}?subject=${encodeURIComponent("My Safari Brief")}&body=${encodeURIComponent(message)}`} onClick={() => setPrepared(true)}><Mail />Prepare email enquiry</a></Button></div>
-          <p className="text-sm text-muted-foreground" role="status">{prepared ? "Your brief is ready in your chosen app. Send it there to reach Pelican; this is not a confirmed booking." : "Your preferences are subject to confirmation. Nothing is sent until you send the message in WhatsApp or your email app."}</p>
+          <div className="flex flex-wrap gap-3"><Button size="lg" disabled={sending || sent} onClick={submit}><Send />{sent ? "Brief sent to Pelican" : sending ? "Sending…" : "Send brief to Pelican"}</Button><Button asChild variant="outline" size="lg"><a href={whatsapp(message)} target="_blank" rel="noreferrer" onClick={() => setPrepared(true)}><MessageCircle />Send via WhatsApp</a></Button><Button asChild variant="ghost" size="lg"><a href={`mailto:${company.email}?subject=${encodeURIComponent("My Safari Brief")}&body=${encodeURIComponent(message)}`} onClick={() => setPrepared(true)}><Mail />Prepare email</a></Button></div>
+          <p className="text-sm text-muted-foreground" role="status">{error || (sent ? "Thank you — Pelican has received your brief and will contact you. This is not a confirmed booking." : prepared ? "Your brief is ready in your chosen app. Send it there to reach Pelican; this is not a confirmed booking." : "Nothing is sent until you choose an option. Add your name and an email or phone number to send directly.")}</p>
         </div>}
         <div className="mt-12 flex justify-between border-t border-border pt-6"><Button variant="ghost" disabled={step === 0} onClick={() => setStep(step - 1)}><ArrowLeft />Back</Button>{step < 3 && <Button onClick={() => setStep(step + 1)}>{step === 2 ? "Review brief" : "Continue"}<ArrowRight /></Button>}</div>
       </div><aside className="lg:col-span-4"><h2 className="text-xl font-semibold">Your journey</h2><ol className="mt-4 divide-y divide-border">{places.map((slug, i) => <li key={slug} className="flex items-center gap-2 py-4"><span className="text-sm text-clay">{String(i + 1).padStart(2, "0")}</span><span className="flex-1 text-sm">{destinations.find((d) => d.slug === slug)?.name}</span><Button title="Move earlier" aria-label={`Move ${slug} earlier`} variant="ghost" size="icon" disabled={i === 0} onClick={() => move(i, -1)}><ChevronUp /></Button><Button title="Move later" aria-label={`Move ${slug} later`} variant="ghost" size="icon" disabled={i === places.length - 1} onClick={() => move(i, 1)}><ChevronDown /></Button><Button title="Remove destination" aria-label={`Remove ${slug}`} variant="ghost" size="icon" onClick={() => setPlaces(places.filter((p) => p !== slug))}><X /></Button></li>)}</ol>{!places.length && <p className="mt-4 text-sm text-muted-foreground">Open to Pelican’s recommendations.</p>}<p className="mt-5 text-xs text-muted-foreground">Preferred stops, not a confirmed route. Pelican will advise on order and travel times.</p><Button asChild variant="link" className="mt-8 px-0"><a href={whatsapp("Hello Pelican, could you help me plan my safari?")} target="_blank" rel="noreferrer"><MessageCircle />Talk to Kamwi instead</a></Button></aside></div>
