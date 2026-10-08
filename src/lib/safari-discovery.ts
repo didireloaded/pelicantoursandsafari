@@ -8,9 +8,11 @@ export function findSafaris(country: string, destination: string, interest: stri
   );
 }
 
-export function planningSearch(search: Record<string, unknown>) {
-  return {
-    safari: typeof search.safari === "string" ? search.safari : undefined,
-    destinations: typeof search.destinations === "string" ? search.destinations : undefined,
-  };
+export type PlanningSearch = { safari?: string; destinations?: string };
+
+export function planningSearch(search: Record<string, unknown>): PlanningSearch {
+  const out: PlanningSearch = {};
+  if (typeof search["safari"] === "string") out.safari = search["safari"];
+  if (typeof search["destinations"] === "string") out.destinations = search["destinations"];
+  return out;
 }
