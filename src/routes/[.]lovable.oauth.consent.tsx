@@ -33,7 +33,7 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     return { client: data?.client?.name ?? "An app", redirectUri: data?.client?.redirect_uri ?? "", scope: data?.scope ?? "", email: u.user?.email ?? "" };
   },
   component: Consent,
-  errorComponent: ({ error }) => <Section className="pt-32"><h1 className="font-display text-4xl">Could not load this request</h1><p className="mt-4 text-muted-foreground">{error.message}</p></Section>,
+  errorComponent: ({ error }) => <Section className="pt-32"><h1 className="font-display text-4xl">Could not load this request</h1><p className="mt-4 text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p></Section>,
 });
 
 const scopeLabel = (s: string) => s === "openid" ? "Confirm who you are" : s === "email" ? "Share your email address" : s === "profile" ? "Share your basic profile" : `Additional permission requested: ${s}`;
