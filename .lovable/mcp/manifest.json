@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "sdk_version": "3.0.5",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://owwkanlnxtvzwbpggmgf.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "wanderlust-navigator",
+      "version": "0.1.0",
+      "title": "Wanderlust Navigator"
+    },
+    "tools": [
+      {
+        "name": "list_safaris",
+        "title": "List safaris",
+        "description": "List Pelican's safari experiences with their overview and the destinations they visit.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_enquiries",
+        "title": "List enquiries",
+        "description": "List Safari Brief enquiries received by Pelican, newest first. Pelican staff only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "new",
+                "contacted",
+                "building_itinerary",
+                "quote_sent",
+                "confirmed",
+                "closed"
+              ],
+              "description": "Only return enquiries in this stage."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Maximum number of enquiries (default 25)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_enquiry",
+        "title": "Update enquiry",
+        "description": "Move an enquiry to a new stage and/or replace its team notes. Pelican staff only.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Enquiry id."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "new",
+                "contacted",
+                "building_itinerary",
+                "quote_sent",
+                "confirmed",
+                "closed"
+              ],
+              "description": "New pipeline stage."
+            },
+            "staff_notes": {
+              "type": "string",
+              "maxLength": 8000,
+              "description": "Replacement team notes."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
