@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { ItineraryDraft } from "@/components/itinerary-draft";
 import { Section } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -205,13 +206,11 @@ function Proposals() {
                       onSubmit={(e) => {
                         e.preventDefault();
                         void perform(async () => {
-                          const result = await supabase
-                            .from("proposal_requests")
-                            .insert({
-                              version_id: viewing.id,
-                              traveller_id: user.id,
-                              message: revision.trim(),
-                            });
+                          const result = await supabase.from("proposal_requests").insert({
+                            version_id: viewing.id,
+                            traveller_id: user.id,
+                            message: revision.trim(),
+                          });
                           if (result.error) throw result.error;
                           setRevision("");
                           await load();
@@ -306,6 +305,14 @@ function Proposals() {
                 </label>
                 <Button disabled={busy}>Create proposal</Button>
               </form>
+              {current && (
+                <ItineraryDraft
+                  key={current.id}
+                  enquiryId={current.enquiry_id}
+                  quote={draft}
+                  onApply={(itinerary) => setDraft((previous) => ({ ...previous, itinerary }))}
+                />
+              )}
               {current && (
                 <form
                   className="mt-12 space-y-6"

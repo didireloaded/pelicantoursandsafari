@@ -5,3 +5,7 @@ verify_jwt = false
 
 [functions.journey-route]
 verify_jwt = false
+
+[functions.draft-itinerary]
+# The function verifies the session with auth.getUser and checks is_staff itself.
+verify_jwt = false

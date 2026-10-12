@@ -17,3 +17,9 @@
 Implemented in code: interest-based Safari Match with budget/days/style passed into the brief; device shortlist and share links; source-linked seasonal/travel guidance and pricing explanation; receipt reference and two-business-day response target; authenticated assigned private proposals with immutable quote versions and change requests; staff assignment, follow-up dates, overdue filter, loaded-record search, activity history and older-record loading; verified-content publication/withdrawal interface.
 
 Pending operational activation: apply the new migration in Lovable Cloud and test with real staff/traveller accounts. Supply approved day-by-day itineraries, rates, accommodation photos/rooms/accessibility facts, guides, vehicle specifications, genuine reviews and business credentials. Staff can publish sourced text and a verified photo URL with each entry through the new interface. No scheduled email/SMS reminder service was added. Existing UI design is preserved; new links and separate feature screens reuse its components.
+
+### Lovable AI itinerary quote drafting
+
+Implemented: staff-only in-app draft generation in the existing proposal editor, linked Safari Brief loading, approved/manual tour detail selection, source-bound AI sequencing, quote preview using staff-entered rates and terms, and explicit application of only the itinerary. Server authentication, rate/budget quotas and malformed/invented-output rejection are included. No new provider dependency or public AI endpoint is exposed.
+
+Activation pending: apply `202610120003_ai_itinerary_drafts.sql`, enable the Lovable AI connector/backend secret, deploy `draft-itinerary`, and run a synthetic live smoke test. Existing UI is preserved apart from the requested collapsible staff feature. AI does not invent missing stops, prices, deposits or payment terms; staff must supply the verified itinerary blocks and commercial information.
