@@ -4,6 +4,7 @@ import { Phone, Menu, X, MessageCircle } from "lucide-react";
 import { company, img, imageDimensions, imageSrcSet, whatsapp } from "@/lib/pelican";
 import { siteOrigin } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
+import { usePhotoPan } from "@/components/use-photo-pan";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -97,23 +98,31 @@ type PhotoProps = {
   loading?: "eager" | "lazy";
   fetchPriority?: "high" | "low" | "auto";
   media?: string;
+  pan?: boolean;
 };
 
 /** Responsive sources stay out of layout; only the image occupies a flex/grid cell. */
-export function Photo({ name, alt, className, sizes = "(min-width: 1440px) 1360px, calc(100vw - 40px)", loading = "lazy", fetchPriority = "auto", media }: PhotoProps) {
+export function Photo({ name, alt, className, sizes = "(min-width: 1440px) 1360px, calc(100vw - 40px)", loading = "lazy", fetchPriority = "auto", media, pan: allowPan = true }: PhotoProps) {
   const dimensions = imageDimensions[name];
+  const pan = usePhotoPan();
+  const interactive = allowPan && !!className?.includes("object-cover");
+  // Native lazy-image auto sizing uses the actual slot; the existing sizes remain a fallback.
+  const responsiveSizes = loading === "lazy" ? `auto, ${sizes}` : sizes;
   return (
     <picture className="contents">
-      <source className="hidden" type="image/avif" srcSet={imageSrcSet(name, "avif")} sizes={sizes} media={media} />
-      <source className="hidden" type="image/webp" srcSet={imageSrcSet(name)} sizes={sizes} media={media} />
+      <source className="hidden" type="image/avif" srcSet={imageSrcSet(name, "avif")} sizes={responsiveSizes} media={media} />
+      <source className="hidden" type="image/webp" srcSet={imageSrcSet(name)} sizes={responsiveSizes} media={media} />
       <img
+        {...(interactive ? pan : {})}
+        tabIndex={interactive ? 0 : undefined}
+        aria-label={interactive ? `${alt || name.replace(/-/g, " ")}. Use arrow keys to explore the photo; Escape resets the view.` : undefined}
         src={media ? "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" : img(name, 1280)}
         srcSet={media ? undefined : imageSrcSet(name)}
-        sizes={sizes}
+        sizes={responsiveSizes}
         width={dimensions?.width}
         height={dimensions?.height}
         alt={alt}
-        className={`min-w-0 max-w-full ${name === "hyena" ? "object-[50%_15%]" : ""} ${className ?? ""}`}
+        className={`${interactive ? "pan-photo focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary" : ""} min-w-0 max-w-full ${name === "hyena" ? "object-[50%_15%]" : ""} ${className ?? ""}`}
         loading={loading}
         decoding="async"
         fetchPriority={fetchPriority}
@@ -138,7 +147,7 @@ export function PageHero({ eyebrow, title, accent, image, children }: { eyebrow?
         <h1 className="text-5xl font-bold leading-[1.02] tracking-tight md:max-w-[65%] md:text-6xl lg:text-7xl">
           {title} {accent && <span className="text-clay">{accent}</span>}
         </h1>
-        <Strip src={image} loading="eager" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" className="h-24 w-full md:ml-auto md:h-28 md:w-0 md:max-w-lg md:flex-1" />
+        <Strip src={image} loading="eager" fetchPriority="high" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" className="h-24 w-full md:ml-auto md:h-28 md:w-0 md:max-w-lg md:flex-1" />
       </div>
       {children && <div className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">{children}</div>}
     </section>

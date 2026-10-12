@@ -171,14 +171,21 @@
 }
 
 /* Motion is confined to the requested discovery interactions; geometry stays fixed. */
+.pan-photo[data-panning] { object-position: var(--photo-pan-position); }
 @media (prefers-reduced-motion: no-preference) {
+  .pan-photo { transition: object-position 140ms ease-out; }
   .journey-panel-background { transition: opacity 350ms ease; }
   .journey-panel-copy, .discovery-card-arrow, .discovery-card-image { transition: transform 250ms ease; }
+  .pan-photo.discovery-card-image { transition: transform 250ms ease, object-position 140ms ease-out; }
   .journey-panel:focus-visible .journey-panel-copy { transform: translateY(-4px); }
   .journey-panel:focus-visible .discovery-card-arrow,
   .discovery-card:focus-within .discovery-card-arrow { transform: translateX(4px); }
   .discovery-card:focus-within .discovery-card-image { transform: scale(1.025); }
 }
+
+/* Pointer inspection replaces the decorative zoom so the crop can reach both edges. */
+.discovery-card:hover .discovery-card-image[data-panning],
+.discovery-card:focus-within .discovery-card-image[data-panning] { transform: none; }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .journey-panel:hover .journey-panel-copy { transform: translateY(-4px); }
   .journey-panel:hover .discovery-card-arrow,

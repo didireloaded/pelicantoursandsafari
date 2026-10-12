@@ -19,7 +19,7 @@ function Home() {
         <h1 className="text-5xl font-bold leading-[1.02] md:text-[clamp(3rem,6.6vw,6rem)]">
           <div className="flex items-center gap-3 md:gap-5">
             <span className="md:whitespace-nowrap">Discover <span className="text-clay">Namibia</span></span>
-            <Strip src="rhino" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] w-0 flex-1 md:block" />
+            <Strip src="rhino" loading="eager" fetchPriority="high" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] w-0 flex-1 md:block" />
           </div>
           <div className="mt-2 flex items-center gap-3 md:gap-5">
             <Strip src="zebra" shape="left" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] w-0 flex-1 md:block" />
@@ -76,7 +76,7 @@ function Home() {
               <span className="text-sm text-muted-foreground md:col-span-1">0{i + 1}</span>
               <h3 className="text-2xl font-semibold tracking-tight md:col-span-4 md:text-3xl group-hover:text-clay">{s.name}</h3>
               <div className="md:col-span-3"><p className="text-muted-foreground">{s.short}</p>{packages[s.slug] && <SafariPackageSummary details={packages[s.slug]!.details} />}</div>
-              <Strip animateOnHover src={s.image} shape={i % 2 ? "left" : "right"} className="h-20 w-full md:col-span-4 md:h-24" />
+              <Strip animateOnHover sizes="(min-width: 1440px) 440px, (min-width: 768px) 32vw, calc(100vw - 40px)" src={s.image} shape={i % 2 ? "left" : "right"} className="h-20 w-full md:col-span-4 md:h-24" />
             </Link>
           ))}
         </div>

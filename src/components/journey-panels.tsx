@@ -49,6 +49,7 @@ export function JourneyPanels() {
               className={`journey-panel-background absolute inset-0 ${active === index ? "opacity-100" : "opacity-0"}`}
             >
               <Photo
+                pan={false}
                 name={panel.image}
                 alt=""
                 media="(min-width: 768px)"
@@ -72,6 +73,7 @@ export function JourneyPanels() {
             >
               <div aria-hidden="true" className="pointer-events-none absolute inset-0 md:hidden">
                 <Photo
+                  pan={false}
                   name={panel.image}
                   alt=""
                   media="(max-width: 767px)"

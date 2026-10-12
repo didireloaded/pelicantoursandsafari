@@ -41,7 +41,7 @@ function Safaris() {
         {!matches.length && <div className="border-y border-border py-12"><h2 className="text-2xl font-semibold">A journey shaped around you.</h2><Button asChild className="mt-6"><Link to="/tailor-made" search={destination ? { destinations: destination } : {}}>Ask us to build it</Link></Button><Button variant="ghost" className="ml-3" onClick={() => { filter({}); }}>Clear filters</Button></div>}
         {matches.map((s, i) => (
           <article key={s.slug} className="discovery-card group grid gap-6 border-t border-border/70 py-10 md:grid-cols-12 md:gap-10 md:py-14">
-            <Strip animateOnHover src={s.image} shape={i % 2 ? "left" : "right"} className={`h-48 w-full md:col-span-7 md:h-64 ${i % 2 ? "md:order-2" : ""}`} />
+            <Strip animateOnHover sizes="(min-width: 1440px) 780px, (min-width: 768px) 57vw, calc(100vw - 40px)" src={s.image} shape={i % 2 ? "left" : "right"} className={`h-48 w-full md:col-span-7 md:h-64 ${i % 2 ? "md:order-2" : ""}`} />
             <div className="md:col-span-5 md:self-center">
               <span className="text-sm text-muted-foreground">0{i + 1}</span>
               <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl group-hover:text-clay">{s.name}</h2>

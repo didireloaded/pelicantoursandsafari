@@ -7,8 +7,8 @@
     "width": 1920,
     "height": 1280,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -16,37 +16,37 @@
         "file": "rhino-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 93314
+        "bytes": 56752
       },
       {
         "file": "rhino-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 63267
+        "bytes": 31731
       },
       {
         "file": "rhino-1280.webp",
         "width": 1280,
         "height": 853,
-        "bytes": 328596
+        "bytes": 196628
       },
       {
         "file": "rhino-1280.avif",
         "width": 1280,
         "height": 853,
-        "bytes": 221396
+        "bytes": 110641
       },
       {
         "file": "rhino-1920.webp",
         "width": 1920,
         "height": 1280,
-        "bytes": 622554
+        "bytes": 393792
       },
       {
         "file": "rhino-1920.avif",
         "width": 1920,
         "height": 1280,
-        "bytes": 418540
+        "bytes": 241399
       }
     ]
   },
@@ -58,8 +58,8 @@
     "width": 1920,
     "height": 1285,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -67,37 +67,37 @@
         "file": "leopard-640.webp",
         "width": 640,
         "height": 428,
-        "bytes": 49006
+        "bytes": 33072
       },
       {
         "file": "leopard-640.avif",
         "width": 640,
         "height": 428,
-        "bytes": 37467
+        "bytes": 20713
       },
       {
         "file": "leopard-1280.webp",
         "width": 1280,
         "height": 857,
-        "bytes": 182330
+        "bytes": 106642
       },
       {
         "file": "leopard-1280.avif",
         "width": 1280,
         "height": 857,
-        "bytes": 138738
+        "bytes": 67163
       },
       {
         "file": "leopard-1920.webp",
         "width": 1920,
         "height": 1285,
-        "bytes": 383806
+        "bytes": 231314
       },
       {
         "file": "leopard-1920.avif",
         "width": 1920,
         "height": 1285,
-        "bytes": 288066
+        "bytes": 157977
       }
     ]
   },
@@ -109,8 +109,8 @@
     "width": 1920,
     "height": 1280,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -118,37 +118,37 @@
         "file": "zebra-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 97588
+        "bytes": 64224
       },
       {
         "file": "zebra-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 63760
+        "bytes": 31624
       },
       {
         "file": "zebra-1280.webp",
         "width": 1280,
         "height": 853,
-        "bytes": 315380
+        "bytes": 198358
       },
       {
         "file": "zebra-1280.avif",
         "width": 1280,
         "height": 853,
-        "bytes": 207283
+        "bytes": 103111
       },
       {
         "file": "zebra-1920.webp",
         "width": 1920,
         "height": 1280,
-        "bytes": 561990
+        "bytes": 354946
       },
       {
         "file": "zebra-1920.avif",
         "width": 1920,
         "height": 1280,
-        "bytes": 375315
+        "bytes": 205201
       }
     ]
   },
@@ -160,8 +160,8 @@
     "width": 1920,
     "height": 1280,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -169,37 +169,37 @@
         "file": "oryx-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 111044
+        "bytes": 72990
       },
       {
         "file": "oryx-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 77412
+        "bytes": 38375
       },
       {
         "file": "oryx-1280.webp",
         "width": 1280,
         "height": 853,
-        "bytes": 424366
+        "bytes": 273688
       },
       {
         "file": "oryx-1280.avif",
         "width": 1280,
         "height": 853,
-        "bytes": 286292
+        "bytes": 141184
       },
       {
         "file": "oryx-1920.webp",
         "width": 1920,
         "height": 1280,
-        "bytes": 877808
+        "bytes": 591122
       },
       {
         "file": "oryx-1920.avif",
         "width": 1920,
         "height": 1280,
-        "bytes": 564918
+        "bytes": 329824
       }
     ]
   },
@@ -211,8 +211,8 @@
     "width": 1920,
     "height": 1281,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -220,37 +220,37 @@
         "file": "hippo-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 115028
+        "bytes": 77030
       },
       {
         "file": "hippo-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 86704
+        "bytes": 49041
       },
       {
         "file": "hippo-1280.webp",
         "width": 1280,
         "height": 854,
-        "bytes": 393718
+        "bytes": 252596
       },
       {
         "file": "hippo-1280.avif",
         "width": 1280,
         "height": 854,
-        "bytes": 272756
+        "bytes": 141914
       },
       {
         "file": "hippo-1920.webp",
         "width": 1920,
         "height": 1281,
-        "bytes": 738058
+        "bytes": 493156
       },
       {
         "file": "hippo-1920.avif",
         "width": 1920,
         "height": 1281,
-        "bytes": 496683
+        "bytes": 296064
       }
     ]
   },
@@ -262,8 +262,8 @@
     "width": 1920,
     "height": 1280,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -271,37 +271,37 @@
         "file": "hyena-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 147968
+        "bytes": 104956
       },
       {
         "file": "hyena-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 98888
+        "bytes": 51250
       },
       {
         "file": "hyena-1280.webp",
         "width": 1280,
         "height": 853,
-        "bytes": 503530
+        "bytes": 346142
       },
       {
         "file": "hyena-1280.avif",
         "width": 1280,
         "height": 853,
-        "bytes": 336404
+        "bytes": 175699
       },
       {
         "file": "hyena-1920.webp",
         "width": 1920,
         "height": 1280,
-        "bytes": 971258
+        "bytes": 669352
       },
       {
         "file": "hyena-1920.avif",
         "width": 1920,
         "height": 1280,
-        "bytes": 626679
+        "bytes": 357514
       }
     ]
   },
@@ -313,8 +313,8 @@
     "width": 1920,
     "height": 1281,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -322,37 +322,37 @@
         "file": "baboon-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 49524
+        "bytes": 30786
       },
       {
         "file": "baboon-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 37909
+        "bytes": 19451
       },
       {
         "file": "baboon-1280.webp",
         "width": 1280,
         "height": 854,
-        "bytes": 182514
+        "bytes": 116518
       },
       {
         "file": "baboon-1280.avif",
         "width": 1280,
         "height": 854,
-        "bytes": 136665
+        "bytes": 70028
       },
       {
         "file": "baboon-1920.webp",
         "width": 1920,
         "height": 1281,
-        "bytes": 351208
+        "bytes": 231280
       },
       {
         "file": "baboon-1920.avif",
         "width": 1920,
         "height": 1281,
-        "bytes": 244057
+        "bytes": 153280
       }
     ]
   },
@@ -364,8 +364,8 @@
     "width": 1920,
     "height": 1280,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -373,37 +373,37 @@
         "file": "sea-lions-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 70414
+        "bytes": 43178
       },
       {
         "file": "sea-lions-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 50123
+        "bytes": 26002
       },
       {
         "file": "sea-lions-1280.webp",
         "width": 1280,
         "height": 853,
-        "bytes": 232076
+        "bytes": 145608
       },
       {
         "file": "sea-lions-1280.avif",
         "width": 1280,
         "height": 853,
-        "bytes": 164679
+        "bytes": 85253
       },
       {
         "file": "sea-lions-1920.webp",
         "width": 1920,
         "height": 1280,
-        "bytes": 432540
+        "bytes": 282824
       },
       {
         "file": "sea-lions-1920.avif",
         "width": 1920,
         "height": 1280,
-        "bytes": 296312
+        "bytes": 181092
       }
     ]
   },
@@ -415,8 +415,8 @@
     "width": 1920,
     "height": 1280,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -424,37 +424,37 @@
         "file": "car-safari-scene-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 84746
+        "bytes": 53172
       },
       {
         "file": "car-safari-scene-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 60550
+        "bytes": 32856
       },
       {
         "file": "car-safari-scene-1280.webp",
         "width": 1280,
         "height": 853,
-        "bytes": 293034
+        "bytes": 183384
       },
       {
         "file": "car-safari-scene-1280.avif",
         "width": 1280,
         "height": 853,
-        "bytes": 201420
+        "bytes": 106762
       },
       {
         "file": "car-safari-scene-1920.webp",
         "width": 1920,
         "height": 1280,
-        "bytes": 581918
+        "bytes": 385490
       },
       {
         "file": "car-safari-scene-1920.avif",
         "width": 1920,
         "height": 1280,
-        "bytes": 392820
+        "bytes": 224247
       }
     ]
   },
@@ -466,8 +466,8 @@
     "width": 1920,
     "height": 1280,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -475,37 +475,37 @@
         "file": "nature-landscape-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 40470
+        "bytes": 23368
       },
       {
         "file": "nature-landscape-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 26828
+        "bytes": 14307
       },
       {
         "file": "nature-landscape-1280.webp",
         "width": 1280,
         "height": 853,
-        "bytes": 109996
+        "bytes": 61848
       },
       {
         "file": "nature-landscape-1280.avif",
         "width": 1280,
         "height": 853,
-        "bytes": 78949
+        "bytes": 39519
       },
       {
         "file": "nature-landscape-1920.webp",
         "width": 1920,
         "height": 1280,
-        "bytes": 192406
+        "bytes": 108050
       },
       {
         "file": "nature-landscape-1920.avif",
         "width": 1920,
         "height": 1280,
-        "bytes": 146759
+        "bytes": 72370
       }
     ]
   },
@@ -517,8 +517,8 @@
     "width": 1920,
     "height": 1282,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -526,37 +526,37 @@
         "file": "savanna-plains-sunset-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 38442
+        "bytes": 23712
       },
       {
         "file": "savanna-plains-sunset-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 28389
+        "bytes": 15800
       },
       {
         "file": "savanna-plains-sunset-1280.webp",
         "width": 1280,
         "height": 855,
-        "bytes": 108008
+        "bytes": 65402
       },
       {
         "file": "savanna-plains-sunset-1280.avif",
         "width": 1280,
         "height": 855,
-        "bytes": 84312
+        "bytes": 45813
       },
       {
         "file": "savanna-plains-sunset-1920.webp",
         "width": 1920,
         "height": 1282,
-        "bytes": 191362
+        "bytes": 117598
       },
       {
         "file": "savanna-plains-sunset-1920.avif",
         "width": 1920,
         "height": 1282,
-        "bytes": 146973
+        "bytes": 87537
       }
     ]
   },
@@ -568,8 +568,8 @@
     "width": 1920,
     "height": 1281,
     "quality": {
-      "webp": 90,
-      "avif": 75
+      "webp": 80,
+      "avif": 55
     },
     "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
     "derivatives": [
@@ -577,37 +577,37 @@
         "file": "quiver-tree-sunset-640.webp",
         "width": 640,
         "height": 427,
-        "bytes": 71474
+        "bytes": 45788
       },
       {
         "file": "quiver-tree-sunset-640.avif",
         "width": 640,
         "height": 427,
-        "bytes": 53740
+        "bytes": 27410
       },
       {
         "file": "quiver-tree-sunset-1280.webp",
         "width": 1280,
         "height": 854,
-        "bytes": 262116
+        "bytes": 167348
       },
       {
         "file": "quiver-tree-sunset-1280.avif",
         "width": 1280,
         "height": 854,
-        "bytes": 192156
+        "bytes": 97300
       },
       {
         "file": "quiver-tree-sunset-1920.webp",
         "width": 1920,
         "height": 1281,
-        "bytes": 535058
+        "bytes": 341118
       },
       {
         "file": "quiver-tree-sunset-1920.avif",
         "width": 1920,
         "height": 1281,
-        "bytes": 356496
+        "bytes": 210875
       }
     ]
   }
