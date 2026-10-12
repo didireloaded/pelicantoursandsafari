@@ -102,6 +102,7 @@ function TravelGuide() {
               src={x.photo_url}
               alt={x.title}
               loading="lazy"
+              decoding="async"
               className="my-6 max-h-96 w-full object-contain"
             />
           )}

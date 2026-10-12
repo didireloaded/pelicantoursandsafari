@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Strip, Section, PlanCTA, meta } from "@/components/site";
-import { company, destinations, img, safaris } from "@/lib/pelican";
+import { Strip, Photo, Section, PlanCTA, meta } from "@/components/site";
+import { company, destinations, safaris } from "@/lib/pelican";
 
 export const Route = createFileRoute("/")({
   head: () => meta("Discover Namibia", "Big Five safaris in Etosha, Windhoek city tours, Namibian highlights and cross-border trips to Botswana and Zimbabwe.", "savanna-plains-sunset"),
@@ -14,19 +14,19 @@ function Home() {
         <h1 className="text-5xl font-bold leading-[1.02] md:text-7xl xl:text-[7.5rem]">
           <div className="flex items-center gap-5">
             <span>Discover <span className="text-clay">Namibia</span></span>
-            <Strip src="rhino" className="hidden h-[0.85em] flex-1 md:block" />
+            <Strip src="rhino" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] flex-1 md:block" />
           </div>
           <div className="mt-2 flex items-center gap-5">
-            <Strip src="zebra" shape="left" className="hidden h-[0.85em] flex-1 md:block" />
+            <Strip src="zebra" shape="left" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] flex-1 md:block" />
             <span>through</span>
           </div>
           <div className="mt-2 flex items-center gap-5">
             <span className="text-clay">wild</span>
-            <Strip src="leopard" shape="both" className="hidden h-[0.85em] flex-1 md:block" />
+            <Strip src="leopard" shape="both" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] flex-1 md:block" />
             <span>places.</span>
           </div>
         </h1>
-        <Strip src="leopard" className="mt-6 h-40 w-full md:hidden" />
+        <Strip src="leopard" loading="eager" fetchPriority="high" media="(max-width: 767px)" sizes="calc(100vw - 40px)" className="mt-6 h-40 w-full md:hidden" />
         <div className="mt-10 flex flex-col gap-6 md:mt-14 md:flex-row md:items-end md:justify-between">
           <p className="max-w-md text-lg text-muted-foreground">Professionally guided safaris across Namibia, with selected routes into Botswana and Zimbabwe.</p>
           <div className="flex gap-3">
@@ -62,7 +62,7 @@ function Home() {
       </Section>
 
       <section className="grid md:grid-cols-2">
-        <img src={img("savanna-plains-sunset")} alt="Savanna plains at sunset" className="h-80 w-full object-cover md:h-full" />
+        <Photo name="savanna-plains-sunset" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Savanna plains at sunset" className="h-80 w-full object-cover md:h-full" />
         <div className="px-5 py-14 md:px-16 md:py-24">
           <h2 className="text-4xl font-bold tracking-tight md:text-5xl">Where we <span className="text-clay">travel</span></h2>
           <ul className="mt-8">
@@ -98,10 +98,10 @@ function Home() {
 
       <Section className="pt-0 md:pt-0">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-12 md:gap-4">
-          <img src={img("leopard")} alt="Leopard" className="col-span-2 h-64 w-full rounded-r-[5rem] object-cover md:col-span-7 md:h-[28rem]" />
-          <img src={img("oryx")} alt="Oryx" className="h-48 w-full object-cover md:col-span-5 md:h-[28rem]" />
-          <img src={img("sea-lions")} alt="Sea lions" className="h-48 w-full object-cover md:col-span-5 md:h-72" />
-          <img src={img("quiver-tree-sunset")} alt="Quiver tree at sunset" className="col-span-2 h-56 w-full rounded-l-[5rem] object-cover md:col-span-7 md:h-72" />
+          <Photo name="leopard" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Leopard" className="col-span-2 h-64 w-full rounded-r-[5rem] object-cover md:col-span-7 md:h-[28rem]" />
+          <Photo name="oryx" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Oryx" className="h-48 w-full object-cover md:col-span-5 md:h-[28rem]" />
+          <Photo name="sea-lions" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Sea lions" className="h-48 w-full object-cover md:col-span-5 md:h-72" />
+          <Photo name="quiver-tree-sunset" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Quiver tree at sunset" className="col-span-2 h-56 w-full rounded-l-[5rem] object-cover md:col-span-7 md:h-72" />
         </div>
         <Link to="/gallery" className="mt-8 inline-block text-sm font-semibold text-primary">View the gallery →</Link>
       </Section>

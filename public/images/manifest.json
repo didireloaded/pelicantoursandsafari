@@ -1,0 +1,614 @@
+[
+  {
+    "name": "rhino",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/rhino.jpg",
+    "sourceBytes": 560696,
+    "sourceSha256": "f8817132dc3275097660fea87b295b919a5a15d83b8647cbc669d0728d5be1ee",
+    "width": 1920,
+    "height": 1280,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "rhino-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 93314
+      },
+      {
+        "file": "rhino-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 63267
+      },
+      {
+        "file": "rhino-1280.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 328596
+      },
+      {
+        "file": "rhino-1280.avif",
+        "width": 1280,
+        "height": 853,
+        "bytes": 221396
+      },
+      {
+        "file": "rhino-1920.webp",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 622554
+      },
+      {
+        "file": "rhino-1920.avif",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 418540
+      }
+    ]
+  },
+  {
+    "name": "leopard",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/leopard.jpg",
+    "sourceBytes": 328651,
+    "sourceSha256": "493f02e515a27166d02128b7a33f10e249e333406bb39588e739458910f782c5",
+    "width": 1920,
+    "height": 1285,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "leopard-640.webp",
+        "width": 640,
+        "height": 428,
+        "bytes": 49006
+      },
+      {
+        "file": "leopard-640.avif",
+        "width": 640,
+        "height": 428,
+        "bytes": 37467
+      },
+      {
+        "file": "leopard-1280.webp",
+        "width": 1280,
+        "height": 857,
+        "bytes": 182330
+      },
+      {
+        "file": "leopard-1280.avif",
+        "width": 1280,
+        "height": 857,
+        "bytes": 138738
+      },
+      {
+        "file": "leopard-1920.webp",
+        "width": 1920,
+        "height": 1285,
+        "bytes": 383806
+      },
+      {
+        "file": "leopard-1920.avif",
+        "width": 1920,
+        "height": 1285,
+        "bytes": 288066
+      }
+    ]
+  },
+  {
+    "name": "zebra",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/zebra.jpg",
+    "sourceBytes": 603946,
+    "sourceSha256": "d33db3cd59c919337866a34e92f6c4375cce526e26dd5b28628a76ea4f19ac11",
+    "width": 1920,
+    "height": 1280,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "zebra-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 97588
+      },
+      {
+        "file": "zebra-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 63760
+      },
+      {
+        "file": "zebra-1280.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 315380
+      },
+      {
+        "file": "zebra-1280.avif",
+        "width": 1280,
+        "height": 853,
+        "bytes": 207283
+      },
+      {
+        "file": "zebra-1920.webp",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 561990
+      },
+      {
+        "file": "zebra-1920.avif",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 375315
+      }
+    ]
+  },
+  {
+    "name": "oryx",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/oryx.jpg",
+    "sourceBytes": 756995,
+    "sourceSha256": "05a38a85f4e54980a9284fb990ac049edeabc91f0737b2b1e842526ad7fc12a9",
+    "width": 1920,
+    "height": 1280,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "oryx-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 111044
+      },
+      {
+        "file": "oryx-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 77412
+      },
+      {
+        "file": "oryx-1280.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 424366
+      },
+      {
+        "file": "oryx-1280.avif",
+        "width": 1280,
+        "height": 853,
+        "bytes": 286292
+      },
+      {
+        "file": "oryx-1920.webp",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 877808
+      },
+      {
+        "file": "oryx-1920.avif",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 564918
+      }
+    ]
+  },
+  {
+    "name": "hippo",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/hippo.jpg",
+    "sourceBytes": 651431,
+    "sourceSha256": "0aa5d447c7c316addfee05f57e1ca7d42c9c855e56e2f93b9e67a778a73cd4b2",
+    "width": 1920,
+    "height": 1281,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "hippo-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 115028
+      },
+      {
+        "file": "hippo-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 86704
+      },
+      {
+        "file": "hippo-1280.webp",
+        "width": 1280,
+        "height": 854,
+        "bytes": 393718
+      },
+      {
+        "file": "hippo-1280.avif",
+        "width": 1280,
+        "height": 854,
+        "bytes": 272756
+      },
+      {
+        "file": "hippo-1920.webp",
+        "width": 1920,
+        "height": 1281,
+        "bytes": 738058
+      },
+      {
+        "file": "hippo-1920.avif",
+        "width": 1920,
+        "height": 1281,
+        "bytes": 496683
+      }
+    ]
+  },
+  {
+    "name": "hyena",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/hyena.jpg",
+    "sourceBytes": 888843,
+    "sourceSha256": "293a8a05aa240fa8b92db91145381bd99e7116019179b593320b58bf85d73582",
+    "width": 1920,
+    "height": 1280,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "hyena-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 147968
+      },
+      {
+        "file": "hyena-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 98888
+      },
+      {
+        "file": "hyena-1280.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 503530
+      },
+      {
+        "file": "hyena-1280.avif",
+        "width": 1280,
+        "height": 853,
+        "bytes": 336404
+      },
+      {
+        "file": "hyena-1920.webp",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 971258
+      },
+      {
+        "file": "hyena-1920.avif",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 626679
+      }
+    ]
+  },
+  {
+    "name": "baboon",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/baboon.jpg",
+    "sourceBytes": 299230,
+    "sourceSha256": "646e2876794a4f5d0d807413337f5662ad0e7c21db61637cf063e83b705f54bb",
+    "width": 1920,
+    "height": 1281,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "baboon-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 49524
+      },
+      {
+        "file": "baboon-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 37909
+      },
+      {
+        "file": "baboon-1280.webp",
+        "width": 1280,
+        "height": 854,
+        "bytes": 182514
+      },
+      {
+        "file": "baboon-1280.avif",
+        "width": 1280,
+        "height": 854,
+        "bytes": 136665
+      },
+      {
+        "file": "baboon-1920.webp",
+        "width": 1920,
+        "height": 1281,
+        "bytes": 351208
+      },
+      {
+        "file": "baboon-1920.avif",
+        "width": 1920,
+        "height": 1281,
+        "bytes": 244057
+      }
+    ]
+  },
+  {
+    "name": "sea-lions",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/sea-lions.jpg",
+    "sourceBytes": 357510,
+    "sourceSha256": "f36b727a968f69294706cac27e8a2fd66449a921bf8957a57eb1ea42cb176f9d",
+    "width": 1920,
+    "height": 1280,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "sea-lions-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 70414
+      },
+      {
+        "file": "sea-lions-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 50123
+      },
+      {
+        "file": "sea-lions-1280.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 232076
+      },
+      {
+        "file": "sea-lions-1280.avif",
+        "width": 1280,
+        "height": 853,
+        "bytes": 164679
+      },
+      {
+        "file": "sea-lions-1920.webp",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 432540
+      },
+      {
+        "file": "sea-lions-1920.avif",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 296312
+      }
+    ]
+  },
+  {
+    "name": "car-safari-scene",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/car-safari-scene.jpg",
+    "sourceBytes": 572411,
+    "sourceSha256": "98ea223815b2a58c21b7511f0034142c67b3fc451fa3dc1d4cebbea6b5830bf9",
+    "width": 1920,
+    "height": 1280,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "car-safari-scene-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 84746
+      },
+      {
+        "file": "car-safari-scene-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 60550
+      },
+      {
+        "file": "car-safari-scene-1280.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 293034
+      },
+      {
+        "file": "car-safari-scene-1280.avif",
+        "width": 1280,
+        "height": 853,
+        "bytes": 201420
+      },
+      {
+        "file": "car-safari-scene-1920.webp",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 581918
+      },
+      {
+        "file": "car-safari-scene-1920.avif",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 392820
+      }
+    ]
+  },
+  {
+    "name": "nature-landscape",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/nature-landscape.jpg",
+    "sourceBytes": 245942,
+    "sourceSha256": "aa0e7ae04cb4016b9e78bc4278bf68327a8645410d304f50d0c7d7003a21e50d",
+    "width": 1920,
+    "height": 1280,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "nature-landscape-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 40470
+      },
+      {
+        "file": "nature-landscape-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 26828
+      },
+      {
+        "file": "nature-landscape-1280.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 109996
+      },
+      {
+        "file": "nature-landscape-1280.avif",
+        "width": 1280,
+        "height": 853,
+        "bytes": 78949
+      },
+      {
+        "file": "nature-landscape-1920.webp",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 192406
+      },
+      {
+        "file": "nature-landscape-1920.avif",
+        "width": 1920,
+        "height": 1280,
+        "bytes": 146759
+      }
+    ]
+  },
+  {
+    "name": "savanna-plains-sunset",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/savanna-plains-sunset.jpg",
+    "sourceBytes": 186167,
+    "sourceSha256": "dbf74d0c1bc1f603c6b9144579ce2952f3b54ce614c5267c33cbd3bb2f723d01",
+    "width": 1920,
+    "height": 1282,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "savanna-plains-sunset-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 38442
+      },
+      {
+        "file": "savanna-plains-sunset-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 28389
+      },
+      {
+        "file": "savanna-plains-sunset-1280.webp",
+        "width": 1280,
+        "height": 855,
+        "bytes": 108008
+      },
+      {
+        "file": "savanna-plains-sunset-1280.avif",
+        "width": 1280,
+        "height": 855,
+        "bytes": 84312
+      },
+      {
+        "file": "savanna-plains-sunset-1920.webp",
+        "width": 1920,
+        "height": 1282,
+        "bytes": 191362
+      },
+      {
+        "file": "savanna-plains-sunset-1920.avif",
+        "width": 1920,
+        "height": 1282,
+        "bytes": 146973
+      }
+    ]
+  },
+  {
+    "name": "quiver-tree-sunset",
+    "source": "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/quiver-tree-sunset.jpg",
+    "sourceBytes": 513310,
+    "sourceSha256": "efa5a3ef06b8bdefb7fd2197081d6594a7ab77ce11f73df9c9926d14eeeb5ba4",
+    "width": 1920,
+    "height": 1281,
+    "quality": {
+      "webp": 90,
+      "avif": 75
+    },
+    "rights": "Publication permission/license unconfirmed; verify with the operator and source owner before release.",
+    "derivatives": [
+      {
+        "file": "quiver-tree-sunset-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 71474
+      },
+      {
+        "file": "quiver-tree-sunset-640.avif",
+        "width": 640,
+        "height": 427,
+        "bytes": 53740
+      },
+      {
+        "file": "quiver-tree-sunset-1280.webp",
+        "width": 1280,
+        "height": 854,
+        "bytes": 262116
+      },
+      {
+        "file": "quiver-tree-sunset-1280.avif",
+        "width": 1280,
+        "height": 854,
+        "bytes": 192156
+      },
+      {
+        "file": "quiver-tree-sunset-1920.webp",
+        "width": 1920,
+        "height": 1281,
+        "bytes": 535058
+      },
+      {
+        "file": "quiver-tree-sunset-1920.avif",
+        "width": 1920,
+        "height": 1281,
+        "bytes": 356496
+      }
+    ]
+  }
+]

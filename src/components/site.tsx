@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Phone, Menu, X, MessageCircle } from "lucide-react";
-import { company, img, whatsapp } from "@/lib/pelican";
+import { company, img, imageDimensions, imageSrcSet, whatsapp } from "@/lib/pelican";
+import { siteOrigin } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 
 const nav = [
@@ -22,7 +23,7 @@ export function Header() {
         <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setOpen(false)}>
           <img src="/pelican-logo.png" alt="" className="h-11 w-11 object-contain" /> Pelican
         </Link>
-        <nav className="hidden items-center gap-7 text-sm font-medium lg:flex">
+        <nav aria-label="Main navigation" className="hidden items-center gap-7 text-sm font-medium lg:flex">
           {nav.slice(1).map((n) => (
             <Link key={n.to} to={n.to} className="text-foreground/75 hover:text-foreground" activeProps={{ className: "!text-clay" }}>
               {n.label}
@@ -36,13 +37,13 @@ export function Header() {
           <a href={`tel:+${company.contacts[0]?.tel ?? ""}`} aria-label="Call Pelican" className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground md:hidden">
             <Phone className="h-4 w-4" />
           </a>
-          <Button variant="ghost" size="icon" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)} className="lg:hidden">
+          <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-controls="mobile-navigation" aria-expanded={open} onClick={() => setOpen(!open)} className="lg:hidden">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </div>
       {open && (
-        <nav className="h-[calc(100dvh-4rem)] overflow-y-auto border-t bg-background px-5 py-6 lg:hidden">
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="h-[calc(100dvh-4rem)] overflow-y-auto border-t bg-background px-5 py-6 lg:hidden">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="block border-b border-border/60 py-4 text-3xl font-semibold tracking-tight" activeProps={{ className: "text-clay" }} activeOptions={{ exact: n.to === "/" }}>
               {n.label}
@@ -79,19 +80,52 @@ export function Footer() {
 
 export function MobileActions() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-background text-[11px] font-medium md:hidden">
+    <nav aria-label="Quick actions" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-background text-[11px] font-medium md:hidden">
       <Link to="/safaris" className="py-3 text-center">Safaris</Link>
       <a href={whatsapp()} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 py-3"><MessageCircle className="h-3.5 w-3.5" />WhatsApp</a>
       <a href={`tel:+${company.contacts[0]?.tel ?? ""}`} className="flex items-center justify-center gap-1 py-3"><Phone className="h-3.5 w-3.5" />Call</a>
       <Link to="/tailor-made" className="bg-primary py-3 text-center text-primary-foreground">Plan Safari</Link>
-    </div>
+    </nav>
+  );
+}
+
+type PhotoProps = {
+  name: string;
+  alt: string;
+  className?: string;
+  sizes?: string;
+  loading?: "eager" | "lazy";
+  fetchPriority?: "high" | "low" | "auto";
+  media?: string;
+};
+
+/** Responsive versions keep the original image and CSS crop. */
+export function Photo({ name, alt, className, sizes = "(min-width: 1440px) 1360px, calc(100vw - 40px)", loading = "lazy", fetchPriority = "auto", media }: PhotoProps) {
+  const dimensions = imageDimensions[name];
+  return (
+    <picture className="contents">
+      <source type="image/avif" srcSet={imageSrcSet(name, "avif")} sizes={sizes} media={media} />
+      <source type="image/webp" srcSet={imageSrcSet(name)} sizes={sizes} media={media} />
+      <img
+        src={media ? "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" : img(name, 1280)}
+        srcSet={media ? undefined : imageSrcSet(name)}
+        sizes={sizes}
+        width={dimensions?.width}
+        height={dimensions?.height}
+        alt={alt}
+        className={className}
+        loading={loading}
+        decoding="async"
+        fetchPriority={fetchPriority}
+      />
+    </picture>
   );
 }
 
 /** Signature long photo cutout, set inline with large type. */
-export function Strip({ src, shape = "right", className = "" }: { src: string; shape?: "right" | "left" | "both"; className?: string }) {
+export function Strip({ src, shape = "right", className = "", ...props }: { src: string; shape?: "right" | "left" | "both"; className?: string } & Omit<PhotoProps, "name" | "alt" | "className">) {
   const r = shape === "right" ? "rounded-l-xl rounded-r-[5rem]" : shape === "left" ? "rounded-l-[5rem] rounded-r-xl" : "rounded-[5rem]";
-  return <img src={img(src)} alt="" className={`object-cover ${r} ${className}`} />;
+  return <Photo name={src} alt="" className={`object-cover ${r} ${className}`} {...props} />;
 }
 
 /** Interior page hero: big headline + photo strip. */
@@ -103,7 +137,7 @@ export function PageHero({ eyebrow, title, accent, image, children }: { eyebrow?
         <h1 className="text-5xl font-bold leading-[1.02] tracking-tight md:text-7xl lg:text-8xl">
           {title} {accent && <span className="text-clay">{accent}</span>}
         </h1>
-        <Strip src={image} className="h-24 w-full md:h-32 md:flex-1" />
+        <Strip src={image} loading="eager" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" className="h-24 w-full md:h-32 md:flex-1" />
       </div>
       {children && <div className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">{children}</div>}
     </section>
@@ -137,6 +171,10 @@ export function meta(title: string, description: string, image?: string) {
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
   ];
-  if (image) m.push({ property: "og:image", content: img(image) }, { name: "twitter:image", content: img(image) });
+  const origin = siteOrigin(import.meta.env["VITE_SITE_ORIGIN"]);
+  if (image && origin) {
+    const url = new URL(img(image), origin).href;
+    m.push({ property: "og:image", content: url }, { name: "twitter:image", content: url });
+  }
   return { meta: m };
 }

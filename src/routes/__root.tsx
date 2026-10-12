@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -13,6 +14,7 @@ import { Toaster } from "sonner";
 
 import { Header, Footer, MobileActions } from "../components/site";
 import appCss from "../styles.css?url";
+import { jsonLd, pageSeo } from "../lib/seo";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -86,8 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" },
+      { rel: "preload", href: "/fonts/sora-latin-variable.woff2", as: "font", type: "font/woff2", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
         href: appCss,
@@ -103,10 +104,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const seo = pageSeo(pathname, import.meta.env["VITE_SITE_ORIGIN"]);
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        {seo.canonical && <link rel="canonical" href={seo.canonical} />}
+        {seo.canonical && <meta property="og:url" content={seo.canonical} />}
+        {!seo.indexable && <meta name="robots" content="noindex, nofollow" />}
+        {seo.structuredData.map((data, index) => (
+          <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(data) }} />
+        ))}
       </head>
       <body>
         {children}
@@ -122,8 +131,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-5 focus:top-5 focus:z-50 focus:rounded-lg focus:bg-background focus:px-5 focus:py-3 focus:text-foreground focus:ring-2 focus:ring-primary">Skip to content</a>
       <Header />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
       <Footer />

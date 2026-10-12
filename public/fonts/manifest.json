@@ -1,0 +1,23 @@
+[
+  {
+    "file": "sora-latin-variable.woff2",
+    "source": "https://fonts.gstatic.com/s/sora/v17/xMQbuFFYT72XzQUpDqW1KX4.woff2",
+    "bytes": 33672,
+    "sha256": "d2909123a6a8ed2f928055f002c32f63ee93496b470c1a344873f955111fca53",
+    "license": "SIL Open Font License 1.1; see OFL-Sora.txt"
+  },
+  {
+    "file": "sora-latin-ext-variable.woff2",
+    "source": "https://fonts.gstatic.com/s/sora/v17/xMQbuFFYT72XzQspDqW1KX7wmA.woff2",
+    "bytes": 15556,
+    "sha256": "df4fca18912e29202b16286ab514798de8357c416b5e1f2dd31703994bec7a78",
+    "license": "SIL Open Font License 1.1; see OFL-Sora.txt"
+  },
+  {
+    "file": "OFL-Sora.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/sora/OFL.txt",
+    "bytes": 4385,
+    "sha256": "ba0b9729c9428ba79a0459ab8ec575791b51509dbec213e383d0316d37fec299",
+    "license": "SIL Open Font License 1.1; see OFL-Sora.txt"
+  }
+]

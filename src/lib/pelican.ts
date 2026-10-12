@@ -1,7 +1,24 @@
 // Factual content sourced from Pelican's WIKINAM listing. Do not add invented facts.
-const IMG_BASE =
-  "https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/img/showcase/1920/";
-export const img = (n: string) => `${IMG_BASE}${n}.jpg`;
+// Local derivatives of the same source photographs; source evidence is in
+// public/images/manifest.json. No image crop or catalogue fact is changed.
+export const img = (name: string, width: 640 | 1280 | 1920 = 1920) =>
+  `/images/${name}-${width}.webp`;
+export const imageSrcSet = (name: string, format: "webp" | "avif" = "webp") =>
+  [640, 1280, 1920].map((width) => `/images/${name}-${width}.${format} ${width}w`).join(", ");
+export const imageDimensions: Record<string, { width: number; height: number }> = {
+  rhino: { width: 1920, height: 1280 },
+  leopard: { width: 1920, height: 1285 },
+  zebra: { width: 1920, height: 1280 },
+  oryx: { width: 1920, height: 1280 },
+  hippo: { width: 1920, height: 1281 },
+  hyena: { width: 1920, height: 1280 },
+  baboon: { width: 1920, height: 1281 },
+  "sea-lions": { width: 1920, height: 1280 },
+  "car-safari-scene": { width: 1920, height: 1280 },
+  "nature-landscape": { width: 1920, height: 1280 },
+  "savanna-plains-sunset": { width: 1920, height: 1282 },
+  "quiver-tree-sunset": { width: 1920, height: 1281 },
+};
 
 export const images = [
   "rhino", "leopard", "zebra", "oryx", "hippo", "hyena", "baboon", "sea-lions",

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, Section, meta } from "@/components/site";
-import { company, images, img } from "@/lib/pelican";
+import { PageHero, Photo, Section, meta } from "@/components/site";
+import { company, images } from "@/lib/pelican";
 
 export const Route = createFileRoute("/gallery")({
   head: () => meta("Gallery", "Wildlife and landscape photography from Pelican Tours and Safaris journeys.", "leopard"),
@@ -16,7 +16,7 @@ function Gallery() {
       <Section className="pt-0 md:pt-0">
         <div className="grid gap-3 md:grid-cols-12 md:gap-4">
           {images.map((n, i) => (
-            <img key={n} src={img(n)} alt={n.replace(/-/g, " ")} loading="lazy" className={`h-64 w-full object-cover md:h-96 ${spans[i % 4]}`} />
+            <Photo key={n} name={n} sizes="(min-width: 768px) 66vw, calc(100vw - 40px)" alt={n.replace(/-/g, " ")} loading="lazy" className={`h-64 w-full object-cover md:h-96 ${spans[i % 4]}`} />
           ))}
         </div>
         <a href={company.album} target="_blank" rel="noreferrer" className="mt-10 inline-block border-b border-foreground pb-1 text-sm font-semibold">See the full photo album</a>
