@@ -1,6 +1,9 @@
+import { useApprovedSafariPackages } from "@/lib/approved-travel-details";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Strip, Photo, Section, PlanCTA, meta } from "@/components/site";
-import { company, destinations, safaris } from "@/lib/pelican";
+import { SafariPackageSummary } from "@/components/approved-safari-package";
+import { SafariPlanningSteps, ApprovedTravelTrust } from "@/components/safari-planning";
+import { company, destinations, safaris, safariInterests } from "@/lib/pelican";
 
 export const Route = createFileRoute("/")({
   head: () => meta("Discover Namibia", "Big Five safaris in Etosha, Windhoek city tours, Namibian highlights and cross-border trips to Botswana and Zimbabwe.", "savanna-plains-sunset"),
@@ -8,6 +11,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const { packages } = useApprovedSafariPackages();
   return (
     <>
       <section className="mx-auto max-w-[1440px] px-5 pb-16 pt-10 md:px-10 md:pb-24 md:pt-16">
@@ -44,6 +48,20 @@ function Home() {
         </div>
       </Section>
 
+      <Section className="border-t border-border/60">
+        <h2 className="text-3xl font-semibold md:text-4xl">Find your kind of journey</h2>
+        <p className="mt-4 max-w-2xl text-muted-foreground">Explore the experiences in our safari catalogue, or let Pelican help you choose.</p>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from(new Set(Object.values(safariInterests).flat())).map(interest => {
+            const count = safaris.filter(s => safariInterests[s.slug]?.includes(interest)).length;
+            return <Link key={interest} to="/safaris" search={{interest}} className="border-b border-border py-5">
+              <h3 className="text-xl font-semibold">{interest}</h3><p className="mt-2 text-sm text-muted-foreground">{count} {count === 1 ? "safari idea" : "safari ideas"} →</p>
+            </Link>;
+          })}
+        </div>
+        <Link to="/match" className="mt-8 inline-block text-sm font-semibold text-primary">Help me find my safari →</Link>
+      </Section>
+
       <Section className="pt-0 md:pt-0">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="text-4xl font-bold tracking-tight md:text-6xl">Safari <span className="text-clay">journeys</span></h2>
@@ -54,7 +72,7 @@ function Home() {
             <Link key={s.slug} to="/safaris/$slug" params={{ slug: s.slug }} className="group grid items-center gap-4 py-6 md:grid-cols-12 md:gap-8">
               <span className="text-sm text-muted-foreground md:col-span-1">0{i + 1}</span>
               <h3 className="text-2xl font-semibold tracking-tight md:col-span-4 md:text-3xl group-hover:text-clay">{s.name}</h3>
-              <p className="text-muted-foreground md:col-span-3">{s.short}</p>
+              <div className="md:col-span-3"><p className="text-muted-foreground">{s.short}</p>{packages[s.slug] && <SafariPackageSummary details={packages[s.slug]!.details} />}</div>
               <Strip src={s.image} shape={i % 2 ? "left" : "right"} className="h-20 w-full md:col-span-4 md:h-24" />
             </Link>
           ))}
@@ -106,6 +124,7 @@ function Home() {
         <Link to="/gallery" className="mt-8 inline-block text-sm font-semibold text-primary">View the gallery →</Link>
       </Section>
 
+      <Section className="border-t border-border/60"><SafariPlanningSteps /><ApprovedTravelTrust /></Section>
       <PlanCTA />
     </>
   );

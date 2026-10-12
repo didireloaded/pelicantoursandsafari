@@ -80,3 +80,14 @@ The Tailor-Made page now calls a same-site TanStack POST server function, which 
 Configure `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ENQUIRY_RATE_SALT`, and exact `ENQUIRY_ALLOWED_ORIGINS` in the **site's server runtime**, not just Edge Function secrets. Secrets must not have VITE_ prefixes. Ensure the protected `submit_enquiry` SQL function/grants are actually deployed: the recent Drizzle table migration does not create this RPC. Reconcile migration histories before applying source SQL; do not apply the unfinished local email migration.
 
 Server submission is disabled by default. Set `ENQUIRY_TRUST_CLOUDFLARE_IP=true` only after verifying the deployed ingress below. The trusted Cloudflare ingress must overwrite/remove visitor-controlled `cf-connecting-ip` before the server function executes. The handler hashes that identity with the configured salt and never accepts identity from the form or falls back to user-controlled forwarded headers. If hosting does not guarantee this header, configure an equivalent trusted ingress mechanism before launch; missing identity fails closed. Local direct Node requests therefore do not submit successfully without a trusted proxy. Test allowed origins, retry/response loss, malformed data, quota, and protected-RPC denial on the deployed host. This code cannot make missing live secrets/RPCs operational on its own.
+
+## Approved catalogue packages
+
+After reconciling the existing travel_details schema, apply
+`20261012075627_approved_safari_packages.sql`. Staff can attach structured verified
+itineraries and seasonal NAD rates to catalogue safaris through Approved information.
+The existing staff-write/public-approved policies are retained. There are no seeded
+prices or itineraries. Optional sourced USD/EUR conversions expire after seven days
+and affect indicative display only. Verify staff publishing, public draft exclusion,
+conflicting updates and currency conditions live before advertising prices.
+See `docs/SAFARI-DISCOVERY-RELEASE.md` for behaviour, proof and rollback guidance.

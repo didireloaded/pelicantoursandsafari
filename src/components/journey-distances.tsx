@@ -34,6 +34,7 @@ export function JourneyDistances({
     try {
       const { data, error } = await supabase.functions.invoke("journey-route", {
         body: { stops: JSON.parse(key) },
+        signal: AbortSignal.timeout(15000),
       });
       if (error) throw error;
       setRoad({ key, route: parseRoadRoute(data, stops.length) });

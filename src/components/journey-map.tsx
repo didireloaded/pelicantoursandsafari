@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { destinations } from "@/lib/pelican";
 import type { JourneyStop } from "@/lib/journey";
 import "leaflet/dist/leaflet.css";
@@ -22,13 +22,16 @@ export function JourneyMap({
   confirmed?: boolean;
 }) {
   const element = useRef<HTMLDivElement>(null);
+  const [mapError, setMapError] = useState("");
   useEffect(() => {
     let disposed = false;
+    setMapError("");
     let cleanup: (() => void) | undefined;
     import("leaflet").then((L) => {
       if (disposed || !element.current) return;
       const map = L.map(element.current).setView([-21, 20], 5);
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      cleanup = () => map.remove();
+      const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' +
           (roadRoute?.provider === "Mapbox"
@@ -36,6 +39,7 @@ export function JourneyMap({
             : ""),
         maxZoom: 12,
       }).addTo(map);
+      tiles.on("tileerror", () => { if (!disposed) setMapError("Map tiles could not load. Use the destination list and directions below."); });
       destinations.forEach((destination) => {
         const point = points[destination.slug];
         if (!point) return;
@@ -105,7 +109,7 @@ export function JourneyMap({
         resize.disconnect();
         map.remove();
       };
-    });
+    }).catch(() => { if (!disposed) setMapError("The interactive map is unavailable. Use the destination list and directions below."); });
     return () => {
       disposed = true;
       cleanup?.();
@@ -113,6 +117,7 @@ export function JourneyMap({
   }, [stops, onSelect, roadRoute, confirmed]);
   return (
     <div>
+      {mapError && <p role="status" className="mb-3 text-sm text-muted-foreground">{mapError}</p>}
       <div
         ref={element}
         className="relative z-0 h-[420px] w-full border border-border"

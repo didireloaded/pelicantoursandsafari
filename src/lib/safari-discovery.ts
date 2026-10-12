@@ -65,3 +65,14 @@ export function planningSearch(search: Record<string, unknown>): PlanningSearch 
   }
   return out;
 }
+
+export type DiscoverySearch = { country?: string; destination?: string; interest?: string };
+
+/** Shareable catalogue filters accept only known destinations and experience labels. */
+export function discoverySearch(search: Record<string, unknown>): DiscoverySearch {
+  const out: DiscoverySearch = {};
+  if (typeof search["country"] === "string" && ["Namibia", "Botswana", "Zimbabwe"].includes(search["country"])) out.country = search["country"];
+  if (typeof search["destination"] === "string" && getDestination(search["destination"])) out.destination = search["destination"];
+  if (typeof search["interest"] === "string" && Object.values(safariInterests).flat().includes(search["interest"])) out.interest = search["interest"];
+  return out;
+}

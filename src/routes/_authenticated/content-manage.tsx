@@ -4,6 +4,10 @@ import { Section } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { SafariPackageEditor } from "@/components/safari-package-editor";
+import { safariPackageSchema, type SafariPackage } from "@/lib/safari-package";
+import { getSafari } from "@/lib/pelican";
+import { ZodError } from "zod";
 type Detail = Database["public"]["Tables"]["travel_details"]["Row"];
 const blank = {
   category: "itinerary",
@@ -25,6 +29,9 @@ function Manage() {
   const [rows, setRows] = useState<Detail[]>([]);
   const [selected, setSelected] = useState("");
   const [form, setForm] = useState(blank);
+  const [safariSlug, setSafariSlug] = useState("");
+  const [packageDetails, setPackageDetails] = useState<SafariPackage | null>(null);
+  const [unsupportedPackage, setUnsupportedPackage] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
@@ -80,6 +87,15 @@ function Manage() {
                 setSelected(e.target.value);
                 const row = rows.find((r) => r.id === e.target.value);
                 setForm(row ? { ...row, photo_url: row.photo_url ?? "" } : blank);
+                setSafariSlug(row?.safari_slug ?? "");
+                const parsed = safariPackageSchema.safeParse(row?.package_details);
+                setUnsupportedPackage(!!row?.package_details && !parsed.success);
+                setPackageDetails(parsed.success ? parsed.data : null);
+                setMessage(
+                  row?.package_details && !parsed.success
+                    ? "This package has an unsupported format. Reload or enter verified package fields before saving."
+                    : "",
+                );
               }}
             >
               <option value="">New entry</option>
@@ -98,10 +114,30 @@ function Manage() {
               lock.current = true;
               setBusy(true);
               try {
+                if (unsupportedPackage) {
+                  setMessage(
+                    "Not saved. This entry uses an unsupported package format; select the catalogue safari again to replace it with verified fields, or reload.",
+                  );
+                  return;
+                }
                 const source = new URL(form.source_url);
                 if (source.protocol !== "https:") throw new Error();
                 if (form.photo_url && new URL(form.photo_url).protocol !== "https:")
                   throw new Error();
+                if (safariSlug && !getSafari(safariSlug)) throw new Error();
+                const details =
+                  form.category === "itinerary" && packageDetails
+                    ? safariPackageSchema.parse({
+                        ...packageDetails,
+                        inclusions: packageDetails.inclusions
+                          .map((item) => item.trim())
+                          .filter(Boolean),
+                        exclusions: packageDetails.exclusions
+                          .map((item) => item.trim())
+                          .filter(Boolean),
+                      })
+                    : null;
+                if (details && !safariSlug) throw new Error();
                 const body = {
                   category: form.category,
                   source_url: form.source_url,
@@ -110,6 +146,8 @@ function Manage() {
                   title: form.title.trim(),
                   body: form.body.trim(),
                   updated_by: user.id,
+                  safari_slug: details ? safariSlug : null,
+                  package_details: details,
                 };
                 const previous = rows.find((r) => r.id === selected);
                 const result = previous
@@ -129,9 +167,11 @@ function Manage() {
                     ? "Verified entry published."
                     : "Draft saved; hidden from public readers.",
                 );
-              } catch {
+              } catch (error) {
                 setMessage(
-                  "Not saved. Check your source URL and reload before retrying if another staff member edited this entry.",
+                  error instanceof ZodError
+                    ? `Not saved. ${error.issues[0]?.message ?? "Check the package fields."}`
+                    : "Not saved. Check source URLs and package fields. Only one package per safari can be published. Reload before retrying if another staff member edited this entry.",
                 );
               } finally {
                 setBusy(false);
@@ -144,7 +184,14 @@ function Manage() {
               <select
                 className={field}
                 value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                onChange={(e) => {
+                  setForm({ ...form, category: e.target.value });
+                  if (e.target.value !== "itinerary") {
+                    setSafariSlug("");
+                    setPackageDetails(null);
+                    setUnsupportedPackage(false);
+                  }
+                }}
               >
                 {[
                   "itinerary",
@@ -180,6 +227,17 @@ function Manage() {
                 onChange={(e) => setForm({ ...form, body: e.target.value })}
               />
             </label>
+            {form.category === "itinerary" && (
+              <SafariPackageEditor
+                slug={safariSlug}
+                value={packageDetails}
+                onChange={(slug, details) => {
+                  setSafariSlug(slug);
+                  setPackageDetails(details);
+                  setUnsupportedPackage(false);
+                }}
+              />
+            )}
             <label className="block">
               Source URL
               <input
