@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, MessageCircle, Mail, ChevronUp, ChevronDown, X, Send } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { submitTripEnquiry } from "@/lib/enquiry-submit.functions";
 import { PageHero, Section, meta } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { company, destinations, getSafari, planningInterests, stays, whatsapp } from "@/lib/pelican";
@@ -88,8 +88,8 @@ function TailorMade() {
     submitLock.current = true;
     setSending(true);
     try {
-      const { data, error: err } = await supabase.functions.invoke("submit-enquiry", { body: { ...body, request_id: pendingRequest.current.id } });
-      if (err || !data?.reference) throw new Error("Submission failed");
+      const data = await submitTripEnquiry({ data: { ...body, request_id: pendingRequest.current.id }, signal: AbortSignal.timeout(20000) });
+      if (!data.reference) { setError(data.error ?? "Receipt unavailable. Retry the same brief."); return; }
       setReference(String(data.reference)); setSent(true);
     } catch { setError("We could not confirm receipt. Retry the same brief to check without creating a duplicate. If you contact Pelican by WhatsApp or email instead, mention this attempted submission."); }
     finally { submitLock.current = false; setSending(false); }

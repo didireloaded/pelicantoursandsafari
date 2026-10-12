@@ -9,3 +9,7 @@ verify_jwt = false
 [functions.draft-itinerary]
 # The function verifies the session with auth.getUser and checks is_staff itself.
 verify_jwt = false
+
+[functions.plan-safari]
+# Own session verification permits travellers without granting staff access.
+verify_jwt = false

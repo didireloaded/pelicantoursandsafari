@@ -5,14 +5,17 @@ import type { Database } from "@/integrations/supabase/types";
 import { Section } from "@/components/site";
 import { JourneyMap } from "@/components/journey-map";
 import { JourneyDistances } from "@/components/journey-distances";
+import { checkTravellerSession } from "@/lib/traveller-session";
 import { validateJourney } from "@/lib/journey";
 import { stopName, type RoadRoute } from "@/lib/journey-geography";
 type Trip = Database["public"]["Tables"]["trips"]["Row"];
 export const Route = createFileRoute("/trips")({
   ssr: false,
   head: () => ({ meta: [{ title: "My trips — Pelican" }, { name: "robots", content: "noindex" }] }),
+  pendingMs: 0,
+  pendingComponent: () => <Section><h1 className="text-5xl font-bold">My trips</h1><p className="mt-8" role="status">Checking your sign-in…</p></Section>,
   beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } = await checkTravellerSession(() => supabase.auth.getUser());
     if (error || !data.user) throw redirect({ to: "/auth", search: { next: "/trips" } });
     return { user: data.user };
   },

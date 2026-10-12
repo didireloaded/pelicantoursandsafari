@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { TravellerItinerary } from "@/components/traveller-itinerary";
 import { Section } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { matchInterests, matchSafaris } from "@/lib/safari-match";
@@ -117,6 +118,7 @@ function Match() {
           </Link>
         </div>
       )}
+      <TravellerItinerary />
     </Section>
   );
 }

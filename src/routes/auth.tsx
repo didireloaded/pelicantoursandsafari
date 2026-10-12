@@ -26,7 +26,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const { next } = Route.useSearch();
-  const traveller = ["/trips", "/proposals"].includes(next.split("?")[0] ?? "");
+  const traveller = ["/trips", "/proposals", "/match"].includes(next.split("?")[0] ?? "");
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
