@@ -18,6 +18,7 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as MatchRouteImport } from './routes/match'
 import { Route as ProposalsRouteImport } from './routes/proposals'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ShortlistRouteImport } from './routes/shortlist'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
 import { Route as TravelGuideRouteImport } from './routes/travel-guide'
@@ -75,6 +76,11 @@ const MatchRoute = MatchRouteImport.update({
 const ProposalsRoute = ProposalsRouteImport.update({
   id: '/proposals',
   path: '/proposals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShortlistRoute = ShortlistRouteImport.update({
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/journey': typeof JourneyRoute
   '/match': typeof MatchRoute
   '/proposals': typeof ProposalsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
   '/travel-guide': typeof TravelGuideRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/journey': typeof JourneyRoute
   '/match': typeof MatchRoute
   '/proposals': typeof ProposalsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
   '/travel-guide': typeof TravelGuideRoute
@@ -209,6 +217,7 @@ export interface FileRoutesById {
   '/journey': typeof JourneyRoute
   '/match': typeof MatchRoute
   '/proposals': typeof ProposalsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
   '/travel-guide': typeof TravelGuideRoute
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
     | '/journey'
     | '/match'
     | '/proposals'
+    | '/reset-password'
     | '/shortlist'
     | '/tailor-made'
     | '/travel-guide'
@@ -259,6 +269,7 @@ export interface FileRouteTypes {
     | '/journey'
     | '/match'
     | '/proposals'
+    | '/reset-password'
     | '/shortlist'
     | '/tailor-made'
     | '/travel-guide'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/journey'
     | '/match'
     | '/proposals'
+    | '/reset-password'
     | '/shortlist'
     | '/tailor-made'
     | '/travel-guide'
@@ -310,6 +322,7 @@ export interface RootRouteChildren {
   JourneyRoute: typeof JourneyRoute
   MatchRoute: typeof MatchRoute
   ProposalsRoute: typeof ProposalsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ShortlistRoute: typeof ShortlistRoute
   TailorMadeRoute: typeof TailorMadeRoute
   TravelGuideRoute: typeof TravelGuideRoute
@@ -386,6 +399,13 @@ declare module '@tanstack/react-router' {
       path: '/proposals'
       fullPath: '/proposals'
       preLoaderRoute: typeof ProposalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shortlist': {
@@ -514,6 +534,7 @@ const rootRouteChildren: RootRouteChildren = {
   JourneyRoute: JourneyRoute,
   MatchRoute: MatchRoute,
   ProposalsRoute: ProposalsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ShortlistRoute: ShortlistRoute,
   TailorMadeRoute: TailorMadeRoute,
   TravelGuideRoute: TravelGuideRoute,

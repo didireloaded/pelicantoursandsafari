@@ -54,3 +54,11 @@ Only trip-preference text and selected details are submitted to Lovable AI when 
 Requests consume workspace AI credits. The authenticated database quota caps attempts at 10 per staff member per hour and 100 across the team per rolling day, with an advisory lock enforcing concurrent checks. Failed attempts also count. Gateway credit/rate-limit/configuration failures produce actionable messages and never apply a partial draft.
 
 Before enabling production use, test the deployed function with synthetic preferences and verified tour blocks as staff; confirm a traveller account is denied, the commercial fields remain unchanged, and generated itineraries can be edited and explicitly published. Local tests use mocked model responses; no authenticated live generation or connected-cloud deployment was performed by Codex.
+
+## Launch verification update (12 October 2026)
+
+See `../docs/LAUNCH-CHECKLIST.md` for evidence, full feature checks, release order and recovery gates. Live `submit-enquiry` preflight currently returns 404. Lovable SQL inspection still rejects the connector's missing `projects:write` scope; no migration/function activation has been performed by this update.
+
+The MCP `update_enquiry` tool now requires `expected_updated_at`, copied exactly from `list_enquiries`, and rejects stale writes. Refresh MCP clients' tool schemas after deployment and test real OAuth before staff use. Never automatically reload the version and replay a conflicting notes replacement.
+
+Password recovery now has `/reset-password`; add the exact deployed URL to the Auth redirect allowlist and verify delivery and a user-performed reset. This does not configure SMTP, staff accounts or MFA. These must be activated and tested in the real project. GitHub checks compile with placeholder public backend settings and do not deploy Cloud resources.

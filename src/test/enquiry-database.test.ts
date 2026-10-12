@@ -70,6 +70,33 @@ describe.sequential("Enquiry database", () => {
     await expect(db.query("update enquiries set email = 'changed@example.com'")).rejects.toThrow();
     await db.exec("reset role");
   });
+  it("rejects stale staff writes and preserves the winning update", async () => {
+    await db.exec("set role authenticated");
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [staff]);
+    const previous = (
+      await db.query<{ id: string; version: string }>(
+        "select id, updated_at::text as version from enquiries limit 1",
+      )
+    ).rows[0]!;
+    const first = await db.query(
+      "update enquiries set staff_notes = 'First staff save' where id = $1 and updated_at = $2::timestamptz returning id",
+      [previous.id, previous.version],
+    );
+    const stale = await db.query(
+      "update enquiries set staff_notes = 'Stale overwrite' where id = $1 and updated_at = $2::timestamptz returning id",
+      [previous.id, previous.version],
+    );
+    expect(first.rows).toHaveLength(1);
+    expect(stale.rows).toHaveLength(0);
+    expect(
+      (
+        await db.query<{ staff_notes: string }>("select staff_notes from enquiries where id = $1", [
+          previous.id,
+        ])
+      ).rows[0]?.staff_notes,
+    ).toBe("First staff save");
+    await db.exec("reset role");
+  });
   it("limits repeated new submissions and rejects invalid payloads", async () => {
     await db.exec("set role service_role");
     await expect(

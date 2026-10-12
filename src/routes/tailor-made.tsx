@@ -91,7 +91,7 @@ function TailorMade() {
       const { data, error: err } = await supabase.functions.invoke("submit-enquiry", { body: { ...body, request_id: pendingRequest.current.id } });
       if (err || !data?.reference) throw new Error("Submission failed");
       setReference(String(data.reference)); setSent(true);
-    } catch { setError("Sorry, the brief could not be sent. Please try WhatsApp or email instead."); }
+    } catch { setError("We could not confirm receipt. Retry the same brief to check without creating a duplicate. If you contact Pelican by WhatsApp or email instead, mention this attempted submission."); }
     finally { submitLock.current = false; setSending(false); }
   };
   return <>
