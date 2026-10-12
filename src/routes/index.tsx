@@ -11,25 +11,25 @@ function Home() {
   return (
     <>
       <section className="mx-auto max-w-[1440px] px-5 pb-16 pt-10 md:px-10 md:pb-24 md:pt-16">
-        <h1 className="text-5xl font-bold leading-[1.02] md:text-7xl xl:text-[7.5rem]">
-          <div className="flex items-center gap-5">
-            <span>Discover <span className="text-clay">Namibia</span></span>
-            <Strip src="rhino" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] flex-1 md:block" />
+        <h1 className="text-5xl font-bold leading-[1.02] md:text-[clamp(3rem,6.6vw,6rem)]">
+          <div className="flex items-center gap-3 md:gap-5">
+            <span className="md:whitespace-nowrap">Discover <span className="text-clay">Namibia</span></span>
+            <Strip src="rhino" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] w-0 flex-1 md:block" />
           </div>
-          <div className="mt-2 flex items-center gap-5">
-            <Strip src="zebra" shape="left" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] flex-1 md:block" />
+          <div className="mt-2 flex items-center gap-3 md:gap-5">
+            <Strip src="zebra" shape="left" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] w-0 flex-1 md:block" />
             <span>through</span>
           </div>
-          <div className="mt-2 flex items-center gap-5">
+          <div className="mt-2 flex items-center gap-3 md:gap-5">
             <span className="text-clay">wild</span>
-            <Strip src="leopard" shape="both" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] flex-1 md:block" />
+            <Strip src="leopard" shape="both" loading="eager" media="(min-width: 768px)" sizes="50vw" className="hidden h-[0.85em] w-0 flex-1 md:block" />
             <span>places.</span>
           </div>
         </h1>
         <Strip src="leopard" loading="eager" fetchPriority="high" media="(max-width: 767px)" sizes="calc(100vw - 40px)" className="mt-6 h-40 w-full md:hidden" />
         <div className="mt-10 flex flex-col gap-6 md:mt-14 md:flex-row md:items-end md:justify-between">
           <p className="max-w-md text-lg text-muted-foreground">Professionally guided safaris across Namibia, with selected routes into Botswana and Zimbabwe.</p>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Link to="/safaris" className="rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground">Explore Safaris</Link>
             <Link to="/tailor-made" className="rounded-lg border border-foreground/20 px-6 py-3.5 text-sm font-semibold">Plan Your Safari</Link>
           </div>
@@ -45,7 +45,7 @@ function Home() {
       </Section>
 
       <Section className="pt-0 md:pt-0">
-        <div className="flex items-end justify-between">
+        <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="text-4xl font-bold tracking-tight md:text-6xl">Safari <span className="text-clay">journeys</span></h2>
           <Link to="/safaris" className="text-sm font-semibold text-primary">All safaris →</Link>
         </div>
@@ -61,22 +61,22 @@ function Home() {
         </div>
       </Section>
 
-      <section className="grid md:grid-cols-2">
-        <Photo name="savanna-plains-sunset" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Savanna plains at sunset" className="h-80 w-full object-cover md:h-full" />
-        <div className="px-5 py-14 md:px-16 md:py-24">
+      <Section className="grid items-center gap-8 pt-0 md:grid-cols-2 md:gap-12 md:pt-0">
+        <Photo name="savanna-plains-sunset" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Savanna plains at sunset" className="h-56 w-full rounded-r-[5rem] object-cover md:h-80" />
+        <div className="min-w-0">
           <h2 className="text-4xl font-bold tracking-tight md:text-5xl">Where we <span className="text-clay">travel</span></h2>
           <ul className="mt-8">
             {destinations.slice(0, 7).map((d) => (
               <li key={d.slug} className="border-b border-border/60">
-                <Link to="/destinations/$slug" params={{ slug: d.slug }} className="flex justify-between py-3.5 text-lg font-medium hover:text-clay">
-                  {d.name}<span className="text-sm text-muted-foreground">{d.country}</span>
+                <Link to="/destinations/$slug" params={{ slug: d.slug }} className="flex items-baseline justify-between gap-4 py-3.5 text-lg font-medium hover:text-clay">
+                  {d.name}<span className="shrink-0 text-sm text-muted-foreground">{d.country}</span>
                 </Link>
               </li>
             ))}
           </ul>
           <Link to="/destinations" className="mt-8 inline-block text-sm font-semibold text-primary">All destinations →</Link>
         </div>
-      </section>
+      </Section>
 
       <Section className="grid gap-10 md:grid-cols-12 md:items-center">
         <div className="md:col-span-5">
@@ -85,7 +85,7 @@ function Home() {
           <p className="mt-6 text-lg text-muted-foreground">{company.specialty}</p>
           <Link to="/tailor-made" className="mt-8 inline-block rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground">Plan Your Safari</Link>
         </div>
-        <Strip src="car-safari-scene" shape="left" className="h-64 w-full md:col-span-7 md:h-96" />
+        <Strip src="car-safari-scene" shape="left" className="h-48 w-full md:col-span-7 md:h-60" />
       </Section>
 
       <Section className="grid gap-10 border-t border-border/60 md:grid-cols-12">
@@ -98,10 +98,10 @@ function Home() {
 
       <Section className="pt-0 md:pt-0">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-12 md:gap-4">
-          <Photo name="leopard" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Leopard" className="col-span-2 h-64 w-full rounded-r-[5rem] object-cover md:col-span-7 md:h-[28rem]" />
-          <Photo name="oryx" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Oryx" className="h-48 w-full object-cover md:col-span-5 md:h-[28rem]" />
-          <Photo name="sea-lions" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Sea lions" className="h-48 w-full object-cover md:col-span-5 md:h-72" />
-          <Photo name="quiver-tree-sunset" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Quiver tree at sunset" className="col-span-2 h-56 w-full rounded-l-[5rem] object-cover md:col-span-7 md:h-72" />
+          <Photo name="leopard" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Leopard" className="h-40 w-full rounded-r-[5rem] object-cover md:col-span-7 md:h-72" />
+          <Photo name="oryx" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Oryx" className="h-40 w-full object-cover md:col-span-5 md:h-72" />
+          <Photo name="sea-lions" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Sea lions" className="h-40 w-full object-cover md:col-span-5 md:h-60" />
+          <Photo name="quiver-tree-sunset" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" alt="Quiver tree at sunset" className="h-40 w-full rounded-l-[5rem] object-cover md:col-span-7 md:h-60" />
         </div>
         <Link to="/gallery" className="mt-8 inline-block text-sm font-semibold text-primary">View the gallery →</Link>
       </Section>

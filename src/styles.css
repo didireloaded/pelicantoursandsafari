@@ -160,6 +160,10 @@
     border-color: var(--color-border);
   }
 
+  h1, h2, h3, p, a {
+    overflow-wrap: break-word;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);

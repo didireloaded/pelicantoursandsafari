@@ -58,7 +58,7 @@ export function Header() {
 export function Footer() {
   return (
     <footer className="border-t border-border/60 bg-background pb-24 md:pb-0">
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-14 md:grid-cols-4 md:px-10">
+      <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-14 md:grid-cols-2 md:px-10 lg:grid-cols-4">
         <div className="md:col-span-2">
           <p className="flex items-center gap-3 text-lg font-semibold"><img src="/pelican-logo.png" alt="" className="h-12 w-12 object-contain" />{company.name}</p>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">Proudly Namibian, professionally guided safaris and tours.</p>
@@ -69,7 +69,7 @@ export function Footer() {
         </div>
         <div className="text-sm leading-7">
           {company.contacts.map((c) => <a key={c.tel} href={`tel:+${c.tel}`} className="block">{c.display} · {c.name}</a>)}
-          <a href={`mailto:${company.email}`} className="block">{company.email}</a>
+          <a href={`mailto:${company.email}`} className="block break-words">{company.email}</a>
         </div>
       </div>
       <div className="mx-auto flex max-w-[1440px] flex-wrap gap-6 px-5 pb-8 text-sm md:px-10"><Link to="/stay" className="text-primary">Places to stay</Link><Link to="/trips" className="text-sm hover:text-clay">My trips</Link><Link to="/journey" className="text-primary">Build my journey</Link><Link to="/match">Safari match</Link><Link to="/shortlist" search={{saved:"[]"}}>Shortlist</Link><Link to="/travel-guide">Travel guide</Link><Link to="/proposals" search={{}}>My proposals</Link></div>
@@ -99,13 +99,13 @@ type PhotoProps = {
   media?: string;
 };
 
-/** Responsive versions keep the original image and CSS crop. */
+/** Responsive sources stay out of layout; only the image occupies a flex/grid cell. */
 export function Photo({ name, alt, className, sizes = "(min-width: 1440px) 1360px, calc(100vw - 40px)", loading = "lazy", fetchPriority = "auto", media }: PhotoProps) {
   const dimensions = imageDimensions[name];
   return (
     <picture className="contents">
-      <source type="image/avif" srcSet={imageSrcSet(name, "avif")} sizes={sizes} media={media} />
-      <source type="image/webp" srcSet={imageSrcSet(name)} sizes={sizes} media={media} />
+      <source className="hidden" type="image/avif" srcSet={imageSrcSet(name, "avif")} sizes={sizes} media={media} />
+      <source className="hidden" type="image/webp" srcSet={imageSrcSet(name)} sizes={sizes} media={media} />
       <img
         src={media ? "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" : img(name, 1280)}
         srcSet={media ? undefined : imageSrcSet(name)}
@@ -113,7 +113,7 @@ export function Photo({ name, alt, className, sizes = "(min-width: 1440px) 1360p
         width={dimensions?.width}
         height={dimensions?.height}
         alt={alt}
-        className={className}
+        className={`min-w-0 max-w-full ${name === "hyena" ? "object-[50%_15%]" : ""} ${className ?? ""}`}
         loading={loading}
         decoding="async"
         fetchPriority={fetchPriority}
@@ -134,10 +134,10 @@ export function PageHero({ eyebrow, title, accent, image, children }: { eyebrow?
     <section className="mx-auto max-w-[1440px] px-5 pb-12 pt-12 md:px-10 md:pb-20 md:pt-20">
       {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-clay">{eyebrow}</p>}
       <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-center md:gap-8">
-        <h1 className="text-5xl font-bold leading-[1.02] tracking-tight md:text-7xl lg:text-8xl">
+        <h1 className="text-5xl font-bold leading-[1.02] tracking-tight md:max-w-[65%] md:text-6xl lg:text-7xl">
           {title} {accent && <span className="text-clay">{accent}</span>}
         </h1>
-        <Strip src={image} loading="eager" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" className="h-24 w-full md:h-32 md:flex-1" />
+        <Strip src={image} loading="eager" sizes="(min-width: 768px) 50vw, calc(100vw - 40px)" className="h-24 w-full md:ml-auto md:h-28 md:w-0 md:max-w-lg md:flex-1" />
       </div>
       {children && <div className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">{children}</div>}
     </section>
@@ -151,7 +151,7 @@ export function Section({ children, className = "" }: { children: ReactNode; cla
 export function PlanCTA() {
   return (
     <section className="bg-primary text-primary-foreground">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-5 py-16 md:flex-row md:items-end md:justify-between md:px-10 md:py-24">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-5 py-16 lg:flex-row lg:items-end lg:justify-between md:px-10 md:py-20">
         <h2 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">Let's plan your Namibian story.</h2>
         <div className="flex flex-wrap gap-3">
           <Link to="/tailor-made" className="rounded-lg bg-background px-6 py-3.5 text-sm font-semibold text-foreground">Plan Your Safari</Link>

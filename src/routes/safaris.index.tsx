@@ -33,10 +33,10 @@ function Safaris() {
         {!matches.length && <div className="border-y border-border py-12"><h2 className="text-2xl font-semibold">A journey shaped around you.</h2><Button asChild className="mt-6"><Link to="/tailor-made" search={destination ? { destinations: destination } : {}}>Ask us to build it</Link></Button><Button variant="ghost" className="ml-3" onClick={() => { setCountry(""); setDestination(""); setInterest(""); }}>Clear filters</Button></div>}
         {matches.map((s, i) => (
           <article key={s.slug} className="group grid gap-6 border-t border-border/70 py-10 md:grid-cols-12 md:gap-10 md:py-14">
-            <Strip src={s.image} shape={i % 2 ? "left" : "right"} className={`h-56 w-full md:col-span-7 md:h-80 ${i % 2 ? "md:order-2" : ""}`} />
+            <Strip src={s.image} shape={i % 2 ? "left" : "right"} className={`h-48 w-full md:col-span-7 md:h-64 ${i % 2 ? "md:order-2" : ""}`} />
             <div className="md:col-span-5 md:self-center">
               <span className="text-sm text-muted-foreground">0{i + 1}</span>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-5xl group-hover:text-clay">{s.name}</h2>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl group-hover:text-clay">{s.name}</h2>
               <p className="mt-4 text-muted-foreground">{s.overview}</p>
               <p className="mt-4 text-sm">{s.destinations.map((d) => getDestination(d)?.name).join(" · ")}</p>
               <div className="mt-6 flex flex-wrap items-center gap-5"><Button asChild variant="link" className="px-0"><Link to="/safaris/$slug" params={{ slug: s.slug }}>View safari →</Link></Button><label className="flex cursor-pointer items-center gap-2 text-sm"><input type="checkbox" className="accent-primary" checked={compared.includes(s.slug)} onChange={(e) => setCompared((prev) => e.target.checked ? [...prev, s.slug] : prev.filter((slug) => slug !== s.slug))} />Compare</label></div>
