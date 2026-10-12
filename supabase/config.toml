@@ -2,3 +2,6 @@ project_id = "owwkanlnxtvzwbpggmgf"
 
 [functions.submit-enquiry]
 verify_jwt = false
+
+[functions.journey-route]
+verify_jwt = false

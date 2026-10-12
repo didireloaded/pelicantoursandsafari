@@ -17,7 +17,9 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
+import { Route as TripsRouteImport } from './routes/trips'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedTripsManageRouteImport } from './routes/_authenticated/trips-manage'
 import { Route as DestinationsIndexRouteImport } from './routes/destinations.index'
 import { Route as DestinationsSlugRouteImport } from './routes/destinations.$slug'
 import { Route as SafarisIndexRouteImport } from './routes/safaris.index'
@@ -65,11 +67,22 @@ const TailorMadeRoute = TailorMadeRouteImport.update({
   path: '/tailor-made',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TripsRoute = TripsRouteImport.update({
+  id: '/trips',
+  path: '/trips',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTripsManageRoute =
+  AuthenticatedTripsManageRouteImport.update({
+    id: '/trips-manage',
+    path: '/trips-manage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const DestinationsIndexRoute = DestinationsIndexRouteImport.update({
   id: '/destinations/',
   path: '/destinations/',
@@ -114,7 +127,9 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/trips': typeof TripsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
   '/safaris/$slug': typeof SafarisSlugRoute
   '/stay/$slug': typeof StaySlugRoute
@@ -131,7 +146,9 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/trips': typeof TripsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
   '/safaris/$slug': typeof SafarisSlugRoute
   '/stay/$slug': typeof StaySlugRoute
@@ -150,7 +167,9 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/trips': typeof TripsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
   '/safaris/$slug': typeof SafarisSlugRoute
   '/stay/$slug': typeof StaySlugRoute
@@ -169,7 +188,9 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/journey'
     | '/tailor-made'
+    | '/trips'
     | '/dashboard'
+    | '/trips-manage'
     | '/destinations/$slug'
     | '/safaris/$slug'
     | '/stay/$slug'
@@ -186,7 +207,9 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/journey'
     | '/tailor-made'
+    | '/trips'
     | '/dashboard'
+    | '/trips-manage'
     | '/destinations/$slug'
     | '/safaris/$slug'
     | '/stay/$slug'
@@ -204,7 +227,9 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/journey'
     | '/tailor-made'
+    | '/trips'
     | '/_authenticated/dashboard'
+    | '/_authenticated/trips-manage'
     | '/destinations/$slug'
     | '/safaris/$slug'
     | '/stay/$slug'
@@ -223,6 +248,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   JourneyRoute: typeof JourneyRoute
   TailorMadeRoute: typeof TailorMadeRoute
+  TripsRoute: typeof TripsRoute
   DestinationsSlugRoute: typeof DestinationsSlugRoute
   SafarisSlugRoute: typeof SafarisSlugRoute
   StaySlugRoute: typeof StaySlugRoute
@@ -290,11 +316,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TailorMadeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trips': {
+      id: '/trips'
+      path: '/trips'
+      fullPath: '/trips'
+      preLoaderRoute: typeof TripsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips-manage': {
+      id: '/_authenticated/trips-manage'
+      path: '/trips-manage'
+      fullPath: '/trips-manage'
+      preLoaderRoute: typeof AuthenticatedTripsManageRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/destinations/': {
@@ -351,10 +391,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedTripsManageRoute: typeof AuthenticatedTripsManageRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedTripsManageRoute: AuthenticatedTripsManageRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -369,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   JourneyRoute: JourneyRoute,
   TailorMadeRoute: TailorMadeRoute,
+  TripsRoute: TripsRoute,
   DestinationsSlugRoute: DestinationsSlugRoute,
   SafarisSlugRoute: SafarisSlugRoute,
   StaySlugRoute: StaySlugRoute,

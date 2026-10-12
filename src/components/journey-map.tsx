@@ -3,26 +3,23 @@ import { destinations } from "@/lib/pelican";
 import type { JourneyStop } from "@/lib/journey";
 import "leaflet/dist/leaflet.css";
 
-// Approximate destination overview points, not property locations or driving routes.
-const points: Record<string, [number, number]> = {
-  etosha: [-18.9, 16.4],
-  "sossusvlei-deadvlei": [-24.73, 15.29],
-  "swakopmund-walvis-bay": [-22.68, 14.53],
-  spitzkoppe: [-21.83, 15.2],
-  "skeleton-coast": [-20.4, 13.2],
-  "kavango-zambezi": [-17.8, 22.3],
-  windhoek: [-22.57, 17.08],
-  botswana: [-22.3, 24.7],
-  chobe: [-18.4, 24.2],
-  zimbabwe: [-19, 29.15],
-  "victoria-falls": [-17.93, 25.86],
-};
+import {
+  destinationPoints as points,
+  propertyLocations,
+  stopPoint,
+  type RoadRoute,
+} from "@/lib/journey-geography";
+import { stays } from "@/lib/pelican";
 export function JourneyMap({
   stops,
   onSelect,
+  roadRoute,
+  confirmed = false,
 }: {
   stops: JourneyStop[];
   onSelect: (slug: string) => void;
+  roadRoute?: RoadRoute | undefined;
+  confirmed?: boolean;
 }) {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -39,7 +36,7 @@ export function JourneyMap({
       destinations.forEach((destination) => {
         const point = points[destination.slug];
         if (!point) return;
-        const sequence = stops.findIndex((s) => s.destination === destination.slug);
+        const sequence = stops.findIndex((s) => !s.stay && s.destination === destination.slug);
         const marker = L.marker(point, {
           icon: L.divIcon({
             html: `<span style="display:block;border-radius:50%;background:${sequence >= 0 ? "#185846" : "#af602a"};color:white;text-align:center;width:28px;height:28px;line-height:28px">${sequence >= 0 ? sequence + 1 : "+"}</span>`,
@@ -55,17 +52,62 @@ export function JourneyMap({
           .addTo(map);
         marker.getElement()?.setAttribute("aria-label", `Explore ${destination.name}`);
       });
-      const route = stops
-        .map((s) => points[s.destination])
-        .filter((p): p is [number, number] => !!p);
-      if (route.length > 1) L.polyline(route, { color: "#185846", dashArray: "6 8" }).addTo(map);
-      cleanup = () => map.remove();
+      stays.forEach((stay) => {
+        const location = propertyLocations[stay.slug];
+        if (!location) return;
+        const sequence = stops.findIndex((s) => s.stay === stay.slug);
+        const marker = L.marker(location.point, {
+          icon: L.divIcon({
+            html: `<span style="display:block;background:#185846;color:white;border:2px solid white;border-radius:4px;text-align:center;width:30px;height:30px;line-height:26px">${sequence >= 0 ? sequence + 1 : "⌂"}</span>`,
+            className: "",
+            iconSize: [30, 30],
+          }),
+          title: stay.name,
+          keyboard: true,
+        }).addTo(map);
+        const content = document.createElement("div");
+        const name = document.createElement("strong");
+        name.textContent = stay.name;
+        content.append(name);
+        const state = document.createElement("p");
+        state.textContent =
+          sequence >= 0
+            ? confirmed
+              ? "Confirmed stay"
+              : "Selected preference — not booked"
+            : "Accommodation";
+        content.append(state);
+        const link = document.createElement("a");
+        link.href = `/stay/${stay.slug}`;
+        link.textContent = "View accommodation";
+        content.append(link);
+        marker.bindPopup(content, { maxWidth: 240 }).bindTooltip(stay.name);
+        marker.getElement()?.setAttribute("aria-label", `View ${stay.name}`);
+      });
+      const route = stops.map(stopPoint).filter((p): p is [number, number] => !!p);
+      if (roadRoute) L.polyline(roadRoute.points, { color: "#185846" }).addTo(map);
+      else
+        stops.slice(1).forEach((stop, i) => {
+          const a = stops[i] && stopPoint(stops[i]);
+          const b = stopPoint(stop);
+          if (a && b) L.polyline([a, b], { color: "#185846", dashArray: "6 8" }).addTo(map);
+        });
+      if (route.length > 0) map.fitBounds(L.latLngBounds(route).pad(0.25), { maxZoom: 10 });
+      const resize = new ResizeObserver(() => {
+        map.invalidateSize();
+        if (route.length) map.fitBounds(L.latLngBounds(route).pad(0.25), { maxZoom: 10 });
+      });
+      resize.observe(element.current);
+      cleanup = () => {
+        resize.disconnect();
+        map.remove();
+      };
     });
     return () => {
       disposed = true;
       cleanup?.();
     };
-  }, [stops, onSelect]);
+  }, [stops, onSelect, roadRoute, confirmed]);
   return (
     <div>
       <div
@@ -75,8 +117,9 @@ export function JourneyMap({
         aria-label="Interactive destination map"
       />
       <p className="mt-3 text-xs text-muted-foreground">
-        Approximate destination points. Dashed lines show your preferred stop order, not roads or
-        verified driving routes. Map tiles are provided by OpenStreetMap.
+        Square pins show operator-sourced accommodation locations; round pins are approximate
+        destination areas. Dashed lines show stop order, not roads. Solid lines are estimated
+        driving routes. Map tiles are provided by OpenStreetMap.
       </p>
     </div>
   );

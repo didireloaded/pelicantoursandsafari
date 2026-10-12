@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -56,7 +56,7 @@ function Dashboard() {
   return <Section className="pt-32">
     <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-8">
       <div><p className="text-sm uppercase tracking-[0.2em] text-clay">Pelican team</p><h1 className="mt-3 font-display text-5xl">Enquiries</h1></div>
-      <Button variant="ghost" onClick={signOut}>Sign out</Button>
+      <div className="flex gap-3"><Button asChild variant="ghost"><Link to="/trips-manage">Manage trips</Link></Button><Button variant="ghost" onClick={signOut}>Sign out</Button></div>
     </div>
     <nav className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Filter by status">
       {[{ value: "all" as const, label: "All" }, ...statuses].map((s) => {

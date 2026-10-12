@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { Section } from "@/components/site";
+import { JourneyDistances } from "@/components/journey-distances";
+import type { RoadRoute } from "@/lib/journey-geography";
 import { JourneyMap } from "@/components/journey-map";
 import { Button } from "@/components/ui/button";
 import { destinations, getDestination, getStay, stays, safarisFor } from "@/lib/pelican";
@@ -18,6 +20,7 @@ function JourneyPage() {
   const search = Route.useSearch();
   const [stops, setStops] = useState<JourneyStop[]>([]);
   const [selected, setSelected] = useState("etosha");
+  const [roadRoute, setRoadRoute] = useState<RoadRoute>();
   const [message, setMessage] = useState("");
   useEffect(() => {
     setStops(search.plan ? parseJourney(search.plan) : readJourney());
@@ -49,7 +52,8 @@ function JourneyPage() {
       </p>
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         <div>
-          <JourneyMap stops={stops} onSelect={select} />
+          <JourneyMap stops={stops} onSelect={select} roadRoute={roadRoute} />
+          <JourneyDistances stops={stops} onRoute={setRoadRoute} />
           <label className="mt-6 block">
             Explore a destination
             <select

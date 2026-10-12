@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      trips: {
+        Row: { id: string; traveller_id: string; title: string; status: "draft" | "confirmed" | "cancelled"; starts_on: string; stops: Json; created_at: string; updated_at: string }
+        Insert: { id?: string; traveller_id: string; title: string; status?: "draft" | "confirmed" | "cancelled"; starts_on: string; stops: Json; created_at?: string; updated_at?: string }
+        Update: { traveller_id?: string; title?: string; status?: "draft" | "confirmed" | "cancelled"; starts_on?: string; stops?: Json }
+        Relationships: []
+      }
       enquiries: {
         Row: {
           brief: string

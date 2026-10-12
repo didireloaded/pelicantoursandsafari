@@ -9,3 +9,5 @@
 - [ ] Later batches: Travel Guide, Field Notes, FAQ, guide/team pages, accessible gallery viewer, route maps and itinerary downloads.
 - [ ] Live verification and rollout of enquiry hardening; email notifications/confirmations, content administration and proposals.
 - [ ] Future roadmap: availability integrations, deposits/payments, traveller portal, saved journeys, multilingual content and live rates.
+- [x] Local property map V2: four operator-sourced lodge/hotel pins, straight-line distances, Google Maps directions and on-demand OpenRouteService road estimates. Server routing deployment/key and coverage verification remain pending.
+- [x] Local private trips V1: staff-managed draft/confirmed/cancelled itineraries, traveller assignment and signed-in trip maps. Database migration, real staff/traveller flow and production Auth configuration remain pending.
