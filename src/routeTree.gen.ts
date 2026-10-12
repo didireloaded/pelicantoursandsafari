@@ -16,8 +16,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as JourneyRouteImport } from './routes/journey'
+import { Route as MatchRouteImport } from './routes/match'
+import { Route as ProposalsRouteImport } from './routes/proposals'
+import { Route as ShortlistRouteImport } from './routes/shortlist'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
+import { Route as TravelGuideRouteImport } from './routes/travel-guide'
 import { Route as TripsRouteImport } from './routes/trips'
+import { Route as AuthenticatedContentManageRouteImport } from './routes/_authenticated/content-manage'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedTripsManageRouteImport } from './routes/_authenticated/trips-manage'
 import { Route as DestinationsIndexRouteImport } from './routes/destinations.index'
@@ -62,9 +67,29 @@ const JourneyRoute = JourneyRouteImport.update({
   path: '/journey',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchRoute = MatchRouteImport.update({
+  id: '/match',
+  path: '/match',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProposalsRoute = ProposalsRouteImport.update({
+  id: '/proposals',
+  path: '/proposals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShortlistRoute = ShortlistRouteImport.update({
+  id: '/shortlist',
+  path: '/shortlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TailorMadeRoute = TailorMadeRouteImport.update({
   id: '/tailor-made',
   path: '/tailor-made',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TravelGuideRoute = TravelGuideRouteImport.update({
+  id: '/travel-guide',
+  path: '/travel-guide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TripsRoute = TripsRouteImport.update({
@@ -72,6 +97,12 @@ const TripsRoute = TripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedContentManageRoute =
+  AuthenticatedContentManageRouteImport.update({
+    id: '/content-manage',
+    path: '/content-manage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -126,8 +157,13 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
+  '/match': typeof MatchRoute
+  '/proposals': typeof ProposalsRoute
+  '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
+  '/content-manage': typeof AuthenticatedContentManageRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
@@ -145,8 +181,13 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
+  '/match': typeof MatchRoute
+  '/proposals': typeof ProposalsRoute
+  '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
+  '/content-manage': typeof AuthenticatedContentManageRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
@@ -166,8 +207,13 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
+  '/match': typeof MatchRoute
+  '/proposals': typeof ProposalsRoute
+  '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
+  '/_authenticated/content-manage': typeof AuthenticatedContentManageRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
@@ -187,8 +233,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/journey'
+    | '/match'
+    | '/proposals'
+    | '/shortlist'
     | '/tailor-made'
+    | '/travel-guide'
     | '/trips'
+    | '/content-manage'
     | '/dashboard'
     | '/trips-manage'
     | '/destinations/$slug'
@@ -206,8 +257,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/journey'
+    | '/match'
+    | '/proposals'
+    | '/shortlist'
     | '/tailor-made'
+    | '/travel-guide'
     | '/trips'
+    | '/content-manage'
     | '/dashboard'
     | '/trips-manage'
     | '/destinations/$slug'
@@ -226,8 +282,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/journey'
+    | '/match'
+    | '/proposals'
+    | '/shortlist'
     | '/tailor-made'
+    | '/travel-guide'
     | '/trips'
+    | '/_authenticated/content-manage'
     | '/_authenticated/dashboard'
     | '/_authenticated/trips-manage'
     | '/destinations/$slug'
@@ -247,7 +308,11 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   JourneyRoute: typeof JourneyRoute
+  MatchRoute: typeof MatchRoute
+  ProposalsRoute: typeof ProposalsRoute
+  ShortlistRoute: typeof ShortlistRoute
   TailorMadeRoute: typeof TailorMadeRoute
+  TravelGuideRoute: typeof TravelGuideRoute
   TripsRoute: typeof TripsRoute
   DestinationsSlugRoute: typeof DestinationsSlugRoute
   SafarisSlugRoute: typeof SafarisSlugRoute
@@ -309,11 +374,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JourneyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/match': {
+      id: '/match'
+      path: '/match'
+      fullPath: '/match'
+      preLoaderRoute: typeof MatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proposals': {
+      id: '/proposals'
+      path: '/proposals'
+      fullPath: '/proposals'
+      preLoaderRoute: typeof ProposalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shortlist': {
+      id: '/shortlist'
+      path: '/shortlist'
+      fullPath: '/shortlist'
+      preLoaderRoute: typeof ShortlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tailor-made': {
       id: '/tailor-made'
       path: '/tailor-made'
       fullPath: '/tailor-made'
       preLoaderRoute: typeof TailorMadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/travel-guide': {
+      id: '/travel-guide'
+      path: '/travel-guide'
+      fullPath: '/travel-guide'
+      preLoaderRoute: typeof TravelGuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trips': {
@@ -322,6 +415,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/trips'
       preLoaderRoute: typeof TripsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/content-manage': {
+      id: '/_authenticated/content-manage'
+      path: '/content-manage'
+      fullPath: '/content-manage'
+      preLoaderRoute: typeof AuthenticatedContentManageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -390,11 +490,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedContentManageRoute: typeof AuthenticatedContentManageRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedTripsManageRoute: typeof AuthenticatedTripsManageRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedContentManageRoute: AuthenticatedContentManageRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedTripsManageRoute: AuthenticatedTripsManageRoute,
 }
@@ -410,7 +512,11 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   JourneyRoute: JourneyRoute,
+  MatchRoute: MatchRoute,
+  ProposalsRoute: ProposalsRoute,
+  ShortlistRoute: ShortlistRoute,
   TailorMadeRoute: TailorMadeRoute,
+  TravelGuideRoute: TravelGuideRoute,
   TripsRoute: TripsRoute,
   DestinationsSlugRoute: DestinationsSlugRoute,
   SafarisSlugRoute: SafarisSlugRoute,

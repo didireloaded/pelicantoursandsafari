@@ -11,3 +11,9 @@
 - [ ] Future roadmap: availability integrations, deposits/payments, traveller portal, saved journeys, multilingual content and live rates.
 - [x] Local property map V2: four operator-sourced lodge/hotel pins, straight-line distances, Google Maps directions and on-demand OpenRouteService road estimates. Server routing deployment/key and coverage verification remain pending.
 - [x] Local private trips V1: staff-managed draft/confirmed/cancelled itineraries, traveller assignment and signed-in trip maps. Database migration, real staff/traveller flow and production Auth configuration remain pending.
+
+### Traveller decision and staff follow-up batch — 12 October 2026
+
+Implemented in code: interest-based Safari Match with budget/days/style passed into the brief; device shortlist and share links; source-linked seasonal/travel guidance and pricing explanation; receipt reference and two-business-day response target; authenticated assigned private proposals with immutable quote versions and change requests; staff assignment, follow-up dates, overdue filter, loaded-record search, activity history and older-record loading; verified-content publication/withdrawal interface.
+
+Pending operational activation: apply the new migration in Lovable Cloud and test with real staff/traveller accounts. Supply approved day-by-day itineraries, rates, accommodation photos/rooms/accessibility facts, guides, vehicle specifications, genuine reviews and business credentials. Staff can publish sourced text and a verified photo URL with each entry through the new interface. No scheduled email/SMS reminder service was added. Existing UI design is preserved; new links and separate feature screens reuse its components.

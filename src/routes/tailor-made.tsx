@@ -4,7 +4,8 @@ import { ArrowLeft, ArrowRight, MessageCircle, Mail, ChevronUp, ChevronDown, X, 
 import { supabase } from "@/integrations/supabase/client";
 import { PageHero, Section, meta } from "@/components/site";
 import { Button } from "@/components/ui/button";
-import { company, destinations, getSafari, planningInterests, whatsapp } from "@/lib/pelican";
+import { company, destinations, getSafari, planningInterests, stays, whatsapp } from "@/lib/pelican";
+import { parseShortlist } from "@/lib/shortlist";
 import { planningSearch } from "@/lib/safari-discovery";
 import { parseJourney, readJourney, journeySummary } from "@/lib/journey";
 
@@ -16,6 +17,8 @@ export const Route = createFileRoute("/tailor-made")({
 
 function TailorMade() {
   const search = Route.useSearch();
+  const shortlisted = parseShortlist(search.shortlist);
+  const preferences = search.preferences ? JSON.parse(search.preferences) : {};
   const safari = search.safari ? getSafari(search.safari) : undefined;
   const [step, setStep] = useState(0);
   const [places, setPlaces] = useState<string[]>(() => search.destinations ? search.destinations.split(",").filter((slug) => destinations.some((d) => d.slug === slug)) : safari?.destinations ?? []);
@@ -28,14 +31,14 @@ function TailorMade() {
     }
   }, [search.journey, search.safari, search.destinations]);
   const [countries, setCountries] = useState<string[]>([]);
-  const [interests, setInterests] = useState<string[]>([]);
+  const [interests, setInterests] = useState<string[]>((preferences.interests ?? []).filter((interest: string) => planningInterests.includes(interest)));
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [flexible, setFlexible] = useState(false);
   const [adults, setAdults] = useState("2");
   const [ages, setAges] = useState<string[]>([]);
-  const [days, setDays] = useState("");
-  const [style, setStyle] = useState("Open to suggestions");
+  const [days, setDays] = useState(preferences.days ?? "");
+  const [style, setStyle] = useState(preferences.style ?? "Open to suggestions");
   const [comfort, setComfort] = useState("Comfortable");
   const [pace, setPace] = useState("Balanced");
   const [occasion, setOccasion] = useState("");
@@ -52,6 +55,8 @@ function TailorMade() {
   const toggle = (values: string[], value: string) => values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
   const move = (index: number, change: number) => setPlaces((prev) => { const next = [...prev]; const target = index + change; const value = next[index]; const other = next[target]; if (value && other) { next[index] = other; next[target] = value; } return next; });
   const summary = [
+    shortlisted.length ? `Shortlisted options: ${shortlisted.map(x => x.kind === "safari" ? getSafari(x.slug)?.name : stays.find(stay => stay.slug === x.slug)?.name).join(", ")}` : "",
+    preferences.interests?.length ? `Quiz interests: ${preferences.interests.join(", ")}` : "",
     safari ? `Safari inspiration: ${safari.name}` : "Tailor-made safari",
     ...journeySummary(journey.filter((s) => places.includes(s.destination)).sort((a, b) => places.indexOf(a.destination) - places.indexOf(b.destination))).split("\n").filter(Boolean).map((line) => `Accommodation / nights preference: ${line}`),
     `Journey preferences: ${places.map((slug) => destinations.find((d) => d.slug === slug)?.name).join(" → ") || "Please recommend"}`,
@@ -60,6 +65,7 @@ function TailorMade() {
     `Dates: ${flexible ? "Flexible" : "Preferred"}${start ? ` from ${start}` : " — to discuss"}${end ? ` to ${end}` : ""}`,
     `Travellers: ${adults} adults, ${ages.length} children${ages.length ? ` (ages: ${ages.map((a) => a || "to confirm").join(", ")})` : ""}`,
     `Trip length: ${days ? `${days} days` : "To discuss"}`,
+    preferences.budget ? `Budget preference: NAD ${preferences.budget} per person (subject to quote)` : "",
     `Style: ${style}; comfort: ${comfort}; pace: ${pace}`,
     occasion ? `Occasion: ${occasion}` : "", mobility ? `Mobility/accessibility: ${mobility}` : "", requests ? `Special requests: ${requests}` : "",
     name ? `Name: ${name}` : "", email ? `Email: ${email}` : "", phone ? `Phone: ${phone}` : "", residence ? `Country of residence: ${residence}` : "", `Preferred contact: ${contact}`,
@@ -67,6 +73,7 @@ function TailorMade() {
   const message = `Hello Pelican, here is my Safari Brief.\n\n${summary}`;
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [reference, setReference] = useState("");
   const [error, setError] = useState("");
   const pendingRequest = useRef<{ fingerprint: string; id: string } | null>(null);
   const submitLock = useRef(false);
@@ -83,7 +90,7 @@ function TailorMade() {
     try {
       const { data, error: err } = await supabase.functions.invoke("submit-enquiry", { body: { ...body, request_id: pendingRequest.current.id } });
       if (err || !data?.reference) throw new Error("Submission failed");
-      setSent(true);
+      setReference(String(data.reference)); setSent(true);
     } catch { setError("Sorry, the brief could not be sent. Please try WhatsApp or email instead."); }
     finally { submitLock.current = false; setSending(false); }
   };
@@ -119,7 +126,7 @@ function TailorMade() {
         {step === 3 && <div className="space-y-8"><dl className="divide-y divide-border border-y border-border">{summary.split("\n").map((line, i) => { const split = line.indexOf(":"); return <div key={i} className="grid gap-2 py-4 sm:grid-cols-[160px_1fr]"><dt className="text-sm text-muted-foreground">{split < 0 ? "Brief" : line.slice(0, split)}</dt><dd className="break-words">{split < 0 ? line : line.slice(split + 1)}</dd></div>; })}</dl>
           <div className="grid gap-6 sm:grid-cols-2"><label>Your name<input autoComplete="name" className={field} value={name} onChange={(e) => setName(e.target.value)} /></label><label>Email<input type="email" autoComplete="email" className={field} value={email} onChange={(e) => setEmail(e.target.value)} /></label><label>Phone / WhatsApp<input type="tel" autoComplete="tel" className={field} value={phone} onChange={(e) => setPhone(e.target.value)} /></label><label>Country of residence<input autoComplete="country-name" className={field} value={residence} onChange={(e) => setResidence(e.target.value)} /></label><label>Preferred contact<select className={field} value={contact} onChange={(e) => setContact(e.target.value)}>{["WhatsApp", "Email", "Phone"].map((x) => <option key={x}>{x}</option>)}</select></label></div>
           <div className="flex flex-wrap gap-3"><Button size="lg" disabled={sending || sent} onClick={submit}><Send />{sent ? "Brief sent to Pelican" : sending ? "Sending…" : "Send brief to Pelican"}</Button><Button asChild variant="outline" size="lg"><a href={whatsapp(message)} target="_blank" rel="noreferrer" onClick={() => setPrepared(true)}><MessageCircle />Send via WhatsApp</a></Button><Button asChild variant="ghost" size="lg"><a href={`mailto:${company.email}?subject=${encodeURIComponent("My Safari Brief")}&body=${encodeURIComponent(message)}`} onClick={() => setPrepared(true)}><Mail />Prepare email</a></Button></div>
-          <p className="text-sm text-muted-foreground" role="status">{error || (sent ? "Thank you — Pelican has received your brief and will contact you. This is not a confirmed booking." : prepared ? "Your brief is ready in your chosen app. Send it there to reach Pelican; this is not a confirmed booking." : "Nothing is sent until you choose an option. Add your name and an email or phone number to send directly.")}</p>
+          <p className="text-sm text-muted-foreground" role="status">{error || (sent ? `Thank you — reference ${reference}. Our target is to reply within two business days (Monday–Friday). We will discuss your preferences and send a proposal; your booking is confirmed only after agreed terms. If you have not heard from us, call or WhatsApp Pelican with this reference. This is not a confirmed booking.` : prepared ? "Your brief is ready in your chosen app. Send it there to reach Pelican; this is not a confirmed booking." : "Nothing is sent until you choose an option. Add your name and an email or phone number to send directly.")}</p>
         </div>}
         <div className="mt-12 flex justify-between border-t border-border pt-6"><Button variant="ghost" disabled={step === 0} onClick={() => setStep(step - 1)}><ArrowLeft />Back</Button>{step < 3 && <Button onClick={() => setStep(step + 1)}>{step === 2 ? "Review brief" : "Continue"}<ArrowRight /></Button>}</div>
       </div><aside className="lg:col-span-4"><h2 className="text-xl font-semibold">Your journey</h2><ol className="mt-4 divide-y divide-border">{places.map((slug, i) => <li key={slug} className="flex items-center gap-2 py-4"><span className="text-sm text-clay">{String(i + 1).padStart(2, "0")}</span><span className="flex-1 text-sm">{destinations.find((d) => d.slug === slug)?.name}</span><Button title="Move earlier" aria-label={`Move ${slug} earlier`} variant="ghost" size="icon" disabled={i === 0} onClick={() => move(i, -1)}><ChevronUp /></Button><Button title="Move later" aria-label={`Move ${slug} later`} variant="ghost" size="icon" disabled={i === places.length - 1} onClick={() => move(i, 1)}><ChevronDown /></Button><Button title="Remove destination" aria-label={`Remove ${slug}`} variant="ghost" size="icon" onClick={() => setPlaces(places.filter((p) => p !== slug))}><X /></Button></li>)}</ol>{!places.length && <p className="mt-4 text-sm text-muted-foreground">Open to Pelican’s recommendations.</p>}<p className="mt-5 text-xs text-muted-foreground">Preferred stops, not a confirmed route. Pelican will advise on order and travel times.</p><Button asChild variant="link" className="mt-8 px-0"><a href={whatsapp("Hello Pelican, could you help me plan my safari?")} target="_blank" rel="noreferrer"><MessageCircle />Talk to Kamwi instead</a></Button></aside></div>

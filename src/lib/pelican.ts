@@ -113,3 +113,69 @@ export const stays: Stay[] = [
   { slug: "okaukuejo-resort", name: "Okaukuejo Resort", destination: "etosha", collection: "Namibia Wildlife Resorts", type: "Resort", description: "An Etosha resort known for its floodlit waterhole, where visitors can watch wildlife during the day and at night. NWR currently directs booking requests to its reservations team.", amenities: ["Floodlit waterhole", "Camping", "Guided drives available on request"], source: "https://www.nwr.com.na/resorts/okaukuejo-resort/", verifiedAt: "2026-10-08", bookingMode: "request" },
 ];
 export const getStay = (slug: string) => stays.find((stay) => stay.slug === slug);
+
+// General planning guidance checked against these official sources on 12 October 2026.
+export const travelGuidance = {
+  checked: "12 October 2026",
+  pricing:
+    "Your quote depends on travel dates, group size, accommodation, trip length, transport and requested activities. Ask for a written total, currency, inclusions, exclusions and payment/cancellation terms before committing. Catalogue suggestions do not have verified starting prices.",
+  seasons: [
+    {
+      title: "Etosha and northern Namibia",
+      body: "Summer is hot and rainy; winter brings cooler days and cold nights. Ask Pelican how recent rainfall and water conditions affect wildlife viewing for your dates. Sightings are never guaranteed.",
+      source: "https://visitnamibia.com.na/climate/",
+    },
+    {
+      title: "Sossusvlei, Deadvlei and the Namib",
+      body: "Winter can offer warm days with very cold nights. Summer can be extremely hot: plan activities and packing around the heat.",
+      source: "https://visitnamibia.com.na/climate/",
+    },
+    {
+      title: "Swakopmund, Walvis Bay and the Skeleton Coast",
+      body: "The coast is cooler than the interior and fog is common. Bring warm layers even when travelling in summer.",
+      source: "https://visitnamibia.com.na/climate/",
+    },
+    {
+      title: "Botswana, Chobe and Victoria Falls",
+      body: "Choose dates around your interests and check regional conditions before confirming. Rainfall, river levels and wildlife viewing vary; Pelican can explain the trade-offs for your route.",
+      source: "https://botswanatourism.co.bw/travel-info",
+    },
+  ],
+  faq: [
+    {
+      title: "Do I need a visa or border documents?",
+      body: "Rules depend on passport, destination, route and travel dates. Check every country on your itinerary with its immigration authority, including requirements for children. UK travel advice is written for British passport holders; other nationalities should consult their own embassy.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/entry-requirements",
+    },
+    {
+      title: "What vaccinations or health precautions do I need?",
+      body: "Speak to a travel-health professional about your route, medical history, vaccines and malaria precautions before travelling. Requirements and risk vary by area and season.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/health",
+    },
+    {
+      title: "What insurance should I arrange?",
+      body: "Check that your policy covers your planned activities, medical treatment, evacuation and cancellation. Review exclusions and assistance contacts before departure.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia",
+    },
+    {
+      title: "What about roads and driving?",
+      body: "Review current driving advice and confirm vehicle suitability with Pelican. Allow time for road conditions and stops; a map estimate is not a guaranteed arrival time.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/safety-and-security",
+    },
+    {
+      title: "How should I handle currency?",
+      body: "Request a quote with the currency clearly stated. Confirm card acceptance and cash needs for your route before departure.",
+      source: "https://visitnamibia.com.na/currencies/",
+    },
+    {
+      title: "What luggage can I bring?",
+      body: "Ask Pelican for the limits of your actual vehicle, accommodation and any flight connections. Pack layers for your route and season; do not assume every operator uses the same allowance.",
+      source: "https://visitnamibia.com.na/climate/",
+    },
+    {
+      title: "What are the cancellation terms?",
+      body: "Ask for the written terms attached to your proposal before paying. Refunds, deadlines and supplier conditions must be confirmed for your own booking.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia",
+    },
+  ],
+};

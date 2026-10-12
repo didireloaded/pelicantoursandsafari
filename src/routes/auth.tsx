@@ -7,14 +7,14 @@ import { Section } from "@/components/site";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({ next: oauthReturnPath(s["next"]) }),
-  head: () => ({ meta: [{ title: "Pelican staff sign in" }, { name: "description", content: "Sign in to the Pelican Tours and Safaris enquiry dashboard." }, { property: "og:title", content: "Pelican staff sign in" }, { property: "og:description", content: "Pelican enquiry dashboard sign in." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Pelican" }, { name: "description", content: "Sign in to your Pelican trips, private proposals or team dashboard." }, { property: "og:title", content: "Sign in — Pelican" }, { property: "og:description", content: "Pelican traveller and team sign in." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: AuthPage,
 });
 
 function AuthPage() {
   const navigate = useNavigate();
   const { next } = Route.useSearch();
-  const traveller = next === "/trips";
+  const traveller = ["/trips", "/proposals"].includes(next.split("?")[0] ?? "");
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,8 +26,8 @@ function AuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMsg(error.message); else window.location.assign(next === "/" ? "/dashboard" : next);
     } else {
-      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}${traveller ? "/trips" : "/dashboard"}` } });
-      setMsg(error ? error.message : traveller ? "Check your email to confirm your account, then sign in. Pelican will assign your confirmed trip." : "Check your email to confirm your account. An administrator must then grant staff access.");
+      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}${traveller ? next : "/dashboard"}` } });
+      setMsg(error ? error.message : traveller ? "Check your email to confirm your account, then sign in. Pelican will assign your trip or private proposal." : "Check your email to confirm your account. An administrator must then grant staff access.");
     }
   };
   return <Section className="pt-32">
