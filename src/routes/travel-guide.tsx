@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { TravelCalendar } from "@/components/travel-calendar";
 import { Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { approvedSource, useApprovedTravelDetails } from "@/lib/approved-travel-details";
@@ -17,6 +18,7 @@ function TravelGuide() {
       </div>
       <h2 className="mt-10 text-3xl">Understanding your quote</h2>
       <p className="mt-4 max-w-3xl text-muted-foreground">{travelGuidance.pricing}</p>
+      <TravelCalendar />
       <h2 className="mt-10 text-3xl">When to visit</h2>
       <p className="mt-3 text-sm text-muted-foreground">
         Sources checked {travelGuidance.checked}. Check current advice before departure.

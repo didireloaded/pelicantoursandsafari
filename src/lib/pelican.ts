@@ -136,6 +136,23 @@ export const travelGuidance = {
   checked: "12 October 2026",
   pricing:
     "Your quote depends on travel dates, group size, accommodation, trip length, transport and requested activities. Ask for a written total, currency, inclusions, exclusions and payment/cancellation terms before committing. Catalogue suggestions do not have verified starting prices.",
+  // Namibia Tourism Board climate page, checked 12 October 2026.
+  // Seasonal patterns are guidance, never a forecast or availability signal.
+  calendar: {
+    source: "https://visitnamibia.com.na/climate/",
+    checked: "12 October 2026",
+    summerMonths: [10, 11, 12, 1, 2, 3, 4],
+    winterMonths: [5, 6, 7, 8, 9],
+    shortRainMonths: [9, 10, 11],
+    mainRainMonths: [12, 1, 2, 3, 4],
+    summer: "Summer conditions: inland days can be very hot. Plan activities, water and sun protection around the heat.",
+    winter: "Winter conditions: days are generally pleasant, but nights can be very cold. Pack warm layers for early starts and evenings.",
+    shortRain: "The tourism authority places the short rainy season in September–November. Rainfall and local conditions vary; check your route before travel.",
+    mainRain: "The tourism authority places the main rainy season in December–April. Rainfall varies; ask Pelican about current road access and your planned activities.",
+    outsideRain: "This month is outside the authority’s listed rainy-season windows. This is a general pattern, not a promise of dry weather.",
+    coast: "Coastal conditions differ from the interior: cooler weather and fog are common. Bring warm layers in any month.",
+    wildlife: "Ask Pelican how recent rainfall and water conditions affect wildlife viewing for your dates. Sightings are never guaranteed.",
+  },
   seasons: [
     {
       title: "Etosha and northern Namibia",

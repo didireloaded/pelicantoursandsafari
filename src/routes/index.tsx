@@ -1,3 +1,4 @@
+import { JourneyPanels } from "@/components/journey-panels";
 import { useApprovedSafariPackages } from "@/lib/approved-travel-details";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Strip, Photo, Section, PlanCTA, meta } from "@/components/site";
@@ -48,6 +49,8 @@ function Home() {
         </div>
       </Section>
 
+      <JourneyPanels />
+
       <Section className="border-t border-border/60">
         <h2 className="text-3xl font-semibold md:text-4xl">Find your kind of journey</h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">Explore the experiences in our safari catalogue, or let Pelican help you choose.</p>
@@ -69,11 +72,11 @@ function Home() {
         </div>
         <div className="mt-10 divide-y divide-border/70 border-y border-border/70">
           {safaris.map((s, i) => (
-            <Link key={s.slug} to="/safaris/$slug" params={{ slug: s.slug }} className="group grid items-center gap-4 py-6 md:grid-cols-12 md:gap-8">
+            <Link key={s.slug} to="/safaris/$slug" params={{ slug: s.slug }} className="discovery-card group grid items-center gap-4 py-6 md:grid-cols-12 md:gap-8">
               <span className="text-sm text-muted-foreground md:col-span-1">0{i + 1}</span>
               <h3 className="text-2xl font-semibold tracking-tight md:col-span-4 md:text-3xl group-hover:text-clay">{s.name}</h3>
               <div className="md:col-span-3"><p className="text-muted-foreground">{s.short}</p>{packages[s.slug] && <SafariPackageSummary details={packages[s.slug]!.details} />}</div>
-              <Strip src={s.image} shape={i % 2 ? "left" : "right"} className="h-20 w-full md:col-span-4 md:h-24" />
+              <Strip animateOnHover src={s.image} shape={i % 2 ? "left" : "right"} className="h-20 w-full md:col-span-4 md:h-24" />
             </Link>
           ))}
         </div>

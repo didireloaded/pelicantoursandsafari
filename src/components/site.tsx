@@ -123,8 +123,9 @@ export function Photo({ name, alt, className, sizes = "(min-width: 1440px) 1360p
 }
 
 /** Signature long photo cutout, set inline with large type. */
-export function Strip({ src, shape = "right", className = "", ...props }: { src: string; shape?: "right" | "left" | "both"; className?: string } & Omit<PhotoProps, "name" | "alt" | "className">) {
+export function Strip({ src, shape = "right", className = "", animateOnHover = false, ...props }: { src: string; animateOnHover?: boolean; shape?: "right" | "left" | "both"; className?: string } & Omit<PhotoProps, "name" | "alt" | "className">) {
   const r = shape === "right" ? "rounded-l-xl rounded-r-[5rem]" : shape === "left" ? "rounded-l-[5rem] rounded-r-xl" : "rounded-[5rem]";
+  if (animateOnHover) return <div className={`min-w-0 max-w-full overflow-hidden ${r} ${className}`}><Photo name={src} alt="" className="discovery-card-image h-full w-full object-cover" {...props} /></div>;
   return <Photo name={src} alt="" className={`object-cover ${r} ${className}`} {...props} />;
 }
 
