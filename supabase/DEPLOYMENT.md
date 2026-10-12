@@ -62,3 +62,13 @@ See `../docs/LAUNCH-CHECKLIST.md` for evidence, full feature checks, release ord
 The MCP `update_enquiry` tool now requires `expected_updated_at`, copied exactly from `list_enquiries`, and rejects stale writes. Refresh MCP clients' tool schemas after deployment and test real OAuth before staff use. Never automatically reload the version and replay a conflicting notes replacement.
 
 Password recovery now has `/reset-password`; add the exact deployed URL to the Auth redirect allowlist and verify delivery and a user-performed reset. This does not configure SMTP, staff accounts or MFA. These must be activated and tested in the real project. GitHub checks compile with placeholder public backend settings and do not deploy Cloud resources.
+
+## Mapbox routing (12 October 2026)
+
+`journey-route` now uses Mapbox Directions when the server-only `MAPBOX_ACCESS_TOKEN` is configured. It retains OpenRouteService compatibility when that token is absent, so existing configured deployments continue working. It never silently switches providers after a Mapbox failure: the existing labelled straight-line/external-directions fallback remains available.
+
+The supplied public token was verified with one successful Windhoek–Swakopmund Directions request (HTTP 200, one leg, GeoJSON route). It is saved only in ignored local `.env.local`, not Git. Configure it separately in Lovable Cloud; a GitHub push does not upload the token or deploy the function. For local Edge Function development, explicitly load the local env file; Vite does not expose this variable because its name has no `VITE_` prefix. Avoid logging request URLs, which contain the provider token.
+
+No Mapbox rendering SDK is needed: Leaflet continues displaying OpenStreetMap tiles in the existing UI and adds Mapbox routing attribution only for a Mapbox result. The driving profile provides estimates for planned journeys, not promised arrival times or future traffic predictions. The existing 30-stop limit is retained with overlapping batches of at most 25 waypoints (up to two Directions requests per calculation); incomplete or disconnected results fail without returning a partial route. Configure Mapbox usage/billing alerts and verify access-road/park/border restrictions with Pelican before launch. Routing quota, allowed origins, rate salt and trusted forwarding-header requirements still apply.
+
+Deploy `journey-route` with `_shared/mapbox-route.ts` and `_shared/journey-locations.ts`, then test a genuine browser calculation, missing/invalid credentials, provider timeout, long journeys, route reordering and unavailable-road fallback. Cloud activation remains blocked by the connector access issue recorded above.

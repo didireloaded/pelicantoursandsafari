@@ -30,7 +30,10 @@ export function JourneyMap({
       const map = L.map(element.current).setView([-21, 20], 5);
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' +
+          (roadRoute?.provider === "Mapbox"
+            ? ' | Routing &copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'
+            : ""),
         maxZoom: 12,
       }).addTo(map);
       destinations.forEach((destination) => {

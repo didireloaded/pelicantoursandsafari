@@ -28,11 +28,16 @@ export function directionsUrl(from: JourneyStop | undefined, to: JourneyStop) {
   if (from) url.searchParams.set("origin", location(from));
   return url.toString();
 }
-export type RoadRoute = { points: MapPoint[]; legs: { km: number; minutes: number }[] };
+export type RoadRoute = {
+  points: MapPoint[];
+  legs: { km: number; minutes: number }[];
+  provider?: "Mapbox" | "OpenRouteService";
+};
 export function parseRoadRoute(value: unknown, count: number): RoadRoute {
   const r = value as RoadRoute;
   if (
     !r ||
+    (r.provider !== undefined && r.provider !== "Mapbox" && r.provider !== "OpenRouteService") ||
     !Array.isArray(r.points) ||
     r.points.length < 2 ||
     r.points.length > 100000 ||
