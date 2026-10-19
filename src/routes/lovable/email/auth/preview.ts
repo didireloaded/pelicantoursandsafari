@@ -18,7 +18,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "Pelican Tours and Safaris"
+const SITE_NAME = "Pelican Tours and Safari"
 const ROOT_DOMAIN = "pelicanexplorer.com"
 
 // Sample data for preview mode ONLY (not used in actual email sending).
