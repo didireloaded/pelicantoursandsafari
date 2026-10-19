@@ -6,7 +6,7 @@ export const submitTripEnquiry = createServerFn({ method: "POST" })
     // out of the client bundle. The handler validates before calling the RPC.
     const { getRequest } = await import("@tanstack/react-start/server");
     const { submitServerEnquiry } = await import("./enquiry-submit.server");
-    return submitServerEnquiry(data, getRequest(), {
+    const receipt = await submitServerEnquiry(data, getRequest(), {
       trustedCloudflareIngress: process.env["ENQUIRY_TRUST_CLOUDFLARE_IP"] === "true",
       allowedOrigins: (process.env["ENQUIRY_ALLOWED_ORIGINS"] ?? "")
         .split(",")
