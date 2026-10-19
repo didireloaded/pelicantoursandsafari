@@ -56,7 +56,9 @@ export async function sendEnquiryEmails(
         text: await render(element, { plainText: true }),
         replyTo: NOTIFICATION_TO,
       })
-      result.traveller = { sent: confirmation.sent, reason: confirmation.sent ? undefined : confirmation.reason }
+      result.traveller = confirmation.sent
+        ? { sent: true }
+        : { sent: false, reason: confirmation.reason }
     } catch (error) {
       console.error("Traveller confirmation email failed:", error)
       result.traveller = { sent: false, reason: "exception" }
@@ -80,7 +82,9 @@ export async function sendEnquiryEmails(
       html: await render(element),
       text: await render(element, { plainText: true }),
     })
-    result.pelican = { sent: notification.sent, reason: notification.sent ? undefined : notification.reason }
+    result.pelican = notification.sent
+      ? { sent: true }
+      : { sent: false, reason: notification.reason }
   } catch (error) {
     console.error("Pelican notification email failed:", error)
     result.pelican = { sent: false, reason: "exception" }
