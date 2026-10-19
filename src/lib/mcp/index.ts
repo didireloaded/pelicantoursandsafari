@@ -6,8 +6,8 @@ import updateEnquiry from "./tools/update-enquiry";
 const projectRef = import.meta.env["VITE_SUPABASE_PROJECT_ID"] ?? "project-ref-unset";
 
 export default defineMcp({
-  name: "wanderlust-navigator",
-  title: "Wanderlust Navigator",
+  name: "pelican-tours-and-safaris",
+  title: "Pelican Tours and Safaris",
   version: "0.1.0",
   instructions: "Tools for Pelican Tours and Safaris: read the safari catalogue, and for Pelican staff, review and update Safari Brief enquiries through the pipeline stages.",
   auth: auth.oauth.issuer({
