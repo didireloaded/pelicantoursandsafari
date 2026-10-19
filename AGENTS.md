@@ -9,6 +9,7 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 - Site content lives in src/lib/pelican.ts as the single factual source; pages read from it so facts stay consistent and un-invented.
+- App emails use the server-only managed send helper and React Email registry; do not create email queues or tables because delivery and suppression are managed by Lovable.
 - Safari discovery uses overview-derived interest labels, never inferred prices, durations or guaranteed inclusions, so filters do not create unsupported packages.
 - Tailor-made planning context travels in validated route search parameters; brief details remain in React state until the traveller explicitly opens WhatsApp or email, avoiding silent storage of personal data.
 
