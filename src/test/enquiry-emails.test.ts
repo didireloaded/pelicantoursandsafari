@@ -42,7 +42,9 @@ describe("sendResendEmail", () => {
     const { sendResendEmail } = await load();
     const result = await sendResendEmail({ to: "traveller@example.com", subject: "We received your safari enquiry", html: "<p>x</p>", text: "x" });
     expect(result).toEqual({ sent: true });
-    const [url, init] = fetchMock.mock.calls[0];
+    const call = fetchMock.mock.calls[0];
+    if (!call) throw new Error("fetch was not called");
+    const [url, init] = call;
     expect(url).toBe("https://api.resend.com/emails");
     const body = JSON.parse(String(init.body));
     expect(body.from).toContain("Pelican Tours and Safari");
