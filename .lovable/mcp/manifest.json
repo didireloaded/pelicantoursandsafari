@@ -11,9 +11,9 @@
   },
   "mcp": {
     "server": {
-      "name": "wanderlust-navigator",
+      "name": "pelican-tours-and-safaris",
       "version": "0.1.0",
-      "title": "Wanderlust Navigator"
+      "title": "Pelican Tours and Safaris"
     },
     "tools": [
       {
