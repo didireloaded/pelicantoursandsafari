@@ -247,8 +247,6 @@ export type Database = {
           body: string
           category: string
           id: string
-          package_details: Json | null
-          safari_slug: string | null
           photo_url: string | null
           source_url: string
           title: string
@@ -260,8 +258,6 @@ export type Database = {
           body: string
           category: string
           id?: string
-          package_details?: Json | null
-          safari_slug?: string | null
           photo_url?: string | null
           source_url: string
           title: string
@@ -273,8 +269,6 @@ export type Database = {
           body?: string
           category?: string
           id?: string
-          package_details?: Json | null
-          safari_slug?: string | null
           photo_url?: string | null
           source_url?: string
           title?: string
