@@ -7,6 +7,7 @@
 - [x] Local enquiry/admin hardening: validated function submission, SQL migration, RLS, rate limits, idempotency, audit events and conflict-aware staff saves. Local database tests pass; live rollout requires access to Pelican's database and deployment configuration.
 - [ ] Verified content: Pelican itineraries, duration, inclusions, prices, seasonal advice, vehicle specifications, guide profiles and genuine guest stories. Blocked on supplied or verified content; do not invent.
 - [ ] Later batches: Travel Guide, Field Notes, FAQ, guide/team pages, accessible gallery viewer, route maps and itinerary downloads.
+- [x] Enquiry submission live end-to-end (19 Oct 2026): Safari Brief → submit_enquiry RPC (applied via migration) → enquiry row with reference; traveller confirmation + Pelican notification emails wired through Resend (RESENDER_API_KEY). Live delivery to real recipients is pending a domain verified in the Resend dashboard (from-address still on the test sender).
 - [ ] Live verification and rollout of enquiry hardening; email notifications/confirmations, content administration and proposals.
 - [ ] Future roadmap: availability integrations, deposits/payments, traveller portal, saved journeys, multilingual content and live rates.
 - [x] Local property map V2: four operator-sourced lodge/hotel pins, straight-line distances, Google Maps directions and on-demand OpenRouteService road estimates. Server routing deployment/key and coverage verification remain pending.
