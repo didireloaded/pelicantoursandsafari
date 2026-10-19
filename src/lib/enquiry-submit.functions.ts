@@ -16,4 +16,14 @@ export const submitTripEnquiry = createServerFn({ method: "POST" })
       databaseUrl: process.env["SUPABASE_URL"],
       serviceKey: process.env["SUPABASE_SERVICE_ROLE_KEY"],
     });
+    if (receipt.reference) {
+      // Best-effort emails after the enquiry is safely stored; failures are
+      // logged and never block the traveller's receipt.
+      const { sendEnquiryEmails } = await import("./enquiry-emails.server");
+      const emails = await sendEnquiryEmails(data, receipt.reference);
+      if (!emails.traveller.sent || !emails.pelican.sent) {
+        console.error("Enquiry emails incomplete:", emails);
+      }
+    }
+    return receipt;
   });
