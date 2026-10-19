@@ -1,4 +1,4 @@
-# Wanderlust Navigator
+# Pelican Tours and Safaris
 
 build for me a safari and tour website.  this is the ui   ... this is the https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.wikinam.org/html/ctc/cl/tours-and-safaris-operators/264/windhoek-061/pelican-tours-and-safaris/contact.html&ved=2ahUKEwie2aKT-qSXAxXWUUEAHb0OMxoQFnoECB4QAQ&usg=AOvVaw32yUG8jCy1IAP5lacy7Qfp.  1. we redesigning. 2. all info comes from this website
 
