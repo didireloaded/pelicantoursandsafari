@@ -13,5 +13,5 @@ export const emailStyles = {
 
 export const EmailBrand = () => <>
   <Img src="https://pelicanexplorer.com/pelican-logo.png" width="56" height="56" alt="Pelican" />
-  <Text style={{ ...emailStyles.text, color: emailStyles.h1.color, fontWeight: 600, margin: '12px 0 0' }}>Pelican Tours and Safaris</Text>
+  <Text style={{ ...emailStyles.text, color: emailStyles.h1.color, fontWeight: 600, margin: '12px 0 0' }}>Pelican Tours and Safari</Text>
 </>
