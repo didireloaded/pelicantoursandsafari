@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "Wanderlust Navigator"
+const SITE_NAME = "Pelican Tours and Safaris"
 const SENDER_DOMAIN = "notify.pelicanexplorer.com"
 const ROOT_DOMAIN = "pelicanexplorer.com"
 const FROM_DOMAIN = "pelicanexplorer.com"
