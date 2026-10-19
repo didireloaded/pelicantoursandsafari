@@ -367,6 +367,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      submit_enquiry: {
+        Args: { network_hash: string; payload: Json }
+        Returns: string
+      }
       valid_trip_stops: { Args: { stops: Json }; Returns: boolean }
     }
     Enums: {

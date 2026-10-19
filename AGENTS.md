@@ -9,7 +9,8 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 - Site content lives in src/lib/pelican.ts as the single factual source; pages read from it so facts stay consistent and un-invented.
-- App emails use the server-only managed send helper and React Email registry; do not create email queues or tables because delivery and suppression are managed by Lovable.
+- App enquiry emails (traveller confirmation + Pelican notification) send through Resend via src/lib/email-templates/resend.ts, reading the RESENDER_API_KEY secret (name is intentionally spelled RESENDER as the user saved it); auth/account emails stay on the managed Lovable send helper. Resend only delivers to real recipients after a domain is verified in the Resend dashboard — until then FROM_ADDRESS stays on the test sender.
+- Enquiry submission goes through the submit_enquiry RPC (service role) via src/lib/enquiry-submit.*; the RPC validates shape/lengths, dedupes by request_id and rate-limits by hashed network address; safari slugs are validated app-side against pelican.ts, not hard-coded in the database.
 - Auth emails keep all six scaffolded action types and the managed SDK webhook; shared email branding stays in the email template module so account emails remain consistent.
 - Safari discovery uses overview-derived interest labels, never inferred prices, durations or guaranteed inclusions, so filters do not create unsupported packages.
 - Tailor-made planning context travels in validated route search parameters; brief details remain in React state until the traveller explicitly opens WhatsApp or email, avoiding silent storage of personal data.
