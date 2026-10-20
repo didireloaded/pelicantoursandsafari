@@ -4,10 +4,9 @@
 // Auth/account emails stay on the managed Lovable email helper (send-email.ts).
 
 const FROM_NAME = "Pelican Tours and Safari"
-// Resend test sender — it only delivers to the Resend account owner's own
-// address. Replace with an address on a domain verified inside the Resend
-// dashboard (e.g. notify.pelicanexplorer.com) before emailing real travellers.
-const FROM_ADDRESS = "onboarding@resend.dev"
+// DKIM and primary sending CNAME verified in Resend on 20 October 2026.
+// The secondary sending CNAME may finish verifying independently.
+const FROM_ADDRESS = "enquiries@pelicanexplorer.com"
 
 export interface SendResendEmailOptions {
   to: string

@@ -1,0 +1,9 @@
+# Pelican enquiry email setup — 20 October 2026
+
+Lovable manages registration and DNS for pelicanexplorer.com. Added the exact Resend TXT DKIM key at resend._domainkey, CNAME rsend → rsend.forge.rmta.net, CNAME send → send.forge.rmta.net and TXT _dmarc → v=DMARC1; p=none;. Lovable uses TTL 300 seconds. Checked the existing full DNS list before adding: no conflicts at these names. Existing website A/TXT records, notify subdomain SPF/DKIM/MX and all existing MX records were retained. Resend receiving is disabled; no root inbound MX was added.
+
+Public DNS lookup confirms all three required authentication records. Resend reports DKIM and send verified, rsend pending, overall partially_verified. Official current documentation explicitly permits normal sending when one of the two sending CNAMEs is verified; the pending record provides fallback-server availability. Source: https://resend.com/docs/dashboard/domains/manage-domains. This state is different from an unverified domain; fallback verification still needs to finish.
+
+The server-only app sender is Pelican Tours and Safari <enquiries@pelicanexplorer.com>, using the existing RESENDER_API_KEY secret. Notifications target the existing company.email, info@pelicantoursandsafaris.com; staff replies go to the validated traveller email when supplied. Traveller confirmations reply to Pelican. Phone-only enquiries still notify staff without an empty Reply-To. Account/auth emails remain on Lovable’s separate managed notify subdomain. Enquiries remain saved before best-effort email sends.
+
+Focused tests (5 across sender/routing files), TypeScript and production build pass. Tests use mocked sending, no real customer or staff test emails. The client mailbox’s actual receipt is not yet proven. Existing best-effort delivery does not provide a durable retry queue; no untracked email-outbox migration was included in this configuration change.

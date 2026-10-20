@@ -78,6 +78,7 @@ export async function sendEnquiryEmails(
     })
     const notification = await sendResendEmail({
       to: NOTIFICATION_TO,
+      ...(input.email ? { replyTo: input.email } : {}),
       subject: `New safari enquiry ${reference} — ${input.name}`,
       html: await render(element),
       text: await render(element, { plainText: true }),
