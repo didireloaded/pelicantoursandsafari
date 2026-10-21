@@ -13,6 +13,7 @@ export interface SendResendEmailOptions {
   html: string
   text: string
   replyTo?: string
+  idempotencyKey?: string
 }
 
 export type SendResendEmailResult =
@@ -33,6 +34,7 @@ export async function sendResendEmail(
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
+      ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}),
     },
     body: JSON.stringify({
       from: `${FROM_NAME} <${FROM_ADDRESS}>`,

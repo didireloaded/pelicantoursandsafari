@@ -40,12 +40,13 @@ describe("sendResendEmail", () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response('{"id":"abc"}', { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const { sendResendEmail } = await load();
-    const result = await sendResendEmail({ to: "traveller@example.com", subject: "We received your safari enquiry", html: "<p>x</p>", text: "x" });
+    const result = await sendResendEmail({ to: "traveller@example.com", subject: "We received your safari enquiry", html: "<p>x</p>", text: "x", idempotencyKey: "enquiry/test/pelican" });
     expect(result).toEqual({ sent: true });
     const call = fetchMock.mock.calls[0];
     if (!call) throw new Error("fetch was not called");
     const [url, init] = call;
     expect(url).toBe("https://api.resend.com/emails");
+    expect(new Headers(init.headers).get("Idempotency-Key")).toBe("enquiry/test/pelican");
     const body = JSON.parse(String(init.body));
     expect(body.from).toBe("Pelican Tours and Safari <enquiries@pelicantoursandsafari.com>");
     expect(body.to).toEqual(["traveller@example.com"]);

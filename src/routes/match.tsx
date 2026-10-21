@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { TravellerItinerary } from "@/components/traveller-itinerary";
-import { Section } from "@/components/site";
+import { Section, meta } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { matchInterests, matchSafaris } from "@/lib/safari-match";
-export const Route = createFileRoute("/match")({ component: Match });
+export const Route = createFileRoute("/match")({ component: Match, head: () => meta("Safari match", "Find safari inspiration based on your interests, travel style and preferences.") });
 function Match() {
   const [interests, setInterests] = useState<string[]>([]);
   const [days, setDays] = useState("");

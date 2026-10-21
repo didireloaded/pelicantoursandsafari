@@ -8,15 +8,6 @@ import { RecoveryEmail } from '@/lib/email-templates/recovery'
 import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
-const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
-  signup: SignupEmail,
-  invite: InviteEmail,
-  magiclink: MagicLinkEmail,
-  recovery: RecoveryEmail,
-  email_change: EmailChangeEmail,
-  reauthentication: ReauthenticationEmail,
-}
-
 // Configuration
 const SITE_NAME = "Pelican Tours and Safari"
 const ROOT_DOMAIN = "pelicantoursandsafari.com"
@@ -28,7 +19,7 @@ const ROOT_DOMAIN = "pelicantoursandsafari.com"
 // even if the project's domain has changed since the template was scaffolded.
 const SAMPLE_PROJECT_URL = `https://${ROOT_DOMAIN}`
 const SAMPLE_EMAIL = "user@example.test"
-const SAMPLE_DATA: Record<string, object> = {
+const SAMPLE_DATA = {
   signup: {
     siteName: SITE_NAME,
     siteUrl: SAMPLE_PROJECT_URL,
@@ -58,6 +49,15 @@ const SAMPLE_DATA: Record<string, object> = {
   reauthentication: {
     token: '123456',
   },
+}
+
+const EMAIL_TEMPLATES: Record<string, () => React.ReactElement> = {
+  signup: () => React.createElement(SignupEmail, SAMPLE_DATA.signup),
+  invite: () => React.createElement(InviteEmail, SAMPLE_DATA.invite),
+  magiclink: () => React.createElement(MagicLinkEmail, SAMPLE_DATA.magiclink),
+  recovery: () => React.createElement(RecoveryEmail, SAMPLE_DATA.recovery),
+  email_change: () => React.createElement(EmailChangeEmail, SAMPLE_DATA.email_change),
+  reauthentication: () => React.createElement(ReauthenticationEmail, SAMPLE_DATA.reauthentication),
 }
 
 export const Route = createFileRoute("/lovable/email/auth/preview")({
@@ -99,8 +99,7 @@ export const Route = createFileRoute("/lovable/email/auth/preview")({
           )
         }
 
-        const sampleData = SAMPLE_DATA[type] || {}
-        const html = await render(React.createElement(EmailTemplate, sampleData))
+        const html = await render(EmailTemplate())
 
         return new Response(html, {
           status: 200,

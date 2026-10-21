@@ -50,9 +50,9 @@ export function JourneyDistances({
     <div className="mt-8">
       <h2 className="text-2xl font-semibold">Distances & directions</h2>
       <p className="mt-3 text-sm text-muted-foreground">
-        Road estimates use OpenRouteService and exclude stops, traffic, border delays and park
+        Road estimates use Mapbox or OpenRouteService and exclude stops, traffic, border delays and park
         restrictions. Pelican must review the route. Calculating sends these locations to
-        OpenRouteService; opening directions sends them to Google Maps.
+        the configured routing provider; opening directions sends them to Google Maps.
       </p>
       {stops.length > 1 && (
         <Button
@@ -103,15 +103,9 @@ export function JourneyDistances({
       {!stops.length && <p className="mt-4 text-sm">Add stops to see distances and directions.</p>}
       <p className="mt-3 text-xs text-muted-foreground">
         Road data © OpenStreetMap contributors · routing by{" "}
-        <a
-          className="underline"
-          href="https://openrouteservice.org"
-          target="_blank"
-          rel="noreferrer"
-        >
-          OpenRouteService / HeiGIT
-        </a>
-        .
+        {route?.provider === "Mapbox" ? <a className="underline" href="https://www.mapbox.com/about/maps/" target="_blank" rel="noreferrer">Mapbox</a>
+          : route?.provider === "OpenRouteService" ? <a className="underline" href="https://openrouteservice.org" target="_blank" rel="noreferrer">OpenRouteService / HeiGIT</a>
+            : "Mapbox or OpenRouteService (shown after calculation)"}.
       </p>
     </div>
   );

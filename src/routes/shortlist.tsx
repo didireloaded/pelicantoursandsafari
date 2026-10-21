@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { safaris, stays } from "@/lib/pelican";
 import { parseShortlist, readShortlist, writeShortlist, type SavedChoice } from "@/lib/shortlist";
 export const Route = createFileRoute("/shortlist")({
+  head: () => ({ meta: [{ title: "Your shortlist — Pelican Tours and Safaris" }] }),
   validateSearch: (s: Record<string, unknown>) => ({
     saved: JSON.stringify(parseShortlist(s["saved"])),
   }),

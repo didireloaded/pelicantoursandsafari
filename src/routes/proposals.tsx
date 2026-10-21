@@ -4,6 +4,7 @@ import { ItineraryDraft } from "@/components/itinerary-draft";
 import { Section } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { checkTravellerSession } from "@/lib/traveller-session";
 import type { Database } from "@/integrations/supabase/types";
 type Tables = Database["public"]["Tables"];
 type Proposal = Tables["proposals"]["Row"];
@@ -20,11 +21,13 @@ export const Route = createFileRoute("/proposals")({
     meta: [{ title: "Private proposals — Pelican" }, { name: "robots", content: "noindex" }],
   }),
   beforeLoad: async ({ location }) => {
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } = await checkTravellerSession(() => supabase.auth.getUser());
     if (error || !data.user) throw redirect({ to: "/auth", search: { next: location.href } });
     return { user: data.user };
   },
   component: Proposals,
+  pendingMs: 0,
+  pendingComponent: () => <Section><h1 className="text-5xl font-bold">Private proposals</h1><p className="mt-8" role="status">Checking your sign-in…</p></Section>,
 });
 const textFields = ["itinerary", "accommodation", "inclusions", "exclusions", "terms"] as const;
 const labels = {

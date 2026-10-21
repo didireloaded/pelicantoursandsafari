@@ -114,7 +114,7 @@ function TailorMade() {
     submitLock.current = true;
     setSending(true);
     try {
-      const data = await submitTripEnquiry({ data: { ...body, request_id: pendingRequest.current.id }, signal: AbortSignal.timeout(20000) });
+      const data = await submitTripEnquiry({ data: { ...body, request_id: pendingRequest.current.id }, signal: AbortSignal.timeout(60000) });
       if (!data.reference) { setError(data.error ?? "Receipt unavailable. Retry the same brief."); return; }
       setReference(String(data.reference)); setSent(true);
     } catch { setError("We could not confirm receipt. Retry the same brief to check without creating a duplicate. If you contact Pelican by WhatsApp or email instead, mention this attempted submission."); }

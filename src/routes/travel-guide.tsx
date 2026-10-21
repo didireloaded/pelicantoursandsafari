@@ -3,9 +3,9 @@ import { TravelCalendar } from "@/components/travel-calendar";
 import { Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { approvedSource, useApprovedTravelDetails } from "@/lib/approved-travel-details";
-import { Section } from "@/components/site";
+import { Section, meta } from "@/components/site";
 import { company, stays, travelGuidance } from "@/lib/pelican";
-export const Route = createFileRoute("/travel-guide")({ component: TravelGuide });
+export const Route = createFileRoute("/travel-guide")({ component: TravelGuide, head: () => meta("Travel guide", "Plan your safari with seasonal guidance, packing advice and practical travel information.") });
 function TravelGuide() {
   const { rows, error } = useApprovedTravelDetails();
   const details = rows.filter(row => row.approved && approvedSource(row.source_url));

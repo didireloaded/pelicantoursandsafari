@@ -8,7 +8,7 @@
     "dev": "vite dev",
     "build": "node --experimental-strip-types scripts/seo-build.ts && vite build",
     "build:dev": "node --experimental-strip-types scripts/seo-build.ts --mode development && vite build --mode development",
-    "preview": "vite preview",
+    "preview": "nitro preview",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format:check": "prettier --check .",

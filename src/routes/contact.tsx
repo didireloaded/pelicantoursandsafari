@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, meta } from "@/components/site";
 import { company, whatsapp } from "@/lib/pelican";
+import { ContactEnquiry } from "@/components/contact-enquiry";
 
 export const Route = createFileRoute("/contact")({
-  head: () => meta("Contact", "Call or WhatsApp Kamwi or Fiona Kays, or visit Pelican at 10 Fabri Street, Pionierspark, Windhoek.", "baboon"),
+  head: () => meta("Contact", "Send an enquiry, call or WhatsApp Kamwi or Fiona Kays, or visit Pelican in Windhoek.", "baboon"),
   component: Contact,
 });
 
@@ -23,6 +24,7 @@ function Contact() {
             </div>
           </div>
         ))}
+        <ContactEnquiry />
         <div className="grid gap-10 border-t border-border/70 pt-12 md:grid-cols-4">
           <div><p className={label}>Office</p><div className="mt-3 leading-7">{company.address.map((a) => <p key={a}>{a}</p>)}</div></div>
           <div><p className={label}>Hours</p><p className="mt-3">{company.hours}</p></div>

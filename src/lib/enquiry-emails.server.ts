@@ -55,6 +55,7 @@ export async function sendEnquiryEmails(
         html: await render(element),
         text: await render(element, { plainText: true }),
         replyTo: NOTIFICATION_TO,
+        idempotencyKey: `enquiry/${reference}/traveller`,
       })
       result.traveller = confirmation.sent
         ? { sent: true }
@@ -78,6 +79,7 @@ export async function sendEnquiryEmails(
     })
     const notification = await sendResendEmail({
       to: NOTIFICATION_TO,
+      idempotencyKey: `enquiry/${reference}/pelican`,
       ...(input.email ? { replyTo: input.email } : {}),
       subject: `New safari enquiry ${reference} — ${input.name}`,
       html: await render(element),
