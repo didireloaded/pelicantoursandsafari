@@ -17,6 +17,7 @@ it("sends Pelican notifications to the client inbox and replies to the traveller
   expect(mocks.send).toHaveBeenCalledWith(expect.objectContaining({
     to: "info@pelicantoursandsafaris.com", replyTo: "traveller@example.com",
     subject: "New safari enquiry synthetic-reference — Routing test",
+    html: expect.stringContaining("https://pelicantoursandsafari.com/dashboard"),
   }));
   expect(mocks.send).toHaveBeenCalledWith(expect.objectContaining({
     to: "traveller@example.com", replyTo: "info@pelicantoursandsafaris.com",

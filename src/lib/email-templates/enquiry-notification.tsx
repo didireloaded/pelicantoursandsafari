@@ -44,13 +44,13 @@ export const EnquiryNotificationEmail = ({
     <Text style={{ ...emailStyles.text, whiteSpace: 'pre-wrap' }}>{brief}</Text>
     <Text style={emailStyles.text}>
       Open the enquiry in your dashboard:{' '}
-      <Link style={emailStyles.link} href="https://pelicanexplorer.com/dashboard">
-        pelicanexplorer.com/dashboard
+      <Link style={emailStyles.link} href="https://pelicantoursandsafari.com/dashboard">
+        pelicantoursandsafari.com/dashboard
       </Link>
     </Text>
     <Text style={emailStyles.footer}>
       This notification is sent automatically when a traveller submits a Safari Brief on
-      pelicanexplorer.com.
+      pelicantoursandsafari.com.
     </Text>
   </Html>
 )

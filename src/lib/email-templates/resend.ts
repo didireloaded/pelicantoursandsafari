@@ -4,9 +4,8 @@
 // Auth/account emails stay on the managed Lovable email helper (send-email.ts).
 
 const FROM_NAME = "Pelican Tours and Safari"
-// DKIM and primary sending CNAME verified in Resend on 20 October 2026.
-// The secondary sending CNAME may finish verifying independently.
-const FROM_ADDRESS = "enquiries@pelicanexplorer.com"
+// Deploy sender changes only after Resend verifies the domain’s sending records.
+const FROM_ADDRESS = "enquiries@pelicantoursandsafari.com"
 
 export interface SendResendEmailOptions {
   to: string

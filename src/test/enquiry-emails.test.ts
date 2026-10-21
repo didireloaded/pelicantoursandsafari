@@ -47,7 +47,7 @@ describe("sendResendEmail", () => {
     const [url, init] = call;
     expect(url).toBe("https://api.resend.com/emails");
     const body = JSON.parse(String(init.body));
-    expect(body.from).toBe("Pelican Tours and Safari <enquiries@pelicanexplorer.com>");
+    expect(body.from).toBe("Pelican Tours and Safari <enquiries@pelicantoursandsafari.com>");
     expect(body.to).toEqual(["traveller@example.com"]);
   });
 });
