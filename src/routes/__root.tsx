@@ -82,6 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "xIWXk62erJNQuuSSm-v_Ej6-SytEUnRPaPn_VphsylU" },
       { title: "Pelican Tours and Safaris" },
       { name: "description", content: "Guided safaris and tours across Namibia, Botswana and Zimbabwe." },
       { property: "og:type", content: "website" },
