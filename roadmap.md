@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Update existing managed account email settings and previews for notify.pelicantoursandsafari.com without overwriting branded templates or changing Resend enquiry sending.
+- [ ] Activate new managed sender and verify real email delivery. Blocked on DNS verification; current email settings also need publishing.
+
 - [x] Phase 1: edge-to-edge layout, real routes, page shells (Home, Safaris + detail, Destinations + detail, Tailor-Made, About, Gallery, Contact)
 - [x] Batch 1: supplied logo and icons, intentional homepage wording, safari finder/comparison, expanded Safari Brief, contextual safari/destination planning.
 - [x] Stay V1: four official-source properties, destination/type/collection filters, detail pages and Pelican booking requests; preferred stays/nights included in Safari Brief. Property imagery and expanded verified rates/policies remain pending.
