@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Google Search Console setup: connected account; add verification meta tag and restore production sitemap, publish with approval, verify ownership, add property and submit sitemap.
+
 - [x] Update existing managed account email settings and previews for notify.pelicantoursandsafari.com without overwriting branded templates or changing Resend enquiry sending.
 - [ ] Activate new managed sender and verify real email delivery. Blocked on DNS verification; current email settings also need publishing.
 
