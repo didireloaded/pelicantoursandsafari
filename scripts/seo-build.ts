@@ -6,7 +6,8 @@ import { sitemapXml, siteOrigin } from "../src/lib/seo.ts";
 const modeIndex = process.argv.indexOf("--mode");
 const mode = modeIndex >= 0 ? process.argv[modeIndex + 1] ?? "production" : "production";
 const env = loadEnv(mode, process.cwd(), "VITE_");
-const origin = siteOrigin(process.env["VITE_SITE_ORIGIN"] ?? env["VITE_SITE_ORIGIN"]);
+// The published domain is explicit; never infer it from a preview/request host.
+const origin = siteOrigin(process.env["VITE_SITE_ORIGIN"] ?? env["VITE_SITE_ORIGIN"]) ?? "https://pelicantoursandsafari.com";
 const sitemap = sitemapXml(origin);
 const robots = `User-agent: *\nAllow: /\nDisallow: /auth\nDisallow: /reset-password\nDisallow: /.lovable/\nDisallow: /dashboard\nDisallow: /trips\nDisallow: /proposals\nDisallow: /content-manage\nDisallow: /shortlist\nDisallow: /journey\nDisallow: /match\n${origin ? `\nSitemap: ${origin}/sitemap.xml\n` : ""}`;
 await writeFile(new URL("../public/robots.txt", import.meta.url), robots);

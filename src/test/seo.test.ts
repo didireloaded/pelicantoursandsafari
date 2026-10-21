@@ -3,6 +3,14 @@ import { jsonLd, pageSeo, publicSeoPaths, siteOrigin, sitemapXml } from "../lib/
 import { destinations, safaris, stays } from "../lib/pelican";
 
 describe("production SEO", () => {
+  it("generates the migrated production sitemap without private or obsolete origins", () => {
+    const xml = sitemapXml("https://pelicantoursandsafari.com");
+    expect(xml).toContain("<loc>https://pelicantoursandsafari.com/</loc>");
+    expect(xml).toContain("<loc>https://pelicantoursandsafari.com/tailor-made</loc>");
+    expect(xml).not.toContain("pelicanexplorer.com");
+    expect(xml).not.toContain("<loc>https://pelicantoursandsafari.com/reset-password</loc>");
+    expect(xml).not.toContain("<loc>https://pelicantoursandsafari.com/dashboard</loc>");
+  });
   it("omits absolute metadata until a production origin is explicitly configured", () => {
     for (const origin of [undefined, "", "http://localhost:3000", "https://example.com/path", "https://user:pass@example.com", "https://example.com/?x=1"]) {
       expect(siteOrigin(origin)).toBeUndefined();
