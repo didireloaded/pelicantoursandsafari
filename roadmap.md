@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Codex migration coordination: verify incoming main changes, new Resend From and VITE_SITE_ORIGIN; preserve both migration and Search Console work before further publication. Git sync must be completed through Lovable Git settings, not manual pulls.
+
 - [ ] Google Search Console setup: connected account; add verification meta tag and restore production sitemap, publish with approval, verify ownership, add property and submit sitemap.
 
 - [x] Update existing managed account email settings and previews for notify.pelicantoursandsafari.com without overwriting branded templates or changing Resend enquiry sending.
