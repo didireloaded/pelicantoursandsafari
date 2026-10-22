@@ -2,7 +2,7 @@ import {
   compileTravellerPlan,
   plannerSchema,
   travellerGatewayBody,
-} from "../../../src/lib/traveller-itinerary.ts";
+} from "../_shared/traveller-itinerary.ts";
 type Services = {
   allowedOrigins: string[];
   gatewayKey?: string | undefined;
