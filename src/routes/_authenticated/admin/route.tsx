@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect, useLocation, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/site";
-import { AdminNavigation } from "@/components/admin/navigation";
+
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async ({ context, location }) => {
     const result = await supabase
@@ -32,11 +32,7 @@ function AdminLayout() {
   const { adminAssurance } = Route.useRouteContext();
   const location = useLocation();
   return (
-    <Section>
-      <p className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-clay">
-        Pelican · Private administration
-      </p>
-      <AdminNavigation />
+    <div>
       {adminAssurance !== "aal2" && location.pathname !== "/admin/account" ? (
         <>
           <h1 className="text-4xl">Secure your staff sign-in</h1>
@@ -50,6 +46,6 @@ function AdminLayout() {
       ) : (
         <Outlet />
       )}
-    </Section>
+    </div>
   );
 }

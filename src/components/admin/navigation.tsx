@@ -4,7 +4,7 @@ export function AdminNavigation() {
   return (
     <nav
       aria-label="Pelican administration"
-      className="mb-10 flex flex-wrap gap-x-6 gap-y-3 border-y border-border py-4 text-sm"
+      className="admin-legacy-nav mb-10 flex flex-wrap gap-x-6 gap-y-3 border-y border-border py-4 text-sm"
     >
       {adminLinks.map((item) => (
         <Link

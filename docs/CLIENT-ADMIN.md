@@ -45,3 +45,21 @@ Rollback: redeploy previous app commit if needed. Keep the additive tables/bucke
 - Full tests, typecheck, lint and build run before publishing. Live signed-in staff writes remain explicitly unverified until a staff account is designated.
 
 Final verification:175tests passed, TypeScript/build passed, lint0errors/13existingwarnings. Local browser checks confirmed no horizontal overflow at390/1440 for the package/gallery editors using a clearly labelled sample harness outside the app; no auth bypass or mock route was shipped. The actual /admin route redirected unsigned visitors to sign-in. An unknown package returned404, and the live-backed package sitemap returned valid empty XML before any package publication. DeepSeek review: no second EXIF rotation exists; authenticated RPC EXECUTE is intentionally paired with authoritative staff+aal2 checks (tested). Cached-photo persistence is documented and new upload cache lifetime bounded.
+
+## Reference-led workspace (22 October 2026)
+
+Nine sidebar destinations share Pelican's private cream/green/clay shell:
+Overview, Clients, Reservations, Analytics, Packages, Gallery, Enquiries, Travel information, Settings.
+The public website layout is unchanged. There is no task board or model branding.
+
+Clients are private records (photo or initials, origin country, source, contact details, notes, archive state). Recorded spend sums manually recorded received amounts from their reservations; missing amounts remain “Not recorded”. Reservations extend existing `trips`, retain draft/confirmed/cancelled status and traveller-own visibility, and can belong to offline clients without an account. Staff must verify identity before linking a traveller UUID. Dates use UTC date arithmetic; return day is checkout-exclusive. No live supplier availability or payment collection is implied.
+
+Cloud migration: `drizzle/migrations/0004_private_admin_workspace.sql`. Client writes check revisions; reservation writes check updated_at under transaction locks. New workspace access and existing staff trip policies require staff + aal2. Authenticated users cannot directly write client or financial fields. Existing staff role onboarding remains manual; signups never self-promote.
+
+The staff help panel calls Lovable Gateway server-side after origin, user, staff/MFA and quota checks. It sends approved public company facts and aggregate counts only, never client names, email, notes, photos or individual financial records. It has no action tools or codebase access. Answers require review; it cannot save or send anything. `LOVABLE_API_KEY` stays server-side. Existing draft quota is shared (10/hour/staff, 100/day globally).
+
+Analytics measures aggregate public page views only after deployment, using the existing allowed-origin, trusted Cloudflare ingress and rate salt configuration. GPC/DNT opt-outs are respected; no cookies, identifiers or raw IP are stored. Short-lived salted network hashes rate-limit events; counts exclude excess events and are not unique visitors. No historical traffic is backfilled. Audience means staff-entered client countries; engagement means enquiries per 100 aggregate views, not visitor conversion. Trip value uses confirmed departure dates and recorded agreed totals, not processed payments. Recent staff circles reflect verified staff activity within two minutes.
+
+Rollback: revert the application release using a new Git commit; retain additive database tables/data. Do not drop client records or financial columns to roll back a UI release. Restoring legacy trip policies would reduce MFA protection and needs an explicit security decision.
+
+Verification: 183 automated tests, TypeScript, production build and lint (13 existing warnings, no errors). Browser design checks used explicitly labelled sample records in an external local harness at 1440px and 390px. No sample client records were inserted in production. Live signed-in writes and Gateway response still require the staff member's own authenticator; authentication was not bypassed.

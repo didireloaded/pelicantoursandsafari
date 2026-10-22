@@ -1,16 +1,43 @@
 export const adminLinks = [
-  { to: "/admin", label: "Home", description: "Choose what you want to update." },
+  {
+    to: "/admin",
+    label: "Overview",
+    description: "Your reservations, recent enquiries and next steps.",
+  },
+  {
+    to: "/admin/clients",
+    label: "Clients",
+    description: "Client profiles, countries, sources and recorded spending.",
+  },
+  {
+    to: "/admin/bookings",
+    label: "Reservations",
+    description: "Bookings, dates and travel calendar.",
+  },
+  {
+    to: "/admin/analytics",
+    label: "Analytics",
+    description: "Traffic, leads, trip value and audience.",
+  },
   {
     to: "/admin/packages",
     label: "Packages",
     description: "Create journeys, itineraries and seasonal prices.",
   },
-  { to: "/admin/gallery", label: "Gallery", description: "Upload photos to destination albums." },
-  { to: "/dashboard", label: "Enquiries", description: "Read and follow up traveller requests." },
+  { to: "/admin/gallery", label: "Gallery", description: "Destination albums and photographs." },
+  {
+    to: "/dashboard",
+    label: "Enquiries",
+    description: "Read, assign and follow up traveller requests.",
+  },
   {
     to: "/content-manage",
     label: "Travel information",
-    description: "Maintain verified guidance and existing safari details.",
+    description: "Verified guidance and catalogue details.",
   },
-  { to: "/admin/account", label: "Account", description: "Manage your sign-in and security." },
+  {
+    to: "/admin/account",
+    label: "Settings",
+    description: "Your sign-in, authenticator and account.",
+  },
 ] as const;
