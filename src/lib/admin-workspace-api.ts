@@ -103,7 +103,12 @@ export async function saveClient(id: string, revision: number, value: ClientInpu
 export async function saveBooking(id: string, updatedAt: string | null, value: BookingInput) {
   const payload = bookingSchema.parse(value);
   const { data, error } = await supabase
-    .rpc("save_admin_trip", { _id: id, _updated_at: updatedAt, _data: payload })
+    // Generated RPC types omit SQL argument nullability; creation requires a literal null.
+    .rpc("save_admin_trip", {
+      _id: id,
+      _updated_at: updatedAt,
+      _data: payload,
+    } as Database["public"]["Functions"]["save_admin_trip"]["Args"])
     .abortSignal(AbortSignal.timeout(15000));
   if (error || !data)
     throw new Error(

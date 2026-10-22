@@ -552,8 +552,7 @@ export type Database = {
         Returns: Json
       }
       save_admin_trip: {
-        // NULL is the explicit create-only revision token accepted by this RPC.
-        Args: { _data: Json; _id: string; _updated_at: string | null }
+        Args: { _data: Json; _id: string; _updated_at: string }
         Returns: Json
       }
       save_site_content: {
