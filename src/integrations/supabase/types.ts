@@ -241,6 +241,80 @@ export type Database = {
           },
         ]
       }
+      site_content: {
+        Row: {
+          draft: Json
+          id: string
+          kind: string
+          published: Json | null
+          published_at: string | null
+          revision: number
+          updated_at: string
+          updated_by: string
+        }
+        Insert: {
+          draft: Json
+          id: string
+          kind: string
+          published?: Json | null
+          published_at?: string | null
+          revision?: number
+          updated_at?: string
+          updated_by: string
+        }
+        Update: {
+          draft?: Json
+          id?: string
+          kind?: string
+          published?: Json | null
+          published_at?: string | null
+          revision?: number
+          updated_at?: string
+          updated_by?: string
+        }
+        Relationships: []
+      }
+      site_content_history: {
+        Row: {
+          action: string
+          changed_at: string
+          changed_by: string
+          content_id: string
+          draft: Json
+          id: number
+          published: Json | null
+          revision: number
+        }
+        Insert: {
+          action: string
+          changed_at?: string
+          changed_by: string
+          content_id: string
+          draft: Json
+          id?: never
+          published?: Json | null
+          revision: number
+        }
+        Update: {
+          action?: string
+          changed_at?: string
+          changed_by?: string
+          content_id?: string
+          draft?: Json
+          id?: never
+          published?: Json | null
+          revision?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_content_history_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "site_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       travel_details: {
         Row: {
           approved: boolean
@@ -339,6 +413,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_site: { Args: never; Returns: boolean }
       consume_ai_draft_request: { Args: never; Returns: boolean }
       consume_routing_request: {
         Args: { network_hash: string }
@@ -359,6 +434,25 @@ export type Database = {
           _proposal_id: string
         }
         Returns: string
+      }
+      published_site_content: {
+        Args: { _kind: string }
+        Returns: {
+          data: Json
+          id: string
+          kind: string
+          updated_at: string
+        }[]
+      }
+      save_site_content: {
+        Args: {
+          _action: string
+          _draft: Json
+          _id: string
+          _kind: string
+          _revision: number
+        }
+        Returns: Json
       }
       staff_directory: {
         Args: never
