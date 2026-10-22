@@ -63,3 +63,18 @@ it("blocks password writes for expired or absent sessions", async () => {
   expect(mocks.update).not.toHaveBeenCalled();
 });
 import React from "react";
+
+it("explains invalid credentials without requiring developer approval and normalizes email", async () => {
+  mocks.signin.mockResolvedValue({
+    error: { code: "invalid_credentials", message: "Invalid login credentials" },
+  });
+  render(React.createElement(authPage));
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "OWNER@EXAMPLE.COM" } });
+  fireEvent.change(screen.getByLabelText("Password"), { target: { value: "test-password" } });
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+  expect(await screen.findByRole("status")).toHaveTextContent("Google or Apple");
+  expect(mocks.signin).toHaveBeenCalledWith({
+    email: "owner@example.com",
+    password: "test-password",
+  });
+});

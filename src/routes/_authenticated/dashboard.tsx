@@ -1,11 +1,20 @@
 import { AppSelect } from "@/components/ui/app-select";
-import { AdminNavigation } from "@/components/admin/navigation";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Search, Clock3, Mail, RefreshCw, ChevronDown } from "lucide-react";
+import { initials } from "@/lib/admin-workspace";
+import { safaris } from "@/lib/pelican";
+import { tripForCode } from "@/lib/booking";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { createFileRoute, Link, useBlocker } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
-import { Section } from "@/components/site";
 import { toast } from "sonner";
 import { useRef } from "react";
 
@@ -19,6 +28,18 @@ const statuses: { value: Status; label: string }[] = [
   { value: "confirmed", label: "Confirmed" },
   { value: "closed", label: "Closed" },
 ];
+
+function statusLabel(value: string | null) {
+  return statuses.find((status) => status.value === value)?.label ?? "Updated";
+}
+function formatDate(value: string, short = false) {
+  return new Date(value).toLocaleString("en-GB", {
+    timeZone: "Africa/Windhoek",
+    day: "numeric",
+    month: "short",
+    ...(short ? {} : { year: "numeric", hour: "2-digit", minute: "2-digit" }),
+  });
+}
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -46,41 +67,64 @@ function Dashboard() {
   );
   const [more, setMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [loadingData, setLoadingData] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [directoryError, setDirectoryError] = useState(false);
+  const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [noteBases, setNoteBases] = useState<Record<string, string>>({});
+  const [feedback, setFeedback] = useState<Record<string, { ok: boolean; text: string }>>({});
+  const [tab, setTab] = useState("brief");
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState(false);
+  const detailRef = useRef<HTMLElement>(null);
   const moreLock = useRef(false);
   const saving = useRef(new Set<string>());
 
   useEffect(() => {
-    (async () => {
+    let active = true;
+    setLoadingData(true);
+    setLoadError(false);
+    void (async () => {
       try {
-        const { data: u } = await supabase.auth.getUser();
-        const { data: roles } = await supabase
+        const user = await supabase.auth.getUser();
+        if (user.error || !user.data.user) throw new Error("Sign-in unavailable");
+        const roles = await supabase
           .from("user_roles")
           .select("role")
-          .eq("user_id", u.user?.id ?? "");
-        const ok = !!roles?.length;
+          .eq("user_id", user.data.user.id);
+        if (roles.error) throw roles.error;
+        const ok = !!roles.data?.length;
+        if (!active) return;
         setStaff(ok);
-        if (ok) {
-          const { data, error } = await supabase
+        if (!ok) return;
+        const [enquiries, team] = await Promise.all([
+          supabase
             .from("enquiries")
             .select("*")
             .order("created_at", { ascending: false })
             .order("id", { ascending: false })
-            .limit(500);
-          if (error) toast.error("Enquiries could not be loaded. Please reload to try again.");
-          else {
-            setRows(data ?? []);
-            setMore(data?.length === 500);
-          }
-        }
-        const team = await supabase.rpc("staff_directory");
-        if (team.error) toast.error("Staff directory could not be loaded.");
-        else setDirectory(team.data ?? []);
+            .limit(500),
+          supabase.rpc("staff_directory"),
+        ]);
+        if (!active) return;
+        if (enquiries.error) throw enquiries.error;
+        setRows(enquiries.data ?? []);
+        setFeedback({});
+        setMore(enquiries.data?.length === 500);
+        setDirectoryError(!!team.error);
+        setDirectory(team.data ?? []);
       } catch {
-        setStaff(false);
-        toast.error("Dashboard could not be loaded. Please reload.");
+        if (active) setLoadError(true);
+      } finally {
+        if (active) setLoadingData(false);
       }
     })();
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [reloadKey]);
 
   const update = async (
     id: string,
@@ -89,9 +133,11 @@ function Dashboard() {
     const previous = rows.find((r) => r.id === id);
     if (!previous || saving.current.has(id)) {
       toast.error("A save is already in progress. Please try again shortly.");
-      return;
+      return false;
     }
     saving.current.add(id);
+    setBusyIds((previous) => new Set(previous).add(id));
+    setFeedback((previous) => ({ ...previous, [id]: { ok: true, text: "Saving…" } }));
     try {
       const { data, error } = await supabase
         .from("enquiries")
@@ -104,13 +150,35 @@ function Dashboard() {
         toast.error(
           "This change was not saved. Reload to check for changes by another team member.",
         );
-        return;
+        setFeedback((previous) => ({
+          ...previous,
+          [id]: {
+            ok: false,
+            text: "Not saved. Refresh to check for another team member’s changes. Your notes are retained.",
+          },
+        }));
+        return false;
       }
       setRows((r) => r.map((x) => (x.id === id ? data : x)));
+      setFeedback((previous) => ({ ...previous, [id]: { ok: true, text: "Saved" } }));
+      return true;
     } catch {
       toast.error("This change was not saved. Check your connection and try again.");
+      setFeedback((previous) => ({
+        ...previous,
+        [id]: {
+          ok: false,
+          text: "Not saved. Check your connection and retry. Your notes are retained.",
+        },
+      }));
+      return false;
     } finally {
       saving.current.delete(id);
+      setBusyIds((previous) => {
+        const next = new Set(previous);
+        next.delete(id);
+        return next;
+      });
     }
   };
   async function loadMore() {
@@ -139,223 +207,539 @@ function Dashboard() {
     }
   }
 
-  if (staff === null)
-    return (
-      <Section className="admin-enquiries">
-        <p>Loading…</p>
-      </Section>
-    );
-  if (!staff)
-    return (
-      <Section className="admin-enquiries">
-        <h1 className="font-display text-4xl">Access pending</h1>
-        <p className="mt-4 max-w-lg text-muted-foreground">
-          Your account is signed in but has not been given staff access yet. Ask a Pelican
-          administrator to grant it.
-        </p>
-        <Button asChild variant="outline" className="mt-8">
-          <Link to="/admin/account">Open settings</Link>
-        </Button>
-      </Section>
-    );
-
-  async function showHistory(id: string) {
-    setOpen(open === id ? null : id);
-    setHistory([]);
-    try {
-      const { data, error } = await supabase
-        .from("enquiry_events")
-        .select("*")
-        .eq("enquiry_id", id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      setHistory(data ?? []);
-    } catch {
-      toast.error("History could not be loaded.");
-    }
-  }
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Africa/Windhoek",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   }).format(new Date());
+  const isOverdue = (r: Enquiry) =>
+    !!r.follow_up_on && r.follow_up_on < today && !["confirmed", "closed"].includes(r.status);
   const shown = rows.filter(
     (r) =>
       (filter === "all" || r.status === filter) &&
-      (!overdue ||
-        (!!r.follow_up_on &&
-          r.follow_up_on < today &&
-          !["confirmed", "closed"].includes(r.status))) &&
+      (!overdue || isOverdue(r)) &&
       [r.name, r.email, r.phone, r.id, r.brief, r.booking_ref, r.trip_code, r.enquiry_ref].some(
-        (v) => v?.toLowerCase().includes(query.toLowerCase()),
+        (value) => value?.toLowerCase().includes(query.trim().toLowerCase()),
       ),
   );
+  const current = shown.find((row) => row.id === open) ?? shown[0];
+  const dirty = rows.some(
+    (row) => drafts[row.id] !== undefined && drafts[row.id] !== (row.staff_notes ?? ""),
+  );
+  useBlocker({
+    shouldBlockFn: () =>
+      saving.current.size > 0 ||
+      (dirty && !window.confirm("Leave without saving your team notes?")),
+    enableBeforeUnload: () => dirty || saving.current.size > 0,
+  });
+  useEffect(() => {
+    if (!current) {
+      setHistory([]);
+      return;
+    }
+    let active = true;
+    setHistory([]);
+    setHistoryLoading(true);
+    setHistoryError(false);
+    void supabase
+      .from("enquiry_events")
+      .select("*")
+      .eq("enquiry_id", current.id)
+      .order("created_at", { ascending: false })
+      .then(
+        ({ data, error }) => {
+          if (!active) return;
+          setHistoryLoading(false);
+          if (error) setHistoryError(true);
+          else setHistory(data ?? []);
+        },
+        () => {
+          if (active) {
+            setHistoryLoading(false);
+            setHistoryError(true);
+          }
+        },
+      );
+    return () => {
+      active = false;
+    };
+  }, [current]);
+  useEffect(() => {
+    if (open && current?.id === open && window.matchMedia("(max-width: 900px)").matches)
+      detailRef.current?.scrollIntoView({ block: "start" });
+  }, [open, current?.id]);
+  if (loadError)
+    return (
+      <section className="admin-panel p-6">
+        <h1 className="text-xl">Enquiries unavailable</h1>
+        <p className="mt-3 text-sm">
+          Your enquiries could not be loaded. Your records have not changed.
+        </p>
+        <Button className="mt-5" onClick={() => setReloadKey((key) => key + 1)}>
+          Retry
+        </Button>
+      </section>
+    );
+  if (staff === null || loadingData)
+    return (
+      <div className="admin-panel p-6" role="status">
+        Loading your enquiries…
+      </div>
+    );
+  if (!staff)
+    return (
+      <section className="admin-panel p-6">
+        <h1 className="text-xl">Access pending</h1>
+        <p className="mt-3 text-sm">
+          Your account is signed in but has not been given staff access yet. Ask a Pelican
+          administrator to grant it.
+        </p>
+        <Button asChild variant="outline" className="mt-5">
+          <Link to="/admin/account">Open settings</Link>
+        </Button>
+      </section>
+    );
+  const draft = current ? (drafts[current.id] ?? current.staff_notes ?? "") : "";
+  const notesChanged = !!current && draft !== (current.staff_notes ?? "");
+  const notesConflict =
+    !!current &&
+    drafts[current.id] !== undefined &&
+    noteBases[current.id] !== undefined &&
+    noteBases[current.id] !== (current.staff_notes ?? "");
+  const working = !!current && busyIds.has(current.id);
+  const reference = (row: Enquiry) => row.booking_ref ?? row.enquiry_ref ?? "Legacy enquiry";
+  const topic = (row: Enquiry) =>
+    tripForCode(row.trip_code ?? "")?.name ??
+    safaris.find((safari) => safari.slug === row.safari_slug)?.name ??
+    "General enquiry";
+  async function saveNotes() {
+    if (!current) return;
+    const id = current.id;
+    const text = draft;
+    if (await update(id, { staff_notes: text })) {
+      setNoteBases((previous) => {
+        const next = { ...previous };
+        delete next[id];
+        return next;
+      });
+      setDrafts((previous) => {
+        if (previous[id] !== text) return previous;
+        const next = { ...previous };
+        delete next[id];
+        return next;
+      });
+    }
+  }
   return (
-    <Section className="admin-enquiries">
-      <AdminNavigation />
+    <div className="enquiry-inbox">
       <div className="admin-page-heading">
         <div>
-          <p className="admin-eyebrow">Pelican team</p>
+          <p className="admin-eyebrow">PEOPLE, PLANS & NEXT STEPS</p>
           <h1 className="mt-2">Enquiries</h1>
+          <p>Your conversations, with the details in one place.</p>
         </div>
-        <div className="flex gap-3">
-          <Button asChild variant="ghost">
-            <Link to="/trips-manage">Manage trips</Link>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="gap-2 !text-xs"
+            disabled={busyIds.size > 0}
+            onClick={() => setReloadKey((key) => key + 1)}
+            title={dirty ? "Your unsaved notes will be retained" : undefined}
+          >
+            <RefreshCw size={14} />
+            Refresh
           </Button>
-          <Button asChild variant="ghost">
-            <Link to="/proposals" search={{}}>
-              Proposals
-            </Link>
-          </Button>
-          <Button asChild variant="ghost">
-            <Link to="/content-manage">Approved content</Link>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2 !text-xs">
+                Related tools
+                <ChevronDown size={14} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="pelican-select-menu">
+              <DropdownMenuItem asChild>
+                <Link to="/trips-manage">Manage trips</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/proposals" search={{}}>
+                  Proposals
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/content-manage">Approved content</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-      <nav
-        className="admin-enquiry-tabs mt-6 flex flex-wrap gap-2 text-xs"
-        aria-label="Filter by status"
-      >
-        {[{ value: "all" as const, label: "All" }, ...statuses].map((s) => {
-          const n =
-            s.value === "all" ? rows.length : rows.filter((r) => r.status === s.value).length;
-          return (
-            <button
-              key={s.value}
-              onClick={() => setFilter(s.value)}
-              className={`border-b py-1 ${filter === s.value ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}
-            >
-              {s.label} <span className="text-clay">{n}</span>
-            </button>
-          );
-        })}
-      </nav>
-      <div className="admin-panel admin-form mt-5 flex flex-wrap items-center gap-5 p-5">
-        <label>
-          Search enquiries
+      <section className="admin-panel enquiry-toolbar" aria-label="Find enquiries">
+        <div className="enquiry-search">
+          <Search size={16} />
           <input
-            className="ml-3 border-b bg-transparent py-2"
+            aria-label="Search enquiries"
+            placeholder="Search a name, reference or message…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            className="mr-2 accent-primary"
-            checked={overdue}
-            onChange={(e) => setOverdue(e.target.checked)}
-          />
-          Overdue follow-ups
-        </label>
-        <p className="text-sm text-muted-foreground">
-          Search covers loaded enquiries. Load older enquiries below to extend it. Follow-up dates
-          use Namibia time; reminders appear here.
-        </p>
-      </div>
-      <ul className="admin-enquiry-list mt-6 space-y-3">
-        {shown.map((r) => (
-          <li key={r.id} className="admin-panel p-5">
-            <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_auto]">
-              <button className="text-left" onClick={() => void showHistory(r.id)}>
-                <span className="text-sm font-medium">{r.name}</span>
-                {(r.booking_ref ?? r.enquiry_ref) && (
-                  <span className="ml-3 text-sm font-semibold text-clay">
-                    {r.booking_ref ?? r.enquiry_ref}
-                  </span>
-                )}
-                <span className="ml-3 text-sm text-muted-foreground">
-                  {new Date(r.created_at).toLocaleString()} · {r.contact_preference}
-                </span>
-              </button>
-              <span className="text-sm text-muted-foreground">
-                {[r.email, r.phone].filter(Boolean).join(" · ")}
-              </span>
-              <AppSelect
-                aria-label="Status"
-                className="border-b border-foreground/25 bg-transparent py-2"
-                value={r.status}
-                onChange={(e) => update(r.id, { status: e.target.value as Status })}
-              >
-                {statuses.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </AppSelect>
-            </div>
-            {open === r.id && (
-              <div className="mt-5 grid gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <p className="text-sm break-all">
-                    Reference: {r.booking_ref ?? r.enquiry_ref ?? "Legacy enquiry"}
-                  </p>
-                  <label className="block">
-                    Assigned to
-                    <AppSelect
-                      className="ml-3 border-b bg-transparent py-2"
-                      value={r.assigned_to ?? ""}
-                      onChange={(e) => void update(r.id, { assigned_to: e.target.value || null })}
+        </div>
+        <AppSelect
+          aria-label="Filter by status"
+          value={filter}
+          className="enquiry-filter"
+          onChange={(e) => setFilter(e.target.value as Status | "all")}
+        >
+          <option value="all">All enquiries ({rows.length})</option>
+          {statuses.map((status) => (
+            <option key={status.value} value={status.value}>
+              {status.label} ({rows.filter((row) => row.status === status.value).length})
+            </option>
+          ))}
+        </AppSelect>
+        <button
+          className={`enquiry-overdue ${overdue ? "is-selected" : ""}`}
+          aria-pressed={overdue}
+          onClick={() => setOverdue(!overdue)}
+        >
+          <Clock3 size={14} />
+          Overdue<span>{rows.filter(isOverdue).length}</span>
+        </button>
+      </section>
+      <div className="enquiry-inbox-grid">
+        <section className="admin-panel enquiry-list-panel" aria-label="Enquiry inbox">
+          <div className="enquiry-list-heading">
+            <h2>
+              Inbox <span>{shown.length}</span>
+            </h2>
+            {dirty && <span className="enquiry-unsaved">Unsaved notes</span>}
+          </div>
+          <div className="enquiry-list-scroll">
+            {shown.length ? (
+              <ul>
+                {shown.map((row) => (
+                  <li key={row.id}>
+                    <button
+                      aria-pressed={current?.id === row.id}
+                      className={`enquiry-list-item ${current?.id === row.id ? "is-selected" : ""}`}
+                      onClick={() => {
+                        setOpen(row.id);
+                        setTab("brief");
+                      }}
                     >
-                      <option value="">Unassigned</option>
-                      {directory.map((u) => (
-                        <option key={u.user_id} value={u.user_id}>
-                          {u.email}
-                        </option>
-                      ))}
-                    </AppSelect>
-                  </label>
-                  <label className="block">
-                    Follow up on
-                    <input
-                      type="date"
-                      className="ml-3 border-b bg-transparent py-2"
-                      value={r.follow_up_on ?? ""}
-                      onChange={(e) => void update(r.id, { follow_up_on: e.target.value || null })}
-                    />
-                  </label>
-                </div>
-                <div className="whitespace-pre-wrap text-sm leading-relaxed">{r.brief}</div>
-                <label className="text-sm">
-                  Team notes
-                  <textarea
-                    rows={6}
-                    className="mt-2 w-full border border-border bg-transparent p-3"
-                    defaultValue={r.staff_notes ?? ""}
-                    onBlur={(e) => update(r.id, { staff_notes: e.target.value })}
-                  />
-                </label>
-                <div className="md:col-span-2">
-                  <h3>Activity history</h3>
-                  {history
-                    .filter((event) => event.enquiry_id === r.id)
-                    .map((event) => (
-                      <p key={event.id} className="mt-2 text-sm">
-                        {new Date(event.created_at).toLocaleString()} ·{" "}
-                        {directory.find((u) => u.user_id === event.actor_id)?.email ?? "Team"} ·{" "}
-                        {event.previous_status} → {event.next_status}
-                        {event.notes_changed ? " · notes changed" : ""}
-                        {event.previous_assignee !== event.next_assignee
-                          ? ` · assigned to ${directory.find((u) => u.user_id === event.next_assignee)?.email ?? event.next_assignee ?? "unassigned"}`
-                          : ""}
-                        {event.previous_follow_up !== event.next_follow_up
-                          ? ` · follow-up ${event.next_follow_up ?? "cleared"}`
-                          : ""}
-                      </p>
-                    ))}
-                </div>
+                      <span className="admin-avatar enquiry-list-avatar">{initials(row.name)}</span>
+                      <span className="enquiry-list-copy">
+                        <span className="enquiry-row-top">
+                          <strong>{row.name}</strong>
+                          <time dateTime={row.created_at}>{formatDate(row.created_at, true)}</time>
+                        </span>
+                        <span className="enquiry-list-topic">{topic(row)}</span>
+                        <span className="enquiry-row-bottom">
+                          <span className={`enquiry-status ${row.status}`}>
+                            {statusLabel(row.status)}
+                          </span>
+                          <span>{isOverdue(row) ? "Follow-up overdue" : reference(row)}</span>
+                          {drafts[row.id] !== undefined &&
+                            drafts[row.id] !== (row.staff_notes ?? "") && (
+                              <span title="Unsaved notes">●</span>
+                            )}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="admin-empty">
+                <Mail size={26} className="mx-auto mb-3 opacity-40" />
+                <p>{rows.length ? "No enquiries match your filters." : "No enquiries yet."}</p>
+                {rows.length > 0 && (
+                  <button
+                    className="mt-3 text-primary text-xs"
+                    onClick={() => {
+                      setQuery("");
+                      setFilter("all");
+                      setOverdue(false);
+                    }}
+                  >
+                    Clear filters
+                  </button>
+                )}
               </div>
             )}
-          </li>
-        ))}
-        {!shown.length && <li className="py-10 text-muted-foreground">No enquiries here yet.</li>}
-      </ul>
-      {more && (
-        <Button className="mt-6" variant="outline" disabled={loadingMore} onClick={loadMore}>
-          {loadingMore ? "Loading…" : "Load older enquiries"}
-        </Button>
-      )}
-    </Section>
+          </div>
+          {more && (
+            <div className="enquiry-list-footer">
+              <Button
+                variant="outline"
+                disabled={loadingMore}
+                className="w-full !text-xs"
+                onClick={loadMore}
+              >
+                {loadingMore ? "Loading…" : "Load older enquiries"}
+              </Button>
+            </div>
+          )}
+          <p className="enquiry-list-footnote">
+            {more
+              ? "Search covers loaded enquiries. Load older entries to search further."
+              : "Showing your loaded enquiries."}{" "}
+            Follow-up dates use Namibia time.
+          </p>
+        </section>
+        <section
+          ref={detailRef}
+          className="admin-panel enquiry-detail"
+          aria-label="Selected enquiry"
+        >
+          {current ? (
+            <>
+              <header className="enquiry-detail-header">
+                <div className="flex items-start gap-3">
+                  <span className="admin-avatar">{initials(current.name)}</span>
+                  <div className="min-w-0">
+                    <p className="enquiry-reference">{reference(current)}</p>
+                    <h2>{current.name}</h2>
+                    <p className="enquiry-received">
+                      {topic(current)} · {formatDate(current.created_at)}
+                    </p>
+                  </div>
+                </div>
+                <span className={`enquiry-status ${current.status}`}>
+                  {statusLabel(current.status)}
+                </span>
+              </header>
+              <dl className="enquiry-contact-grid">
+                {current.email && (
+                  <div>
+                    <dt>Email</dt>
+                    <dd>
+                      <a href={`mailto:${current.email}`}>{current.email}</a>
+                    </dd>
+                  </div>
+                )}
+                {current.phone && (
+                  <div>
+                    <dt>Phone / WhatsApp</dt>
+                    <dd>
+                      <a href={`tel:${current.phone.replace(/[^+0-9]/g, "")}`}>{current.phone}</a>
+                    </dd>
+                  </div>
+                )}
+                <div>
+                  <dt>Preferred contact</dt>
+                  <dd>{current.contact_preference || "Not supplied"}</dd>
+                </div>
+                <div>
+                  <dt>Country</dt>
+                  <dd>{current.residence || "Not supplied"}</dd>
+                </div>
+              </dl>
+              <div className="enquiry-workflow">
+                <label>
+                  Status
+                  <AppSelect
+                    value={current.status}
+                    disabled={working}
+                    onChange={(e) => void update(current.id, { status: e.target.value as Status })}
+                  >
+                    {statuses.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </AppSelect>
+                </label>
+                <label>
+                  Assigned to
+                  <AppSelect
+                    value={current.assigned_to ?? ""}
+                    disabled={working || directoryError}
+                    onChange={(e) =>
+                      void update(current.id, { assigned_to: e.target.value || null })
+                    }
+                  >
+                    <option value="">Unassigned</option>
+                    {current.assigned_to &&
+                      !directory.some((person) => person.user_id === current.assigned_to) && (
+                        <option value={current.assigned_to}>Team member</option>
+                      )}
+                    {directory.map((person) => (
+                      <option key={person.user_id} value={person.user_id}>
+                        {person.email}
+                      </option>
+                    ))}
+                  </AppSelect>
+                </label>
+                <label>
+                  Follow up on
+                  <input
+                    type="date"
+                    disabled={working}
+                    value={current.follow_up_on ?? ""}
+                    onChange={(e) =>
+                      void update(current.id, { follow_up_on: e.target.value || null })
+                    }
+                  />
+                </label>
+              </div>
+              {directoryError && (
+                <p className="enquiry-inline-feedback" role="alert">
+                  The staff list could not be loaded. Refresh to retry.
+                </p>
+              )}
+              {feedback[current.id] && (
+                <p
+                  className="enquiry-inline-feedback"
+                  role={feedback[current.id]!.ok ? "status" : "alert"}
+                >
+                  {feedback[current.id]!.text}
+                </p>
+              )}
+              <Tabs value={tab} onValueChange={setTab} className="enquiry-detail-tabs">
+                <TabsList aria-label="Enquiry details">
+                  <TabsTrigger value="brief">Traveller’s message</TabsTrigger>
+                  <TabsTrigger value="notes">Team notes{notesChanged ? " •" : ""}</TabsTrigger>
+                  <TabsTrigger value="history">Activity</TabsTrigger>
+                </TabsList>
+                <TabsContent value="brief" className="enquiry-tab-content">
+                  <h3 className="sr-only">Traveller’s message</h3>
+                  <div className="enquiry-message">{current.brief}</div>
+                </TabsContent>
+                <TabsContent value="notes" className="enquiry-tab-content">
+                  <label className="text-xs font-medium" htmlFor="enquiry-team-notes">
+                    Private team notes
+                  </label>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Keep the context your team needs for the next conversation.
+                  </p>
+                  <textarea
+                    id="enquiry-team-notes"
+                    disabled={working}
+                    maxLength={10000}
+                    rows={7}
+                    placeholder="Add useful details for your team…"
+                    value={draft}
+                    onChange={(e) => {
+                      setNoteBases((previous) => ({
+                        ...previous,
+                        [current.id]: previous[current.id] ?? current.staff_notes ?? "",
+                      }));
+                      setDrafts((previous) => ({ ...previous, [current.id]: e.target.value }));
+                    }}
+                  />
+                  {notesConflict && (
+                    <div className="enquiry-note-conflict" role="alert">
+                      <p>
+                        Saved notes changed while you were editing. Compare the latest version below
+                        before saving your notes.
+                      </p>
+                      <details>
+                        <summary>Latest saved notes</summary>
+                        <p>{current.staff_notes || "No saved notes"}</p>
+                      </details>
+                    </div>
+                  )}
+                  <div className="mt-4 flex items-center gap-3">
+                    <Button
+                      disabled={working || !notesChanged}
+                      className="!text-xs"
+                      onClick={() => void saveNotes()}
+                    >
+                      {working ? "Saving…" : notesConflict ? "Save my notes" : "Save notes"}
+                    </Button>
+                    {notesChanged && (
+                      <Button
+                        variant="ghost"
+                        disabled={working}
+                        className="!text-xs"
+                        onClick={() => {
+                          setDrafts((previous) => {
+                            const next = { ...previous };
+                            delete next[current.id];
+                            return next;
+                          });
+                          setNoteBases((previous) => {
+                            const next = { ...previous };
+                            delete next[current.id];
+                            return next;
+                          });
+                        }}
+                      >
+                        Discard changes
+                      </Button>
+                    )}
+                  </div>
+                </TabsContent>
+                <TabsContent value="history" className="enquiry-tab-content">
+                  {historyLoading ? (
+                    <p role="status" className="text-xs text-muted-foreground">
+                      Loading activity…
+                    </p>
+                  ) : historyError ? (
+                    <p role="alert" className="text-xs">
+                      Activity could not be loaded. Refresh to retry.
+                    </p>
+                  ) : history.length ? (
+                    <ol className="enquiry-timeline">
+                      {history.map((event) => (
+                        <li key={event.id}>
+                          <span className="enquiry-timeline-dot" />
+                          <div>
+                            <p>
+                              <strong>
+                                {directory.find((person) => person.user_id === event.actor_id)
+                                  ?.email ?? "Team member"}
+                              </strong>
+                              <time dateTime={event.created_at}>
+                                {formatDate(event.created_at)}
+                              </time>
+                            </p>
+                            <ul>
+                              {event.previous_status !== event.next_status && (
+                                <li>
+                                  {statusLabel(event.previous_status)} →{" "}
+                                  {statusLabel(event.next_status)}
+                                </li>
+                              )}
+                              {event.notes_changed && <li>Updated team notes</li>}
+                              {event.previous_assignee !== event.next_assignee && (
+                                <li>
+                                  Assigned to{" "}
+                                  {directory.find(
+                                    (person) => person.user_id === event.next_assignee,
+                                  )?.email ??
+                                    (event.next_assignee ? "a team member" : "Unassigned")}
+                                </li>
+                              )}
+                              {event.previous_follow_up !== event.next_follow_up && (
+                                <li>
+                                  {event.next_follow_up
+                                    ? `Follow-up set for ${event.next_follow_up}`
+                                    : "Cleared follow-up date"}
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No team updates yet.</p>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </>
+          ) : (
+            <div className="admin-empty">
+              <Mail size={28} className="mx-auto mb-4 opacity-40" />
+              <h2 className="text-sm font-medium">A clear space for your next conversation.</h2>
+              <p className="mt-3 text-xs">
+                Select an enquiry from the inbox to see the traveller’s message and next steps.
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

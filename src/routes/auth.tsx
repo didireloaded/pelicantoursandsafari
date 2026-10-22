@@ -44,15 +44,25 @@ function AuthPage() {
     setMsg("");
     try {
       if (mode === "in") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) setMsg(error.message);
-        else window.location.assign(next === "/" ? "/dashboard" : next);
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim().toLowerCase(),
+          password,
+        });
+        if (error)
+          setMsg(
+            error.code === "invalid_credentials" || /invalid.*credentials/i.test(error.message)
+              ? "We couldn’t sign you in with that email and password. If you signed up with Google or Apple, use the same button above. Otherwise choose Forgot password? to reset your password."
+              : error.code === "email_not_confirmed"
+                ? "Confirm your email address using the message in your inbox before signing in."
+                : "Sign-in could not be completed. Please retry or use Forgot password?.",
+          );
+        else window.location.assign(next === "/" ? "/admin" : next);
       } else {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: email.trim().toLowerCase(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${traveller ? next : "/dashboard"}`,
+            emailRedirectTo: `${window.location.origin}${traveller ? next : "/admin"}`,
           },
         });
         setMsg(
@@ -60,7 +70,7 @@ function AuthPage() {
             ? error.message
             : traveller
               ? "Check your email to confirm your account, then sign in. Pelican will assign your trip or private proposal."
-              : "Check your email to confirm your account. An administrator must then grant staff access.",
+              : "Confirm your email, then ask the owner or a team administrator to add this email in Settings → Team. You can also use Google or Apple with the same approved email.",
         );
       }
     } catch {
@@ -102,7 +112,7 @@ function AuthPage() {
     void supabase.auth.getSession().then(({ data }) => {
       if (cancelled || !data.session) return;
       sessionStorage.removeItem(RETURN_KEY);
-      const target = stored === "/" ? "/dashboard" : stored;
+      const target = stored === "/" ? "/admin" : stored;
       window.location.assign(target);
     });
     return () => {
@@ -126,7 +136,7 @@ function AuthPage() {
       }
       if (result.redirected) return;
       sessionStorage.removeItem(RETURN_KEY);
-      window.location.assign(next === "/" ? "/dashboard" : next);
+      window.location.assign(next === "/" ? "/admin" : next);
     } catch {
       sessionStorage.removeItem(RETURN_KEY);
       setMsg(`${label} sign-in could not be completed. Check your connection and try again.`);
@@ -144,44 +154,6 @@ function AuthPage() {
         <h1 className="mt-3 font-display text-5xl">
           {mode === "in" ? "Sign in" : "Create account"}
         </h1>
-        <form onSubmit={go} className="mt-10 space-y-6">
-          <label className="block">
-            Email
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              className={field}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
-          <label className="block">
-            Password
-            <input
-              type="password"
-              required
-              minLength={8}
-              autoComplete={mode === "in" ? "current-password" : "new-password"}
-              className={field}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
-          <Button type="submit" disabled={busy} size="lg" className="w-full">
-            {mode === "in" ? "Sign in" : "Create account"}
-          </Button>
-        </form>
-        {mode === "in" && (
-          <Button variant="link" className="mt-6 px-0" disabled={busy} onClick={recover}>
-            Forgot password?
-          </Button>
-        )}
-        <div className="mt-8 flex items-center gap-4 text-xs uppercase tracking-[0.2em] text-clay">
-          <span aria-hidden className="h-px flex-1 bg-foreground/15" />
-          or
-          <span aria-hidden className="h-px flex-1 bg-foreground/15" />
-        </div>
         <Button
           type="button"
           variant="outline"
@@ -191,10 +163,22 @@ function AuthPage() {
           onClick={() => oauth("google", "Google")}
         >
           <svg aria-hidden viewBox="0 0 24 24" className="mr-2 h-4 w-4">
-            <path fill="#EA4335" d="M12 5.04c1.62 0 3.06.56 4.2 1.66l3.12-3.12C17.4 1.76 14.94.75 12 .75 7.62.75 3.84 3.27 2.04 6.94l3.66 2.84C6.6 7.02 9.08 5.04 12 5.04z" />
-            <path fill="#4285F4" d="M23.25 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.32-5.17 3.32-8.82z" />
-            <path fill="#FBBC05" d="M5.7 14.22a7.2 7.2 0 0 1 0-4.44L2.04 6.94a11.26 11.26 0 0 0 0 10.12l3.66-2.84z" />
-            <path fill="#34A853" d="M12 23.25c3.04 0 5.6-1 7.46-2.72l-3.86-3c-1.07.72-2.44 1.15-3.6 1.15-2.92 0-5.4-1.98-6.3-4.71l-3.66 2.84c1.8 3.66 5.58 6.44 9.96 6.44z" />
+            <path
+              fill="#EA4335"
+              d="M12 5.04c1.62 0 3.06.56 4.2 1.66l3.12-3.12C17.4 1.76 14.94.75 12 .75 7.62.75 3.84 3.27 2.04 6.94l3.66 2.84C6.6 7.02 9.08 5.04 12 5.04z"
+            />
+            <path
+              fill="#4285F4"
+              d="M23.25 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.32-5.17 3.32-8.82z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.7 14.22a7.2 7.2 0 0 1 0-4.44L2.04 6.94a11.26 11.26 0 0 0 0 10.12l3.66-2.84z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23.25c3.04 0 5.6-1 7.46-2.72l-3.86-3c-1.07.72-2.44 1.15-3.6 1.15-2.92 0-5.4-1.98-6.3-4.71l-3.66 2.84c1.8 3.66 5.58 6.44 9.96 6.44z"
+            />
           </svg>
           Continue with Google
         </Button>
@@ -211,6 +195,44 @@ function AuthPage() {
           </svg>
           Continue with Apple
         </Button>
+        <div className="mt-7 flex items-center gap-4 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          {mode === "up" ? "or create an account with email" : "or sign in with email"}
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        <form onSubmit={go} className="mt-6 space-y-6">
+          <label className="block">
+            Email
+            <input
+              type="email"
+              required
+              autoComplete="email"
+              className={field}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </label>
+          <label className="block">
+            Password
+            <input
+              type="password"
+              required
+              minLength={mode === "up" ? 8 : undefined}
+              autoComplete={mode === "in" ? "current-password" : "new-password"}
+              className={field}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          <Button type="submit" disabled={busy} size="lg" className="w-full">
+            {mode === "in" ? "Sign in" : "Create account"}
+          </Button>
+        </form>
+        {mode === "in" && (
+          <Button variant="link" className="mt-6 px-0" disabled={busy} onClick={recover}>
+            Forgot password?
+          </Button>
+        )}
         {msg && (
           <p role="status" className="mt-6 text-sm text-muted-foreground">
             {msg}

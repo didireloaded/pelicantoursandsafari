@@ -3,12 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/site";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  beforeLoad: async ({ context, location }) => {
+  beforeLoad: async ({ context }) => {
     const result = await supabase
       .rpc("is_staff", { _user_id: context.user.id })
       .abortSignal(AbortSignal.timeout(10000));
     if (result.error) throw new Error("Staff access could not be checked. Please retry.");
-    if (!result.data) throw redirect({ to: "/auth", search: { next: location.href } });
+    if (!result.data) throw redirect({ to: "/dashboard" });
     const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (assurance.error) throw new Error("Security check unavailable.");
     return { adminAssurance: assurance.data.currentLevel };

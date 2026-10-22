@@ -1,3 +1,4 @@
+import { TeamSettings } from "@/components/admin/team-settings";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -136,6 +137,7 @@ function Account() {
             </form>
           )}
       </section>
+      <TeamSettings verified={verifiedSession} userId={user.id} />
       <div className="admin-panel mt-6 flex max-w-xl flex-wrap gap-4 p-6">
         <Button
           variant="outline"
