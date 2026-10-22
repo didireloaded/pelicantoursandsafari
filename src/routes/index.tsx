@@ -7,7 +7,7 @@ import { SafariPlanningSteps, ApprovedTravelTrust } from "@/components/safari-pl
 import { company, destinations, safaris, safariInterests } from "@/lib/pelican";
 
 export const Route = createFileRoute("/")({
-  head: () => meta("Discover Namibia", "Big Five safaris in Etosha, Windhoek city tours, Namibian highlights and cross-border trips to Botswana and Zimbabwe.", "savanna-plains-sunset"),
+  head: () => meta("Namibia Safaris & Guided Tours", "Explore Namibia with a Windhoek-based tour operator. Guided Etosha wildlife safaris, tailor-made journeys and selected Botswana and Zimbabwe tours.", "savanna-plains-sunset"),
   component: Home,
 });
 

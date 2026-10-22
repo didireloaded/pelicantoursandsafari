@@ -1,4 +1,4 @@
-import { company, destinations, getSafari, img, safaris, stays } from "./pelican.ts";
+import { company, destinations, getDestination, getSafari, getStay, img, safaris, stays, travelGuidance } from "./pelican.ts";
 
 /** Set VITE_SITE_ORIGIN to the verified public HTTPS origin at build time.
  * Without it, absolute canonical URLs, JSON-LD and the sitemap are omitted.
@@ -17,34 +17,87 @@ export function siteOrigin(value: unknown): string | undefined {
 }
 
 export const publicSeoPaths = [
-  "/", "/about", "/contact", "/gallery", "/tailor-made", "/travel-guide",
+  "/", "/about", "/contact", "/tailor-made", "/travel-guide",
   "/safaris", "/destinations", "/stay",
   ...safaris.map(({ slug }) => `/safaris/${slug}`),
   ...destinations.map(({ slug }) => `/destinations/${slug}`),
   ...stays.map(({ slug }) => `/stay/${slug}`),
 ];
 
+const pageNames: Record<string, string> = {
+  "/": "Namibia Safaris & Guided Tours", "/about": "About Pelican", "/contact": "Contact Pelican",
+  "/tailor-made": "Your Safari Brief", "/travel-guide": "Safari Travel Guide",
+  "/safaris": "Safaris & Tours", "/destinations": "Safari Destinations", "/stay": "Places to Stay",
+};
+
 export function pageSeo(pathname: string, configuredOrigin: unknown) {
   const path = pathname === "/" ? "/" : pathname.replace(/\/+$/, "");
+  // Empty destination gallery albums are not search landing pages until photos exist.
   const indexable = publicSeoPaths.includes(path);
   const origin = siteOrigin(configuredOrigin);
   const canonical = indexable && origin ? `${origin}${path}` : undefined;
-  const business = origin ? {
-    "@context": "https://schema.org", "@type": "LocalBusiness",
-    "@id": `${origin}/#business`, name: company.name, url: `${origin}/`,
-    description: company.intro, email: company.email,
+  const structuredData: Record<string, unknown>[] = [];
+  if (!canonical || !origin) return { indexable, canonical, structuredData };
+  const safari = path.startsWith("/safaris/") ? getSafari(path.slice("/safaris/".length)) : undefined;
+  const destination = path.startsWith("/destinations/") ? getDestination(path.slice("/destinations/".length)) : undefined;
+  const stay = path.startsWith("/stay/") ? getStay(path.slice("/stay/".length)) : undefined;
+  const name = safari?.name ?? destination?.name ?? stay?.name ?? pageNames[path] ?? company.name;
+  const businessId = `${origin}/#business`;
+  const websiteId = `${origin}/#website`;
+  const business = {
+    "@context": "https://schema.org", "@type": "TravelAgency", "@id": businessId,
+    name: company.name, legalName: company.legal, url: `${origin}/`,
+    logo: `${origin}/pelican-logo.png`, description: company.intro, email: company.email,
     telephone: `+${company.contacts[0]?.tel ?? ""}`,
     address: { "@type": "PostalAddress", streetAddress: `${company.address[0]}, ${company.address[1]}`,
       addressLocality: company.address[2], addressCountry: "NA" },
+    contactPoint: company.contacts.map((contact) => ({ "@type": "ContactPoint", name: contact.name,
+      telephone: `+${contact.tel}`, contactType: "enquiries", email: company.email })),
+    areaServed: [...new Set(destinations.map((place) => place.country))].map((country) => ({ "@type": "Country", name: country })),
     sameAs: [company.facebook],
-  } : undefined;
-  const safari = path.startsWith("/safaris/") ? getSafari(path.slice("/safaris/".length)) : undefined;
-  const trip = canonical && safari && business ? {
-    "@context": "https://schema.org", "@type": "TouristTrip", name: safari.name,
-    description: safari.overview, image: new URL(img(safari.image), origin).href, url: canonical,
-    provider: { "@id": business["@id"] },
-  } : undefined;
-  return { indexable, canonical, structuredData: indexable && business ? [business, ...(trip ? [trip] : [])] : [] };
+  };
+  const webPage: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": path === "/travel-guide" ? "FAQPage" : path === "/contact" ? "ContactPage" : path === "/about" ? "AboutPage" : "WebPage",
+    "@id": `${canonical}#webpage`, url: canonical, name, inLanguage: "en",
+    isPartOf: { "@id": websiteId }, publisher: { "@id": businessId },
+  };
+  if (path === "/travel-guide") webPage["mainEntity"] = travelGuidance.faq.map((faq) => ({
+    "@type": "Question", name: faq.title,
+    acceptedAnswer: { "@type": "Answer", text: faq.body, citation: faq.source },
+  }));
+  structuredData.push(business, {
+    "@context": "https://schema.org", "@type": "WebSite", "@id": websiteId,
+    url: `${origin}/`, name: company.name, publisher: { "@id": businessId }, inLanguage: "en",
+  }, webPage);
+  if (path !== "/") {
+    const section = safari ? "/safaris" : destination ? "/destinations" : stay ? "/stay" : undefined;
+    const crumbs = [{ name: "Home", item: `${origin}/` },
+      ...(section ? [{ name: pageNames[section], item: `${origin}${section}` }] : []),
+      { name, item: canonical }];
+    structuredData.push({ "@context": "https://schema.org", "@type": "BreadcrumbList",
+      "@id": `${canonical}#breadcrumbs`, itemListElement: crumbs.map((crumb, index) => ({
+        "@type": "ListItem", position: index + 1, ...crumb,
+      })) });
+    webPage["breadcrumb"] = { "@id": `${canonical}#breadcrumbs` };
+  }
+  if (safari) {
+    webPage["mainEntity"] = { "@id": `${canonical}#trip` };
+    structuredData.push({
+      "@context": "https://schema.org", "@type": "TouristTrip", "@id": `${canonical}#trip`,
+      name: safari.name, description: safari.overview, image: new URL(img(safari.image), origin).href,
+      url: canonical, provider: { "@id": businessId },
+    });
+  }
+  if (destination) {
+    webPage["mainEntity"] = { "@id": `${canonical}#destination` };
+    structuredData.push({ "@context": "https://schema.org", "@type": "TouristDestination",
+      "@id": `${canonical}#destination`, name: destination.name, url: canonical,
+      ...(destination.name !== destination.country ? { containedInPlace: { "@type": "Country", name: destination.country } } : {}),
+      ...(destination.note ? { description: destination.note } : {}),
+    });
+  }
+  return { indexable, canonical, structuredData };
 }
 
 /** Escape script-breaking text even if future catalogue content includes HTML. */

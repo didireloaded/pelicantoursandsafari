@@ -4,11 +4,10 @@ Disallow: /auth
 Disallow: /reset-password
 Disallow: /.lovable/
 Disallow: /dashboard
+Disallow: /trips-manage
+Disallow: /lovable/
 Disallow: /trips
 Disallow: /proposals
 Disallow: /content-manage
-Disallow: /shortlist
-Disallow: /journey
-Disallow: /match
 
 Sitemap: https://pelicantoursandsafari.com/sitemap.xml

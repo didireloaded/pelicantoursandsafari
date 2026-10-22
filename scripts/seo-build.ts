@@ -9,7 +9,7 @@ const env = loadEnv(mode, process.cwd(), "VITE_");
 // The published domain is explicit; never infer it from a preview/request host.
 const origin = siteOrigin(process.env["VITE_SITE_ORIGIN"] ?? env["VITE_SITE_ORIGIN"]) ?? "https://pelicantoursandsafari.com";
 const sitemap = sitemapXml(origin);
-const robots = `User-agent: *\nAllow: /\nDisallow: /auth\nDisallow: /reset-password\nDisallow: /.lovable/\nDisallow: /dashboard\nDisallow: /trips\nDisallow: /proposals\nDisallow: /content-manage\nDisallow: /shortlist\nDisallow: /journey\nDisallow: /match\n${origin ? `\nSitemap: ${origin}/sitemap.xml\n` : ""}`;
+const robots = `User-agent: *\nAllow: /\nDisallow: /auth\nDisallow: /reset-password\nDisallow: /.lovable/\nDisallow: /dashboard\nDisallow: /trips-manage\nDisallow: /lovable/\nDisallow: /trips\nDisallow: /proposals\nDisallow: /content-manage\n${origin ? `\nSitemap: ${origin}/sitemap.xml\n` : ""}`;
 await writeFile(new URL("../public/robots.txt", import.meta.url), robots);
 if (sitemap) await writeFile(new URL("../public/sitemap.xml", import.meta.url), sitemap);
 else {

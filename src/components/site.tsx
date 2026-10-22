@@ -179,6 +179,9 @@ export function meta(title: string, description: string, image?: string) {
     { property: "og:title", content: `${title} — Pelican Tours and Safaris` },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
+    { property: "og:site_name", content: company.name },
+    { name: "twitter:title", content: `${title} — Pelican Tours and Safaris` },
+    { name: "twitter:description", content: description },
     { name: "twitter:card", content: "summary_large_image" },
   ];
   const origin = siteOrigin(import.meta.env["VITE_SITE_ORIGIN"]);

@@ -177,6 +177,21 @@ export const travelGuidance = {
   ],
   faq: [
     {
+      title: "Where is Pelican Tours and Safaris based?",
+      body: `${company.legal} is based at ${company.address.join(", ")}. Office hours are ${company.hours}.`,
+      source: "https://pelicantoursandsafari.com/contact",
+    },
+    {
+      title: "Which countries does Pelican offer tours in?",
+      body: company.intro,
+      source: "https://pelicantoursandsafari.com/about",
+    },
+    {
+      title: "How do I request a tailor-made safari?",
+      body: "Use the Safari Brief to share your destinations, dates, interests, budget and contact details. Pelican will discuss your preferences and prepare a proposal. Sending an enquiry does not confirm a booking; availability, price and written terms must be agreed with Pelican.",
+      source: "https://pelicantoursandsafari.com/tailor-made",
+    },
+    {
       title: "Do I need a visa or border documents?",
       body: "Rules depend on passport, destination, route and travel dates. Check every country on your itinerary with its immigration authority, including requirements for children. UK travel advice is written for British passport holders; other nationalities should consult their own embassy.",
       source: "https://www.gov.uk/foreign-travel-advice/namibia/entry-requirements",

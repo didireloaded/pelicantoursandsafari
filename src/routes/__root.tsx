@@ -113,7 +113,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         {seo.canonical && <link rel="canonical" href={seo.canonical} />}
         {seo.canonical && <meta property="og:url" content={seo.canonical} />}
-        {!seo.indexable && <meta name="robots" content="noindex, nofollow" />}
+        <meta name="robots" content={seo.indexable ? "index, follow, max-image-preview:large" : "noindex, follow"} />
         {seo.structuredData.map((data, index) => (
           <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(data) }} />
         ))}

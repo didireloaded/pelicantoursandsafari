@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { Section } from "@/components/site";
+import { Section, meta } from "@/components/site";
 import { getStay, getDestination, safarisFor, whatsapp } from "@/lib/pelican";
 import { readJourney, saveJourney } from "@/lib/journey";
 import { Button } from "@/components/ui/button";
@@ -12,9 +12,7 @@ export const Route = createFileRoute("/stay/$slug")({
     return stay;
   },
   component: StayPage,
-  head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.name ?? "Stay not found"} — Pelican` }],
-  }),
+  head: ({ loaderData }) => loaderData ? meta(loaderData.name, loaderData.description) : { meta: [{ title: "Stay not found — Pelican" }, { name: "robots", content: "noindex" }] },
   notFoundComponent: () => (
     <Section>
       <h1 className="text-4xl">Stay not found</h1>
