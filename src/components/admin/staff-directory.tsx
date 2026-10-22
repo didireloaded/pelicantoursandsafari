@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { z } from "zod";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,7 +29,9 @@ export function StaffDirectory({ userId, verified }: { userId: string; verified:
     enabled: verified,
     queryFn: async (): Promise<Member[]> => {
       const result = await supabase.rpc("team_members").abortSignal(AbortSignal.timeout(10000));
-      return result.error ? [] : (result.data ?? []);
+      if (result.error) return [];
+      const parsed = z.array(z.object({ user_id: z.string().uuid(), email: z.string().email(), role: z.enum(["admin", "staff"]) })).safeParse(result.data);
+      return parsed.success ? parsed.data : [];
     },
     refetchInterval: 60000,
     retry: 0,

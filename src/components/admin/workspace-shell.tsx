@@ -40,6 +40,7 @@ export function WorkspaceShell({
   ready: boolean;
 }) {
   const location = useLocation();
+  const sampleAvailable = ["/admin", "/dashboard", "/admin/clients", "/admin/bookings", "/admin/analytics", "/admin/team"].includes(location.pathname);
   const [open, setOpen] = useState(false);
   const [teamOpen, setTeamOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -83,7 +84,8 @@ export function WorkspaceShell({
   useEffect(() => {
     setOpen(false);
     setSearch("");
-  }, [location.pathname]);
+    if (!sampleAvailable) setSampleMode(false);
+  }, [location.pathname, sampleAvailable]);
   const profiles = useStaffProfiles(ready);
   const team = useQuery({
     queryKey: ["staff-presence"],
@@ -110,6 +112,7 @@ export function WorkspaceShell({
     ...person,
     ...profiles.data?.find((profile) => profile.user_id === person.user_id),
   }));
+  const sampleEnabled = sampleMode && sampleAvailable;
   const nav = (
     <>
       {adminLinks.map((item, i) => {
@@ -142,7 +145,7 @@ export function WorkspaceShell({
       )
     : [];
   return (
-    <AdminSampleModeProvider enabled={sampleMode}>
+    <AdminSampleModeProvider enabled={sampleEnabled}>
     <div className="pelican-admin">
       <aside
         ref={sidebar}
@@ -165,13 +168,14 @@ export function WorkspaceShell({
           <button
             type="button"
             role="switch"
-            aria-checked={sampleMode}
+            aria-checked={sampleEnabled}
+            disabled={!sampleAvailable}
             onClick={() => setSampleMode((value) => !value)}
             className="flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm hover:bg-secondary focus-visible:outline-2 focus-visible:outline-primary"
           >
-            <span><strong className="block font-medium">Sample data</strong><small className="block text-xs text-muted-foreground">Read-only presentation</small></span>
-            <span aria-hidden="true" className={`inline-flex h-6 w-11 items-center rounded-full p-1 transition-colors ${sampleMode ? "bg-primary" : "bg-muted"}`}>
-              <span className={`h-4 w-4 rounded-full bg-white transition-transform ${sampleMode ? "translate-x-5" : ""}`} />
+            <span><strong className="block font-medium">Sample data</strong><small className="block text-xs text-muted-foreground">{sampleAvailable ? "Read-only presentation" : "Available in the dashboard"}</small></span>
+            <span aria-hidden="true" className={`inline-flex h-6 w-11 items-center rounded-full p-1 transition-colors ${sampleEnabled ? "bg-primary" : "bg-muted"}`}>
+              <span className={`h-4 w-4 rounded-full bg-white transition-transform ${sampleEnabled ? "translate-x-5" : ""}`} />
             </span>
           </button>
         </div>
@@ -284,7 +288,7 @@ export function WorkspaceShell({
             )}
           </div>
         </header>
-        {sampleMode && (
+        {sampleEnabled && (
           <div className="mx-5 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/25 bg-secondary px-4 py-3 text-sm" role="status">
             <span><strong>Sample data is on.</strong> Fictional clients, trips and staff. Changes are disabled. No real records or payments are affected.</span>
             <button type="button" className="font-semibold text-primary underline underline-offset-4" onClick={() => setSampleMode(false)}>Return to live data</button>
