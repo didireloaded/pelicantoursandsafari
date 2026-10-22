@@ -68,7 +68,7 @@ export function PhotoUpload({
               const next = `${userId}/${crypto.randomUUID()}.webp`;
               const result = await supabase.storage
                 .from("site-media")
-                .upload(next, blob, { contentType: "image/webp", upsert: false });
+                .upload(next, blob, { contentType: "image/webp", cacheControl: "60", upsert: false });
               if (result.error)
                 throw new Error("Upload not confirmed. Check your sign-in and retry.");
               onChange(next);
