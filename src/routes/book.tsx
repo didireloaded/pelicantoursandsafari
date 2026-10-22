@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Section, meta } from "@/components/site";
 import { bookableTrips, bookingInput, tripForCode } from "@/lib/booking";
 import { requestBooking } from "@/lib/booking.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/book")({
   validateSearch: z.object({ trip: z.string().optional() }),
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/book")({
 });
 
 function BookPage() {
+  const sendBooking = useServerFn(requestBooking);
   const { trip } = Route.useSearch();
   const [code, setCode] = useState(trip && tripForCode(trip) ? trip : bookableTrips[0]!.code);
   const [name, setName] = useState("");
@@ -40,7 +42,7 @@ function BookPage() {
     if (!parsed.success) { setError("Please enter your name, an email or phone number, your preferred dates and the number of travellers."); return; }
     setBusy(true);
     try {
-      const r = await requestBooking({ data: parsed.data });
+      const r = await sendBooking({ data: parsed.data });
       if (r.bookingRef) setRef(r.bookingRef); else setError(r.error ?? "Request not confirmed. Please retry.");
     } catch {
       setError("We could not confirm your request. Your details are still here; retry without creating a duplicate, or WhatsApp Pelican.");

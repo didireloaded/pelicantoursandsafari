@@ -7,6 +7,7 @@ import { sendResendEmail } from './email-templates/resend'
 import { EnquiryConfirmationEmail } from './email-templates/enquiry-confirmation'
 import { EnquiryNotificationEmail } from './email-templates/enquiry-notification'
 import { company, safaris } from './pelican'
+import { bookingRefPattern } from './booking'
 
 const NOTIFICATION_TO = company.email
 
@@ -49,6 +50,7 @@ export async function sendEnquiryEmails(
         reference: displayRef,
         contactPreference: input.contact_preference,
         safariName,
+        bookingRequest: bookingRefPattern.test(displayRef),
       })
       const confirmation = await sendResendEmail({
         to: input.email,

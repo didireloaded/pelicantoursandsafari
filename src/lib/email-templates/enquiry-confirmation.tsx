@@ -7,6 +7,7 @@ export interface EnquiryConfirmationProps {
   reference: string
   contactPreference: string
   safariName: string | null
+  bookingRequest?: boolean
 }
 
 /** Sent to the traveller right after their Safari Brief is received. */
@@ -15,6 +16,7 @@ export const EnquiryConfirmationEmail = ({
   reference,
   contactPreference,
   safariName,
+  bookingRequest = false,
 }: EnquiryConfirmationProps) => (
   <Html>
     <EmailBrand />
@@ -28,6 +30,13 @@ export const EnquiryConfirmationEmail = ({
       talk through your plans and prepare a proposal. Your route and accommodation remain
       preferences until Pelican confirms them with you.
     </Text>
+    {bookingRequest && <Text style={emailStyles.text}>
+      This is a booking request, not a confirmed booking. Pelican will confirm availability,
+      price and terms in writing.{' '}
+      <Link style={emailStyles.link} href="https://pelicantoursandsafari.com/booking">
+        Check my booking
+      </Link>{' '}using your reference and the email or phone number you submitted.
+    </Text>}
     <Text style={emailStyles.text}>
       Prefer to reach us sooner?{' '}
       <Link style={emailStyles.link} href="https://api.whatsapp.com/send?phone=264817618297">
