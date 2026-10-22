@@ -64,6 +64,8 @@ export type Database = {
           assigned_to: string | null
           booking_ref: string | null
           brief: string
+          confirmed_ends_on: string | null
+          confirmed_starts_on: string | null
           contact_preference: string | null
           created_at: string
           email: string | null
@@ -85,6 +87,8 @@ export type Database = {
           assigned_to?: string | null
           booking_ref?: string | null
           brief: string
+          confirmed_ends_on?: string | null
+          confirmed_starts_on?: string | null
           contact_preference?: string | null
           created_at?: string
           email?: string | null
@@ -106,6 +110,8 @@ export type Database = {
           assigned_to?: string | null
           booking_ref?: string | null
           brief?: string
+          confirmed_ends_on?: string | null
+          confirmed_starts_on?: string | null
           contact_preference?: string | null
           created_at?: string
           email?: string | null
@@ -578,6 +584,15 @@ export type Database = {
       assign_enquiry_ref: { Args: { _enquiry: string }; Returns: string }
       can_manage_site: { Args: never; Returns: boolean }
       can_manage_team: { Args: never; Returns: boolean }
+      confirm_booking: {
+        Args: {
+          _ends_on: string
+          _id: string
+          _starts_on: string
+          _updated_at: string
+        }
+        Returns: Json
+      }
       consume_admin_help: { Args: never; Returns: undefined }
       consume_ai_draft_request: { Args: never; Returns: boolean }
       consume_routing_request: {
