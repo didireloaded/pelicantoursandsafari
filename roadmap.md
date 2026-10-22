@@ -2,7 +2,7 @@
 
 - [ ] Codex migration coordination: blocked on platform Git sync. Commit 468dd49 is not in local history; sender still uses the old domain and VITE_SITE_ORIGIN is absent from .env. Preserve saved Search Console work; do not publish until merged main is loaded. Git sync must be completed through Lovable Git settings, not manual pulls.
 
-- [ ] Google Search Console setup: account connected, verification tag and sitemap published, ownership verified. Adding the property did not execute when its pending approval was interrupted; leave Google approval to the user. Property addition and sitemap submission remain pending.
+- [x] Google Search Console setup complete (22 Oct 2026): property https://pelicantoursandsafari.com/ added and verified (siteOwner), sitemap submitted and registered (pending processing, 0 errors/warnings).
 
 - [x] Update existing managed account email settings and previews for notify.pelicantoursandsafari.com without overwriting branded templates or changing Resend enquiry sending.
 - [ ] Activate new managed sender and verify real email delivery. Blocked on DNS verification; current email settings also need publishing.
