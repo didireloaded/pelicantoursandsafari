@@ -405,6 +405,30 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_profiles: {
+        Row: {
+          avatar_path: string | null
+          display_name: string
+          revision: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_path?: string | null
+          display_name: string
+          revision?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_path?: string | null
+          display_name?: string
+          revision?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       team_access_requests: {
         Row: {
           created_at: string
@@ -624,6 +648,10 @@ export type Database = {
           _kind: string
           _revision: number
         }
+        Returns: Json
+      }
+      save_staff_profile: {
+        Args: { _avatar_path: string; _display_name: string; _revision: number }
         Returns: Json
       }
       set_team_member: {
