@@ -36,6 +36,11 @@ export const adminLinks = [
     description: "Verified guidance and catalogue details.",
   },
   {
+    to: "/admin/team",
+    label: "Team",
+    description: "Five-seat team access, managed by an administrator.",
+  },
+  {
     to: "/admin/account",
     label: "Settings",
     description: "Your sign-in, authenticator and account.",
