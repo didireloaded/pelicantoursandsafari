@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { StaffProfile } from "@/components/admin/staff-profile";
 import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/_authenticated/admin/account")({ component: Account });
 function Account() {
@@ -53,7 +52,11 @@ function Account() {
           {user.email_confirmed_at ? "Email verified" : "Email verification pending"}
         </p>
       </section>
-      <StaffProfile userId={user.id} email={user.email ?? "Staff"} verified={verifiedSession} />
+      <p className="mt-5 text-sm">
+        <Link to="/admin/profile" className="text-primary underline">
+          Edit your name and profile photo →
+        </Link>
+      </p>
       <p role="status" className="mt-5">
         {message}
       </p>

@@ -1,3 +1,4 @@
+import { useStaffProfiles } from "@/lib/staff-profiles";
 import { StaffAvatar } from "./staff-avatar";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -11,6 +12,7 @@ import {
   Mail,
   BookOpen,
   Settings,
+  UserRound,
   Menu,
   X,
   ExternalLink,
@@ -29,6 +31,9 @@ const icons = [
   Image,
   Mail,
   BookOpen,
+  Users,
+  Users,
+  UserRound,
   Settings,
 ];
 export function WorkspaceShell({
@@ -86,6 +91,7 @@ export function WorkspaceShell({
     setOpen(false);
     setSearch("");
   }, [location.pathname]);
+  const profiles = useStaffProfiles(ready);
   const team = useQuery({
     queryKey: ["staff-presence"],
     enabled: ready,
@@ -101,20 +107,16 @@ export function WorkspaceShell({
         .order("display_name")
         .abortSignal(AbortSignal.timeout(10000));
       if (rows.error) throw rows.error;
-      const profiles = await supabase
-        .from("staff_profiles")
-        .select("user_id,display_name,avatar_path")
-        .abortSignal(AbortSignal.timeout(10000));
-      if (profiles.error) throw profiles.error;
-      return (rows.data ?? []).map((person) => ({
-        ...person,
-        ...profiles.data?.find((profile) => profile.user_id === person.user_id),
-      }));
+      return rows.data ?? [];
     },
     refetchInterval: 60000,
     refetchIntervalInBackground: false,
     retry: 0,
   });
+  const people = (team.data ?? []).map((person) => ({
+    ...person,
+    ...profiles.data?.find((profile) => profile.user_id === person.user_id),
+  }));
   const nav = (
     <>
       {adminLinks.map((item, i) => {
@@ -135,7 +137,7 @@ export function WorkspaceShell({
     </>
   );
   const current = adminLinks.find((item) => item.to === location.pathname)?.label ?? "Workspace";
-  const ownProfile = team.data?.find((person) => person.user_id === userId);
+  const ownProfile = profiles.data?.find((person) => person.user_id === userId);
   const name = ownProfile?.display_name || email.split("@")[0] || "Pelican staff";
   const filtered = search.trim()
     ? adminLinks.filter((item) =>
@@ -167,7 +169,7 @@ export function WorkspaceShell({
             <ExternalLink size={17} />
             View website
           </a>
-          <Link to="/admin/account" className="admin-profile">
+          <Link to="/admin/profile" className="admin-profile">
             <span className="admin-avatar">
               <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
             </span>
@@ -204,8 +206,8 @@ export function WorkspaceShell({
               aria-expanded={teamOpen}
               onClick={() => setTeamOpen(!teamOpen)}
             >
-              {team.data?.length ? (
-                team.data.slice(0, 5).map((person) => (
+              {people.length ? (
+                people.slice(0, 5).map((person) => (
                   <span
                     key={person.user_id}
                     className="admin-avatar admin-team-avatar"
@@ -231,8 +233,8 @@ export function WorkspaceShell({
                 </p>
                 {team.isError ? (
                   <p className="text-xs">Team activity unavailable.</p>
-                ) : team.data?.length ? (
-                  team.data.map((person) => (
+                ) : people.length ? (
+                  people.map((person) => (
                     <p className="py-1 text-xs" key={person.user_id}>
                       {person.display_name}
                     </p>

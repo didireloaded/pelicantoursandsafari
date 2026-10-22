@@ -41,6 +41,16 @@ export const adminLinks = [
     description: "Five-seat team access, managed by an administrator.",
   },
   {
+    to: "/admin/staff",
+    label: "Staff directory",
+    description: "Private staff names and profile photos.",
+  },
+  {
+    to: "/admin/profile",
+    label: "Your profile",
+    description: "Edit your display name and private staff photo.",
+  },
+  {
     to: "/admin/account",
     label: "Settings",
     description: "Your sign-in, authenticator and account.",

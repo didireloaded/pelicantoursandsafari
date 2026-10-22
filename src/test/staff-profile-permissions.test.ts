@@ -10,15 +10,12 @@ const ownPhoto = `${staff}/44444444-4444-4444-8444-444444444444.webp`,
   otherPhoto = `${other}/55555555-5555-4555-8555-555555555555.webp`;
 beforeAll(async () => {
   await db.exec(
-    `create role anon;create role authenticated;create role service_role;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;create function auth.jwt() returns jsonb language sql stable as $$select jsonb_build_object('aal',current_setting('request.jwt.claim.aal',true))$$;grant usage on schema auth to authenticated;create schema storage;create table storage.objects(bucket_id text,name text);insert into auth.users values('${staff}'),('${other}'),('${guest}');insert into storage.objects values('site-media','${ownPhoto}'),('site-media','${otherPhoto}');`,
+    `create role anon;create role authenticated;create role service_role;create schema auth;create table auth.users(id uuid primary key,email text);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;create function auth.jwt() returns jsonb language sql stable as $$select jsonb_build_object('aal',current_setting('request.jwt.claim.aal',true))$$;grant usage on schema auth to authenticated;create schema storage;create table storage.objects(bucket_id text,name text);insert into auth.users(id) values('${staff}'),('${other}'),('${guest}');alter table storage.objects enable row level security;grant usage on schema storage to anon,authenticated;grant select,insert on storage.objects to anon,authenticated;insert into storage.objects values('site-media','${otherPhoto}');`,
   );
   await db.exec(readFileSync("supabase/migrations/202610080001_enquiry_core.sql", "utf8"));
-  await db.exec(
-    readFileSync("drizzle/migrations/0003_client_admin_content.sql", "utf8").split(
-      "-- Client-managed content.",
-    )[0]!,
-  );
+  await db.exec(readFileSync("drizzle/migrations/0003_client_admin_content.sql", "utf8"));
   await db.exec(readFileSync("drizzle/migrations/0009_staff_profiles.sql", "utf8"));
+  await db.exec(readFileSync("drizzle/migrations/0011_staff_directory_verified.sql", "utf8"));
   await db.exec(
     `insert into user_roles(user_id,role) values('${staff}','staff'),('${other}','staff');`,
   );
@@ -46,6 +43,13 @@ it("restricts private profile reads and writes to verified staff and always save
     await expect(db.query("select save_staff_profile(0,'Staff',$1)", [path])).rejects.toThrow(
       /own profile photo/,
     );
+  await expect(
+    db.query("insert into storage.objects values('site-media',$1)", [otherPhoto]),
+  ).rejects.toThrow();
+  await db.query("insert into storage.objects values('site-media',$1)", [ownPhoto]);
+  expect(
+    (await db.query("select name from storage.objects where name=$1", [ownPhoto])).rows,
+  ).toHaveLength(1);
   const saved = (
     await db.query<{ profile: { user_id: string; revision: number } }>(
       "select save_staff_profile(0,'Staff member',$1) as profile",
@@ -81,5 +85,21 @@ it("restricts private profile reads and writes to verified staff and always save
   ).toBeNull();
   await db.exec("reset role;set role anon");
   await expect(db.query("select * from staff_profiles")).rejects.toThrow();
+  expect(
+    (await db.query("select name from storage.objects where name=$1", [ownPhoto])).rows,
+  ).toHaveLength(0);
   await expect(db.query("select save_staff_profile(0,'Guest',null)")).rejects.toThrow();
+});
+
+it("requires MFA for the directory and excludes removed staff", async () => {
+  await login(guest);
+  await expect(db.query("select * from staff_directory()")).rejects.toThrow(/verification/);
+  await login(staff, "aal1");
+  await expect(db.query("select * from staff_directory()")).rejects.toThrow(/verification/);
+  await login(staff);
+  expect((await db.query("select * from staff_directory()")).rows).toHaveLength(2);
+  await db.exec("reset role");
+  await db.query("delete from user_roles where user_id=$1", [other]);
+  await login(staff);
+  expect((await db.query("select * from staff_directory()")).rows).toHaveLength(1);
 });

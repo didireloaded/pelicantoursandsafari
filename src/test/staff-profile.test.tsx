@@ -46,9 +46,16 @@ it("retains a failed profile draft and sends the saved revision on retry", async
     data: { display_name: "Staff", avatar_path: null, revision: 2 },
     error: null,
   });
-  mocks.rpc
-    .mockResolvedValueOnce({ error: { message: "conflict" } })
-    .mockResolvedValueOnce({ error: null });
+  mocks.rpc.mockResolvedValueOnce({ error: { message: "conflict" } }).mockResolvedValueOnce({
+    data: {
+      user_id: "11111111-1111-4111-8111-111111111111",
+      display_name: "New display name",
+      avatar_path: null,
+      revision: 3,
+      updated_at: "2026-10-22",
+    },
+    error: null,
+  });
   show();
   const input = await screen.findByLabelText("Display name");
   fireEvent.change(input, { target: { value: "New display name" } });

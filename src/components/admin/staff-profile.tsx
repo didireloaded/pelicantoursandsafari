@@ -78,15 +78,32 @@ export function StaffProfile({
             setMessage("");
             try {
               // Generated RPC types omit SQL nullability; null removes an optional photo.
-              const { error } = await supabase
+              const { data, error } = await supabase
                 .rpc("save_staff_profile", {
                   _revision: profile.data?.revision ?? 0,
                   _display_name: name.trim(),
                   _avatar_path: path,
                 } as Database["public"]["Functions"]["save_staff_profile"]["Args"])
                 .abortSignal(AbortSignal.timeout(15000));
-              if (error) throw error;
+              if (
+                error ||
+                !data ||
+                typeof data !== "object" ||
+                Array.isArray(data) ||
+                data["user_id"] !== userId
+              )
+                throw new Error("Profile save not confirmed");
+              const saved = data as Database["public"]["Tables"]["staff_profiles"]["Row"];
+              cache.setQueryData(["staff-profile", userId], saved);
+              cache.setQueryData<Database["public"]["Tables"]["staff_profiles"]["Row"][]>(
+                ["staff-profiles"],
+                (previous) => [
+                  ...(previous ?? []).filter((profile) => profile.user_id !== userId),
+                  saved,
+                ],
+              );
               await cache.invalidateQueries({ queryKey: ["staff-profile", userId] });
+              await cache.invalidateQueries({ queryKey: ["staff-profiles"] });
               await cache.invalidateQueries({ queryKey: ["staff-presence"] });
               setDirty(false);
               setMessage("Profile saved.");
