@@ -1,3 +1,4 @@
+import type { PublishedContent } from "@/lib/site-content";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -106,7 +107,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const seo = pageSeo(pathname, import.meta.env["VITE_SITE_ORIGIN"]);
+  const publishedPackage = useRouterState({ select: state => state.matches.find(match => match.routeId === "/packages/$id")?.loaderData as { publicPackage?: PublishedContent } | undefined });
+  const seo = pageSeo(pathname, import.meta.env["VITE_SITE_ORIGIN"], publishedPackage?.publicPackage);
   return (
     <html lang="en">
       <head>

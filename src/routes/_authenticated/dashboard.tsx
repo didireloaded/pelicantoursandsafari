@@ -1,3 +1,4 @@
+import { AdminNavigation } from "@/components/admin/navigation";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -196,6 +197,7 @@ function Dashboard() {
   );
   return (
     <Section className="pt-32">
+      <AdminNavigation />
       <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-8">
         <div>
           <p className="text-sm uppercase tracking-[0.2em] text-clay">Pelican team</p>

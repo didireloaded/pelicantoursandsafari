@@ -1,3 +1,5 @@
+import { usePublishedContent } from "@/lib/site-content-api";
+import type { PackageContent } from "@/lib/site-content";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, MessageCircle, Mail, ChevronUp, ChevronDown, X, Send } from "lucide-react";
@@ -19,6 +21,8 @@ export const Route = createFileRoute("/tailor-made")({
 
 function TailorMade() {
   const search = Route.useSearch();
+  const packageQuery = usePublishedContent("package", !!search.package);
+  const selectedPackage = packageQuery.data?.find(row => row.id === search.package)?.data as PackageContent | undefined;
   const shortlisted = parseShortlist(search.shortlist);
   const preferences = search.preferences ? JSON.parse(search.preferences) : {};
   const safari = search.safari ? getSafari(search.safari) : undefined;
@@ -79,6 +83,7 @@ function TailorMade() {
   const toggle = (values: string[], value: string) => values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
   const move = (index: number, change: number) => setPlaces((prev) => { const next = [...prev]; const target = index + change; const value = next[index]; const other = next[target]; if (value && other) { next[index] = other; next[target] = value; } return next; });
   const summary = [
+    search.package ? `Package requested: ${selectedPackage?.title ?? "See reference"} (reference ${search.package})` : "",
     shortlisted.length ? `Shortlisted options: ${shortlisted.map(x => x.kind === "safari" ? getSafari(x.slug)?.name : stays.find(stay => stay.slug === x.slug)?.name).join(", ")}` : "",
     preferences.interests?.length ? `Quiz interests: ${preferences.interests.join(", ")}` : "",
     safari ? `Safari inspiration: ${safari.name}` : "Tailor-made safari",

@@ -7,6 +7,7 @@ vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to, search, ...props }: { children: ReactNode; to: string; search?: Record<string, string> }) => <a href={`${to}${search?.["destination"] ? `?destination=${search["destination"]}` : ""}`} {...props}>{children}</a>,
 }));
 vi.mock("@/components/site", () => ({ Section: ({ children }: { children: ReactNode }) => <section>{children}</section>, meta: () => ({}) }));
+vi.mock("@/lib/site-content-api", () => ({ usePublishedContent: () => ({ data: [], isPending: false, isError: false }) }));
 import { Route } from "@/routes/gallery";
 import { destinations } from "@/lib/pelican";
 const options = Route.options as unknown as { component: ComponentType; validateSearch: (s: Record<string, unknown>) => { destination?: string } };

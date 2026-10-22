@@ -8,7 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
-- Site content lives in src/lib/pelican.ts as the single factual source; pages read from it so facts stay consistent and un-invented.
+- Fixed catalogue categories and business facts live in src/lib/pelican.ts. Client-authored packages/photos use site_content draft/published snapshots via src/lib/site-content.ts and site-content-api.ts. Public consumers read only published_site_content; never expose the draft/history tables or replace the fixed catalogue validation with arbitrary client input. New package references travel in Safari Brief text. See docs/CLIENT-ADMIN.md.
 - Preserve the existing catalogue-based build-time sitemap generator; use an explicit published-origin fallback when build configuration is absent so previews never become sitemap hosts.
 - App enquiry emails (traveller confirmation + Pelican notification) send through Resend via src/lib/email-templates/resend.ts, reading the RESENDER_API_KEY secret (name is intentionally spelled RESENDER as the user saved it); auth/account emails stay on the managed Lovable send helper. The enquiry sender is enquiries@pelicantoursandsafari.com; notifications go to company.email (info@pelicantoursandsafaris.com, the plural mailbox domain is intentional). The new sending domain was fully verified in Resend on 21 October 2026. Never switch to an unverified sender.
 - Contact and Safari Brief share the same protected enquiry service and client notification inbox. Email retries use distinct stable provider idempotency keys per receipt and audience; keep rendered payloads deterministic.
@@ -25,3 +25,5 @@
 - Fix behavior and backend logic while preserving appearance. If a necessary fix or feature cannot be completed without altering existing UI, explain the specific change and get explicit user authorization first.
 - This preference overrides earlier suggestions in this conversation to adjust the hero, navigation, or page compositions unless the user explicitly authorizes that particular UI change.
 - Reusable skill: /Users/visionhaus/.codex/skills/pelican-preserve-ui/SKILL.md.
+
+- Client admin content writes use save_site_content with revision checks and staff+aal2 authorization. Preserve draft/published separation, version history, private site-media storage and published-only reads. The applied Cloud migration is drizzle/migrations/0003_client_admin_content.sql; do not duplicate it under supabase/migrations. Never auto-promote signups or choose a staff email on the client’s behalf.

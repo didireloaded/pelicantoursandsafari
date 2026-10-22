@@ -12,6 +12,7 @@ export function findSafaris(country: string, destination: string, interest: stri
 }
 
 export type PlanningSearch = {
+  package?: string;
   safari?: string;
   destinations?: string;
   journey?: string;
@@ -21,6 +22,7 @@ export type PlanningSearch = {
 
 export function planningSearch(search: Record<string, unknown>): PlanningSearch {
   const out: PlanningSearch = {};
+  if (typeof search["package"] === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(search["package"])) out.package = search["package"];
   const shortlist = parseShortlist(search["shortlist"]);
   if (shortlist.length) out.shortlist = JSON.stringify(shortlist);
   if (typeof search["preferences"] === "string" && search["preferences"].length < 1500) {

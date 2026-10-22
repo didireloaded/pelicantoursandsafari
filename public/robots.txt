@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin
 Disallow: /auth
 Disallow: /reset-password
 Disallow: /.lovable/
@@ -11,3 +12,4 @@ Disallow: /proposals
 Disallow: /content-manage
 
 Sitemap: https://pelicantoursandsafari.com/sitemap.xml
+Sitemap: https://pelicantoursandsafari.com/package-sitemap.xml

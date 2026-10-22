@@ -6,7 +6,9 @@ export function SafariPackageEditor({
   slug,
   value,
   onChange,
+  catalogueSelection = true,
 }: {
+  catalogueSelection?: boolean;
   slug: string;
   value: SafariPackage | null;
   onChange: (slug: string, details: SafariPackage | null) => void;
@@ -16,32 +18,36 @@ export function SafariPackageEditor({
   return (
     <fieldset className="space-y-6 border border-border p-5">
       <legend className="px-2 text-xl">Verified safari package (optional)</legend>
-      <label className="block">
-        Catalogue safari
-        <select
-          className={field}
-          value={slug}
-          onChange={(event) =>
-            onChange(
-              event.target.value,
-              event.target.value ? (value ?? emptySafariPackage()) : null,
-            )
-          }
-        >
-          <option value="">General information only</option>
-          {safaris.map((safari) => (
-            <option key={safari.slug} value={safari.slug}>
-              {safari.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {catalogueSelection && (
+        <label className="block">
+          Catalogue safari
+          <select
+            className={field}
+            value={slug}
+            onChange={(event) =>
+              onChange(
+                event.target.value,
+                event.target.value ? (value ?? emptySafariPackage()) : null,
+              )
+            }
+          >
+            <option value="">General information only</option>
+            {safaris.map((safari) => (
+              <option key={safari.slug} value={safari.slug}>
+                {safari.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       {value && (
         <>
           <p className="text-sm text-muted-foreground">
             Add only approved facts. Leave unverified items empty. Prices are NAD per person
-            sharing; date ranges refer to travel dates. One published package is allowed per
-            safari—unpublish the old package before replacing it.
+            sharing; date ranges refer to travel dates.{" "}
+            {catalogueSelection
+              ? "One published package is allowed per safari—unpublish the old package before replacing it."
+              : "Save a draft before publishing verified changes."}
           </p>
           <label className="block">
             Duration in days (optional)

@@ -1,3 +1,4 @@
+import type { PublishedContent, PackageContent } from "./site-content";
 import { company, destinations, getDestination, getSafari, getStay, img, safaris, stays, travelGuidance } from "./pelican.ts";
 
 /** Set VITE_SITE_ORIGIN to the verified public HTTPS origin at build time.
@@ -30,10 +31,11 @@ const pageNames: Record<string, string> = {
   "/safaris": "Safaris & Tours", "/destinations": "Safari Destinations", "/stay": "Places to Stay",
 };
 
-export function pageSeo(pathname: string, configuredOrigin: unknown) {
+export function pageSeo(pathname: string, configuredOrigin: unknown, publishedPackage?: PublishedContent) {
   const path = pathname === "/" ? "/" : pathname.replace(/\/+$/, "");
   // Empty destination gallery albums are not search landing pages until photos exist.
-  const indexable = publicSeoPaths.includes(path);
+  const custom = publishedPackage?.kind === "package" && path === `/packages/${publishedPackage.id}` ? publishedPackage.data as PackageContent : undefined;
+  const indexable = publicSeoPaths.includes(path) || !!custom;
   const origin = siteOrigin(configuredOrigin);
   const canonical = indexable && origin ? `${origin}${path}` : undefined;
   const structuredData: Record<string, unknown>[] = [];
@@ -41,7 +43,7 @@ export function pageSeo(pathname: string, configuredOrigin: unknown) {
   const safari = path.startsWith("/safaris/") ? getSafari(path.slice("/safaris/".length)) : undefined;
   const destination = path.startsWith("/destinations/") ? getDestination(path.slice("/destinations/".length)) : undefined;
   const stay = path.startsWith("/stay/") ? getStay(path.slice("/stay/".length)) : undefined;
-  const name = safari?.name ?? destination?.name ?? stay?.name ?? pageNames[path] ?? company.name;
+  const name = custom?.title ?? safari?.name ?? destination?.name ?? stay?.name ?? pageNames[path] ?? company.name;
   const businessId = `${origin}/#business`;
   const websiteId = `${origin}/#website`;
   const business = {
@@ -71,7 +73,7 @@ export function pageSeo(pathname: string, configuredOrigin: unknown) {
     url: `${origin}/`, name: company.name, publisher: { "@id": businessId }, inLanguage: "en",
   }, webPage);
   if (path !== "/") {
-    const section = safari ? "/safaris" : destination ? "/destinations" : stay ? "/stay" : undefined;
+    const section = safari || custom ? "/safaris" : destination ? "/destinations" : stay ? "/stay" : undefined;
     const crumbs = [{ name: "Home", item: `${origin}/` },
       ...(section ? [{ name: pageNames[section], item: `${origin}${section}` }] : []),
       { name, item: canonical }];
@@ -81,11 +83,11 @@ export function pageSeo(pathname: string, configuredOrigin: unknown) {
       })) });
     webPage["breadcrumb"] = { "@id": `${canonical}#breadcrumbs` };
   }
-  if (safari) {
+  if (safari || custom) {
     webPage["mainEntity"] = { "@id": `${canonical}#trip` };
     structuredData.push({
       "@context": "https://schema.org", "@type": "TouristTrip", "@id": `${canonical}#trip`,
-      name: safari.name, description: safari.overview, image: new URL(img(safari.image), origin).href,
+      name: custom?.title ?? safari!.name, description: custom?.description ?? safari!.overview, image: new URL(img(custom?.image ?? safari!.image), origin).href,
       url: canonical, provider: { "@id": businessId },
     });
   }

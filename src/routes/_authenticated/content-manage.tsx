@@ -1,3 +1,4 @@
+import { AdminNavigation } from "@/components/admin/navigation";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Section } from "@/components/site";
@@ -63,6 +64,7 @@ function Manage() {
     );
   return (
     <Section>
+      {staff && <AdminNavigation />}
       <h1 className="font-display text-5xl">Approved information</h1>
       <p className="mt-6">
         Publish only verified facts with a source. For itineraries, include day-by-day activities,

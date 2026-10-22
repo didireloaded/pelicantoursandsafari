@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { blankPackage } from "../lib/site-content";
 import { jsonLd, pageSeo, publicSeoPaths, siteOrigin, sitemapXml } from "../lib/seo";
 import { company, destinations, safaris, stays, travelGuidance } from "../lib/pelican";
 
@@ -72,4 +73,14 @@ describe("production SEO", () => {
     expect(encoded).not.toContain("<");
     expect(JSON.parse(encoded)).toEqual({ text: "</script><script>alert(1)</script>&" });
   });
+});
+
+it("indexes only a loaded published custom package with factual metadata", () => {
+ const id="33333333-3333-4333-8333-333333333333";
+ const path=`/packages/${id}`;
+ expect(pageSeo(path,"https://example.com").indexable).toBe(false);
+ const result=pageSeo(path,"https://example.com",{id,kind:"package",data:{...blankPackage(),title:"Etosha journey",summary:"Summary",description:"Approved description",destinations:["etosha"]},updated_at:"2026-10-22"});
+ expect(result.canonical).toBe(`https://example.com${path}`);
+ expect(result.structuredData.find(item=>item["@type"]==="TouristTrip")).toMatchObject({name:"Etosha journey",description:"Approved description"});
+ expect(pageSeo("/admin","https://example.com").indexable).toBe(false);
 });

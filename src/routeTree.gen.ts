@@ -17,22 +17,29 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as MatchRouteImport } from './routes/match'
+import { Route as PackageSitemapDotxmlRouteImport } from './routes/package-sitemap[.]xml'
 import { Route as ProposalsRouteImport } from './routes/proposals'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ShortlistRouteImport } from './routes/shortlist'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
 import { Route as TravelGuideRouteImport } from './routes/travel-guide'
 import { Route as TripsRouteImport } from './routes/trips'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedContentManageRouteImport } from './routes/_authenticated/content-manage'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedTripsManageRouteImport } from './routes/_authenticated/trips-manage'
 import { Route as DestinationsIndexRouteImport } from './routes/destinations.index'
 import { Route as DestinationsSlugRouteImport } from './routes/destinations.$slug'
+import { Route as PackagesIdRouteImport } from './routes/packages/$id'
 import { Route as SafarisIndexRouteImport } from './routes/safaris.index'
 import { Route as SafarisSlugRouteImport } from './routes/safaris.$slug'
 import { Route as StayIndexRouteImport } from './routes/stay.index'
 import { Route as StaySlugRouteImport } from './routes/stay.$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
+import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin/gallery'
+import { Route as AuthenticatedAdminPackagesRouteImport } from './routes/_authenticated/admin/packages'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -76,6 +83,11 @@ const MatchRoute = MatchRouteImport.update({
   path: '/match',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PackageSitemapDotxmlRoute = PackageSitemapDotxmlRouteImport.update({
+  id: '/package-sitemap.xml',
+  path: '/package-sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProposalsRoute = ProposalsRouteImport.update({
   id: '/proposals',
   path: '/proposals',
@@ -106,6 +118,11 @@ const TripsRoute = TripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedContentManageRoute =
   AuthenticatedContentManageRouteImport.update({
     id: '/content-manage',
@@ -133,6 +150,11 @@ const DestinationsSlugRoute = DestinationsSlugRouteImport.update({
   path: '/destinations/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PackagesIdRoute = PackagesIdRouteImport.update({
+  id: '/packages/$id',
+  path: '/packages/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SafarisIndexRoute = SafarisIndexRouteImport.update({
   id: '/safaris/',
   path: '/safaris/',
@@ -158,6 +180,29 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminAccountRoute =
+  AuthenticatedAdminAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminGalleryRoute =
+  AuthenticatedAdminGalleryRouteImport.update({
+    id: '/gallery',
+    path: '/gallery',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminPackagesRoute =
+  AuthenticatedAdminPackagesRouteImport.update({
+    id: '/packages',
+    path: '/packages',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -183,22 +228,29 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
   '/match': typeof MatchRoute
+  '/package-sitemap.xml': typeof PackageSitemapDotxmlRoute
   '/proposals': typeof ProposalsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
   '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/content-manage': typeof AuthenticatedContentManageRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
+  '/packages/$id': typeof PackagesIdRoute
   '/safaris/$slug': typeof SafarisSlugRoute
   '/stay/$slug': typeof StaySlugRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/safaris/': typeof SafarisIndexRoute
   '/stay/': typeof StayIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
+  '/admin/packages': typeof AuthenticatedAdminPackagesRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -211,6 +263,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
   '/match': typeof MatchRoute
+  '/package-sitemap.xml': typeof PackageSitemapDotxmlRoute
   '/proposals': typeof ProposalsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shortlist': typeof ShortlistRoute
@@ -221,12 +274,17 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
+  '/packages/$id': typeof PackagesIdRoute
   '/safaris/$slug': typeof SafarisSlugRoute
   '/stay/$slug': typeof StaySlugRoute
   '/destinations': typeof DestinationsIndexRoute
   '/safaris': typeof SafarisIndexRoute
   '/stay': typeof StayIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
+  '/admin/packages': typeof AuthenticatedAdminPackagesRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -241,22 +299,29 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
   '/match': typeof MatchRoute
+  '/package-sitemap.xml': typeof PackageSitemapDotxmlRoute
   '/proposals': typeof ProposalsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shortlist': typeof ShortlistRoute
   '/tailor-made': typeof TailorMadeRoute
   '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/content-manage': typeof AuthenticatedContentManageRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/trips-manage': typeof AuthenticatedTripsManageRoute
   '/destinations/$slug': typeof DestinationsSlugRoute
+  '/packages/$id': typeof PackagesIdRoute
   '/safaris/$slug': typeof SafarisSlugRoute
   '/stay/$slug': typeof StaySlugRoute
   '/destinations/': typeof DestinationsIndexRoute
   '/safaris/': typeof SafarisIndexRoute
   '/stay/': typeof StayIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
+  '/_authenticated/admin/packages': typeof AuthenticatedAdminPackagesRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -271,22 +336,29 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/journey'
     | '/match'
+    | '/package-sitemap.xml'
     | '/proposals'
     | '/reset-password'
     | '/shortlist'
     | '/tailor-made'
     | '/travel-guide'
     | '/trips'
+    | '/admin'
     | '/content-manage'
     | '/dashboard'
     | '/trips-manage'
     | '/destinations/$slug'
+    | '/packages/$id'
     | '/safaris/$slug'
     | '/stay/$slug'
     | '/destinations/'
     | '/safaris/'
     | '/stay/'
     | '/.lovable/oauth/consent'
+    | '/admin/account'
+    | '/admin/gallery'
+    | '/admin/packages'
+    | '/admin/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -299,6 +371,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/journey'
     | '/match'
+    | '/package-sitemap.xml'
     | '/proposals'
     | '/reset-password'
     | '/shortlist'
@@ -309,12 +382,17 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/trips-manage'
     | '/destinations/$slug'
+    | '/packages/$id'
     | '/safaris/$slug'
     | '/stay/$slug'
     | '/destinations'
     | '/safaris'
     | '/stay'
     | '/.lovable/oauth/consent'
+    | '/admin/account'
+    | '/admin/gallery'
+    | '/admin/packages'
+    | '/admin'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -328,22 +406,29 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/journey'
     | '/match'
+    | '/package-sitemap.xml'
     | '/proposals'
     | '/reset-password'
     | '/shortlist'
     | '/tailor-made'
     | '/travel-guide'
     | '/trips'
+    | '/_authenticated/admin'
     | '/_authenticated/content-manage'
     | '/_authenticated/dashboard'
     | '/_authenticated/trips-manage'
     | '/destinations/$slug'
+    | '/packages/$id'
     | '/safaris/$slug'
     | '/stay/$slug'
     | '/destinations/'
     | '/safaris/'
     | '/stay/'
     | '/.lovable/oauth/consent'
+    | '/_authenticated/admin/account'
+    | '/_authenticated/admin/gallery'
+    | '/_authenticated/admin/packages'
+    | '/_authenticated/admin/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -358,6 +443,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   JourneyRoute: typeof JourneyRoute
   MatchRoute: typeof MatchRoute
+  PackageSitemapDotxmlRoute: typeof PackageSitemapDotxmlRoute
   ProposalsRoute: typeof ProposalsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ShortlistRoute: typeof ShortlistRoute
@@ -365,6 +451,7 @@ export interface RootRouteChildren {
   TravelGuideRoute: typeof TravelGuideRoute
   TripsRoute: typeof TripsRoute
   DestinationsSlugRoute: typeof DestinationsSlugRoute
+  PackagesIdRoute: typeof PackagesIdRoute
   SafarisSlugRoute: typeof SafarisSlugRoute
   StaySlugRoute: typeof StaySlugRoute
   DestinationsIndexRoute: typeof DestinationsIndexRoute
@@ -434,6 +521,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MatchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/package-sitemap.xml': {
+      id: '/package-sitemap.xml'
+      path: '/package-sitemap.xml'
+      fullPath: '/package-sitemap.xml'
+      preLoaderRoute: typeof PackageSitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/proposals': {
       id: '/proposals'
       path: '/proposals'
@@ -476,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TripsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/content-manage': {
       id: '/_authenticated/content-manage'
       path: '/content-manage'
@@ -509,6 +610,13 @@ declare module '@tanstack/react-router' {
       path: '/destinations/$slug'
       fullPath: '/destinations/$slug'
       preLoaderRoute: typeof DestinationsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/packages/$id': {
+      id: '/packages/$id'
+      path: '/packages/$id'
+      fullPath: '/packages/$id'
+      preLoaderRoute: typeof PackagesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/safaris/': {
@@ -546,6 +654,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/account': {
+      id: '/_authenticated/admin/account'
+      path: '/account'
+      fullPath: '/admin/account'
+      preLoaderRoute: typeof AuthenticatedAdminAccountRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/gallery': {
+      id: '/_authenticated/admin/gallery'
+      path: '/gallery'
+      fullPath: '/admin/gallery'
+      preLoaderRoute: typeof AuthenticatedAdminGalleryRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/packages': {
+      id: '/_authenticated/admin/packages'
+      path: '/packages'
+      fullPath: '/admin/packages'
+      preLoaderRoute: typeof AuthenticatedAdminPackagesRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -570,13 +706,35 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminAccountRoute: typeof AuthenticatedAdminAccountRoute
+  AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
+  AuthenticatedAdminPackagesRoute: typeof AuthenticatedAdminPackagesRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminAccountRoute: AuthenticatedAdminAccountRoute,
+    AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
+    AuthenticatedAdminPackagesRoute: AuthenticatedAdminPackagesRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedContentManageRoute: typeof AuthenticatedContentManageRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedTripsManageRoute: typeof AuthenticatedTripsManageRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedContentManageRoute: AuthenticatedContentManageRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedTripsManageRoute: AuthenticatedTripsManageRoute,
@@ -594,6 +752,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   JourneyRoute: JourneyRoute,
   MatchRoute: MatchRoute,
+  PackageSitemapDotxmlRoute: PackageSitemapDotxmlRoute,
   ProposalsRoute: ProposalsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ShortlistRoute: ShortlistRoute,
@@ -601,6 +760,7 @@ const rootRouteChildren: RootRouteChildren = {
   TravelGuideRoute: TravelGuideRoute,
   TripsRoute: TripsRoute,
   DestinationsSlugRoute: DestinationsSlugRoute,
+  PackagesIdRoute: PackagesIdRoute,
   SafarisSlugRoute: SafarisSlugRoute,
   StaySlugRoute: StaySlugRoute,
   DestinationsIndexRoute: DestinationsIndexRoute,
