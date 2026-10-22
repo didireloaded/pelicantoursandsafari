@@ -135,6 +135,7 @@ function AuthPage() {
       setBusy(false);
     }
   };
+  return (
     <Section className="pt-32">
       <div className="mx-auto max-w-md">
         <p className="text-sm uppercase tracking-[0.2em] text-clay">
