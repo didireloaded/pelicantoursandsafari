@@ -7,6 +7,8 @@ type Services = {
   consume: (token: string) => Promise<void>;
   context: (token: string) => Promise<unknown>;
   fetchGateway: typeof fetch;
+  endpoint?: string;
+  model?: string;
 };
 export async function answerAdminQuestion(
   input: unknown,
@@ -28,7 +30,7 @@ export async function answerAdminQuestion(
     await services.consume(token);
     const context = await services.context(token);
     const response = await services.fetchGateway(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      services.endpoint ?? "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
         method: "POST",
         headers: {
@@ -37,7 +39,7 @@ export async function answerAdminQuestion(
         },
         signal: AbortSignal.timeout(35000),
         body: JSON.stringify({
-          model: "google/gemini-3.8-flash",
+          model: services.model ?? "google/gemini-3.8-flash",
           max_tokens: 900,
           messages: [
             {

@@ -22,7 +22,13 @@ export const askWorkspaceHelp = createServerFn({ method: "POST" })
         .split(",")
         .map((v) => v.trim())
         .filter(Boolean),
-      gatewayKey: process.env["LOVABLE_API_KEY"],
+      ...(process.env["GOOGLE_AI_STUDIO_API_KEY"]
+        ? {
+            gatewayKey: process.env["GOOGLE_AI_STUDIO_API_KEY"],
+            endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+            model: "gemini-3.8-flash",
+          }
+        : { gatewayKey: process.env["LOVABLE_API_KEY"] }),
       authorize: async (token) => {
         const c = client(token);
         const user = await c.auth.getUser(token);
