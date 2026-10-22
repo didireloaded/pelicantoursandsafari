@@ -191,7 +191,7 @@ function Dashboard() {
         (!!r.follow_up_on &&
           r.follow_up_on < today &&
           !["confirmed", "closed"].includes(r.status))) &&
-      [r.name, r.email, r.phone, r.id, r.brief, r.booking_ref, r.trip_code].some((v) =>
+      [r.name, r.email, r.phone, r.id, r.brief, r.booking_ref, r.trip_code, r.enquiry_ref].some((v) =>
         v?.toLowerCase().includes(query.toLowerCase()),
       ),
   );
@@ -264,7 +264,7 @@ function Dashboard() {
             <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_auto]">
               <button className="text-left" onClick={() => void showHistory(r.id)}>
                 <span className="text-lg font-medium">{r.name}</span>
-                {r.booking_ref && <span className="ml-3 text-sm font-semibold text-clay">{r.booking_ref}</span>}
+                {(r.booking_ref ?? r.enquiry_ref) && <span className="ml-3 text-sm font-semibold text-clay">{r.booking_ref ?? r.enquiry_ref}</span>}
                 <span className="ml-3 text-sm text-muted-foreground">
                   {new Date(r.created_at).toLocaleString()} · {r.contact_preference}
                 </span>
@@ -288,7 +288,7 @@ function Dashboard() {
             {open === r.id && (
               <div className="mt-5 grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
-                  <p className="text-sm break-all">Reference: {r.id}</p>
+                  <p className="text-sm break-all">Reference: {r.booking_ref ?? r.enquiry_ref ?? r.id}</p>
                   <label className="block">
                     Assigned to
                     <select
