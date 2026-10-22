@@ -3,6 +3,8 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { beforeAll, afterAll, it, expect } from "vitest";
 import { bookingStage, bookingToEnquiry } from "@/lib/booking";
+import { reservationEvents } from "@/lib/reservation-calendar";
+import type { Lead } from "@/lib/admin-workspace";
 const db = new PGlite();
 const staff = "11111111-1111-4111-8111-111111111111";
 const outsider = "22222222-2222-4222-8222-222222222222";
@@ -105,6 +107,30 @@ it("receives once, assigns one private reference, confirms with staff revision, 
       )
     ).rows,
   ).toHaveLength(0);
+  // Re-read the persisted row as the calendar loader does, then reschedule it.
+  const calendarRows = async () =>
+    (
+      await db.query<Lead>(
+        `select id,name,status,created_at::text,
+      null::text as follow_up_on,residence,booking_ref,
+      confirmed_starts_on::text,confirmed_ends_on::text from enquiries where id=$1`,
+        [id],
+      )
+    ).rows;
+  expect(reservationEvents([], [], await calendarRows())).toEqual([
+    expect.objectContaining({ id, kind: "request", startsOn: "2027-06-22", endsOn: "2027-06-24" }),
+  ]);
+  const currentRevision = (
+    await db.query<{ version: string }>(
+      "select updated_at::text as version from enquiries where id=$1",
+      [id],
+    )
+  ).rows[0]!.version;
+  await db.query("select confirm_booking($1,$2,'2027-07-03','2027-07-05')", [id, currentRevision]);
+  const moved = reservationEvents([], [], await calendarRows());
+  expect(moved).toHaveLength(1);
+  expect(moved[0]).toMatchObject({ id, startsOn: "2027-07-03", endsOn: "2027-07-05" });
+  expect((await db.query("select id from enquiries")).rows).toHaveLength(1);
   await db.exec("reset role;set role service_role");
   expect(bookingStage((await lookup("TEST@example.com")).rows[0]!.status)).toBe("Confirmed");
   expect(

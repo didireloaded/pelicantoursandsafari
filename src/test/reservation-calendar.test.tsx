@@ -73,3 +73,36 @@ it("opens the selected traveller and expands a busy day without hiding other boo
     screen.getByRole("button", { name: `Traveller ABCD — ENP1-ABCD on ${today}` }),
   ).toBeVisible();
 });
+it("moves the same enquiry on a calendar refresh without retaining its old dates", () => {
+  const select = vi.fn();
+  const start = today.slice(0, 8) + "10";
+  const end = today.slice(0, 8) + "12";
+  const original = { ...request("MOVE"), confirmed_starts_on: start, confirmed_ends_on: end };
+  const { rerender } = render(
+    <ReservationCalendar events={reservationEvents([], [], [original])} onSelect={select} />,
+  );
+  expect(
+    screen.getByRole("button", { name: `Traveller MOVE — ENP1-MOVE on ${start}` }),
+  ).toBeVisible();
+  const movedStart = today.slice(0, 8) + "20";
+  const movedEnd = today.slice(0, 8) + "21";
+  rerender(
+    <ReservationCalendar
+      events={reservationEvents(
+        [],
+        [],
+        [{ ...original, confirmed_starts_on: movedStart, confirmed_ends_on: movedEnd }],
+      )}
+      onSelect={select}
+    />,
+  );
+  expect(
+    screen.queryByRole("button", { name: `Traveller MOVE — ENP1-MOVE on ${start}` }),
+  ).toBeNull();
+  fireEvent.click(
+    screen.getByRole("button", { name: `Traveller MOVE — ENP1-MOVE on ${movedStart}` }),
+  );
+  expect(select).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "MOVE", startsOn: movedStart, endsOn: movedEnd }),
+  );
+});
