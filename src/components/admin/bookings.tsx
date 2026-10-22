@@ -1,20 +1,14 @@
+import { ReservationCalendar } from "./reservation-calendar";
+import { reservationEvents } from "@/lib/reservation-calendar";
+import { tripForCode } from "@/lib/booking";
 import { AppSelect } from "@/components/ui/app-select";
 import { useRef, useState } from "react";
 import { Link, useBlocker } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  ArrowUpRight,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
+import { Plus, ArrowUpRight, ArrowUp, ArrowDown } from "lucide-react";
 import { ZodError } from "zod";
 import { useWorkspace, saveBooking } from "@/lib/admin-workspace-api";
 import {
-  addDays,
   dayUtc,
   tripEnd,
   initials,
@@ -39,11 +33,11 @@ export function Bookings() {
   const cache = useQueryClient();
   const data = query.data;
   const today = dayUtc();
-  const [month, setMonth] = useState(today.slice(0, 7));
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [requestId, setRequestId] = useState("");
   const [view, setView] = useState<"calendar" | "list">("calendar");
   const [selected, setSelected] = useState("");
   const [status, setStatus] = useState("");
-  const [day, setDay] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<AdminTrip>();
   const [form, setForm] = useState<BookingInput>(blankBooking);
@@ -57,21 +51,24 @@ export function Bookings() {
     enableBeforeUnload: () => dirty || busy,
   });
   const rows = (data?.trips ?? [])
-    .filter(
-      (t) => (!status || t.status === status) && (!day || (t.starts_on <= day && tripEnd(t) > day)),
-    )
+    .filter((t) => !status || t.status === status)
     .sort((a, b) => a.starts_on.localeCompare(b.starts_on));
   const current =
     rows.find((t) => t.id === selected) ?? rows.find((t) => tripEnd(t) >= today) ?? rows[0];
   const client = data?.clients.find((c) => c.id === current?.client_id);
-  const first = `${month}-01`;
-  const start = addDays(first, -((new Date(first + "T00:00:00Z").getUTCDay() + 6) % 7));
-  const days = Array.from({ length: 42 }, (_, i) => addDays(start, i));
+  const events = reservationEvents(data?.trips ?? [], data?.clients ?? [], data?.leads ?? []);
+  const request = data?.leads.find(
+    (lead) => lead.id === requestId && lead.status === "confirmed" && !!lead.confirmed_starts_on,
+  );
+  const unscheduled = (data?.leads ?? []).filter(
+    (lead) => lead.booking_ref && lead.status === "confirmed" && !lead.confirmed_starts_on,
+  );
   const change = (patch: Partial<BookingInput>) => {
     setForm((old) => ({ ...old, ...patch }));
     setDirty(true);
   };
   const edit = (trip?: AdminTrip) => {
+    setDetailOpen(false);
     setEditing(trip);
     setForm(
       trip
@@ -127,61 +124,46 @@ export function Bookings() {
         <div>
           <p className="admin-eyebrow">DATES, GUESTS & THE DETAILS</p>
           <h1 className="mt-2">Reservations</h1>
-          <p>
-            Keep confirmed journeys distinct from draft requests. This is your staff-maintained
-            booking calendar.
-          </p>
+          <p>Your confirmed bookings, with travellers and travel dates in one calendar.</p>
         </div>
-        <Button className="gap-2 !text-xs" onClick={() => edit()}>
-          <Plus size={15} />
-          New reservation
-        </Button>
-      </div>
-      <div className="admin-panel mb-5 flex flex-wrap items-center justify-between gap-3 p-4 text-xs">
-        <p>
-          Website booking requests are accepted in Enquiries. Calendar reservations are maintained
-          separately.
-        </p>
-        <Button asChild variant="outline">
-          <Link to="/dashboard">Review booking requests →</Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline">
+            <Link to="/dashboard">Review requests</Link>
+          </Button>
+          <Button className="gap-2 !text-xs" onClick={() => edit()}>
+            <Plus size={15} />
+            New reservation
+          </Button>
+        </div>
       </div>
       <WorkspaceState
         loading={query.isPending}
         error={query.isError}
         retry={() => void query.refetch()}
       >
-        <div className="admin-stats">
+        <div className="admin-panel reservation-summary">
           {[
-            ["Confirmed bookings", data?.trips.filter((t) => t.status === "confirmed").length ?? 0],
-            ["Draft requests", data?.trips.filter((t) => t.status === "draft").length ?? 0],
+            ["Confirmed bookings", events.length],
+            ["Needs travel dates", unscheduled.length],
             [
               "Travelling today",
-              data?.trips.filter(
-                (t) => t.status === "confirmed" && t.starts_on <= today && tripEnd(t) > today,
-              ).length ?? 0,
+              events.filter((event) => event.startsOn <= today && event.endsOn >= today).length,
             ],
-            [
-              "Future departures",
-              data?.trips.filter((t) => t.status === "confirmed" && t.starts_on > today).length ??
-                0,
-            ],
+            ["Future departures", events.filter((event) => event.startsOn > today).length],
           ].map(([name, value]) => (
-            <div key={name} className="admin-panel admin-stat">
-              <p className="admin-stat-label">{name}</p>
-              <p className="admin-stat-value">{value}</p>
-              <p className="admin-stat-note">From recorded trip status and dates</p>
+            <div key={name}>
+              <strong>{value}</strong>
+              <span>{name}</span>
             </div>
           ))}
         </div>
-        <div className="admin-main-grid">
+        <div className="admin-reservations-layout">
           <section className="admin-panel p-5">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div className="admin-tabs">
                 <button
                   className={`admin-pill ${view === "calendar" ? "is-selected" : ""}`}
                   onClick={() => {
-                    setDay("");
                     setView("calendar");
                   }}
                 >
@@ -194,140 +176,32 @@ export function Bookings() {
                   Reservations
                 </button>
               </div>
-              <AppSelect
-                aria-label="Reservation status"
-                className="admin-pill"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="">All statuses</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="draft">Draft requests</option>
-                <option value="cancelled">Cancelled</option>
-              </AppSelect>
+              {view === "list" && (
+                <AppSelect
+                  aria-label="Reservation status"
+                  className="admin-pill"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="">All statuses</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="draft">Draft requests</option>
+                  <option value="cancelled">Cancelled</option>
+                </AppSelect>
+              )}
             </div>
-            {day && (
-              <button className="mb-4 text-[11px] text-primary" onClick={() => setDay("")}>
-                Showing {day} · clear date filter
-              </button>
-            )}
             {view === "calendar" ? (
-              <>
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <label className="font-medium">
-                    <span className="sr-only">Calendar month</span>
-                    <input
-                      type="month"
-                      min="2000-01"
-                      max="2100-12"
-                      value={month}
-                      onChange={(e) => {
-                        if (/^\d{4}-\d{2}$/.test(e.target.value)) setMonth(e.target.value);
-                      }}
-                      className="bg-transparent text-sm"
-                    />
-                  </label>
-                  <div className="flex gap-2">
-                    <button
-                      className="admin-pill !p-2"
-                      aria-label="Previous month"
-                      onClick={() => {
-                        const d = new Date(first + "T00:00:00Z");
-                        d.setUTCMonth(d.getUTCMonth() - 1);
-                        setMonth(dayUtc(d).slice(0, 7));
-                      }}
-                    >
-                      <ChevronLeft size={14} />
-                    </button>
-                    <button
-                      className="admin-pill"
-                      onClick={() => {
-                        setMonth(today.slice(0, 7));
-                        setDay("");
-                      }}
-                    >
-                      Today
-                    </button>
-                    <button
-                      className="admin-pill !p-2"
-                      aria-label="Next month"
-                      onClick={() => {
-                        const d = new Date(first + "T00:00:00Z");
-                        d.setUTCMonth(d.getUTCMonth() + 1);
-                        setMonth(dayUtc(d).slice(0, 7));
-                      }}
-                    >
-                      <ChevronRight size={14} />
-                    </button>
-                  </div>
-                </div>
-                <div className="admin-calendar-scroll">
-                  <div className="admin-calendar-inner">
-                    <div className="grid grid-cols-7">
-                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((w) => (
-                        <span className="admin-calendar-weekday" key={w}>
-                          {w}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="admin-calendar-grid">
-                      {days.map((date) => {
-                        const trips = rows.filter(
-                          (t) =>
-                            t.status !== "cancelled" && t.starts_on <= date && tripEnd(t) > date,
-                        );
-                        return (
-                          <div
-                            key={date}
-                            className={`admin-calendar-cell ${date === today ? "is-today" : ""} ${!date.startsWith(month) ? "opacity-45" : ""}`}
-                          >
-                            <button
-                              className="admin-calendar-day"
-                              aria-label={`Show reservations on ${date}`}
-                              onClick={() => {
-                                setDay(date);
-                                setSelected(trips[0]?.id ?? "");
-                                setView("list");
-                              }}
-                            >
-                              {Number(date.slice(-2))}
-                            </button>
-                            {trips.slice(0, 3).map((trip) => (
-                              <button
-                                className={`admin-calendar-item ${trip.status}`}
-                                title={`${trip.title} · ${trip.status}`}
-                                key={trip.id}
-                                onClick={() => {
-                                  setDay(date);
-                                  setSelected(trip.id);
-                                  setView("list");
-                                }}
-                              >
-                                {trip.title}
-                              </button>
-                            ))}
-                            {trips.length > 3 && (
-                              <button
-                                className="mt-1 text-[9px] text-primary"
-                                onClick={() => {
-                                  setDay(date);
-                                  setView("list");
-                                }}
-                              >
-                                +{trips.length - 3} more
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-4 text-[10px] text-muted-foreground">
-                  Green: confirmed · Sand: draft request. Cancelled trips remain in the reservation
-                  list.
-                </p>
-              </>
+              <ReservationCalendar
+                events={events}
+                onSelect={(event) => {
+                  if (event.kind === "request") setRequestId(event.id);
+                  else {
+                    setStatus("");
+                    setSelected(event.id);
+                    setDetailOpen(true);
+                  }
+                }}
+              />
             ) : (
               <div>
                 {rows.length ? (
@@ -335,7 +209,10 @@ export function Bookings() {
                     <button
                       key={trip.id}
                       className="admin-row w-full text-left"
-                      onClick={() => setSelected(trip.id)}
+                      onClick={() => {
+                        setSelected(trip.id);
+                        setDetailOpen(true);
+                      }}
                     >
                       <span className="admin-avatar !h-9 !w-9 !text-xs">
                         {initials(
@@ -356,82 +233,148 @@ export function Bookings() {
                 )}
               </div>
             )}
-            {!data?.trips.length && (
+            {view === "list" && !data?.trips.length && (
               <p className="mt-5 text-center text-xs text-muted-foreground">
                 No reservations recorded yet. Start with a client, then create a draft request.
               </p>
             )}
           </section>
-          <aside className="admin-detail-rail">
-            <section className="admin-panel p-6">
-              <h2 className="admin-panel-heading">Reservation details</h2>
-              {current ? (
-                <>
-                  <div className="mt-5 flex items-center gap-3">
-                    <span className="admin-avatar">{initials(client?.name ?? current.title)}</span>
-                    <div>
-                      <h3 className="text-sm font-medium">{client?.name ?? "Traveller account"}</h3>
-                      <p className="text-[10px] text-muted-foreground">
-                        {client?.country || "Country not supplied"}
-                      </p>
-                    </div>
-                  </div>
-                  <h3 className="mt-5 text-lg font-medium">{current.title}</h3>
-                  <span className={`admin-status mt-3 inline-block ${current.status}`}>
-                    {current.status}
-                  </span>
-                  <dl className="mt-6 space-y-4 text-[11px]">
-                    {[
-                      ["Departure", current.starts_on],
-                      ["Return", tripEnd(current)],
-                      [
-                        "Trip total",
-                        current.total_nad === null ? "Not recorded" : formatNad(current.total_nad),
-                      ],
-                      [
-                        "Received",
-                        current.paid_nad === null ? "Not recorded" : formatNad(current.paid_nad),
-                      ],
-                    ].map(([key, value]) => (
-                      <div className="flex justify-between gap-4" key={key}>
-                        <dt className="text-muted-foreground">{key}</dt>
-                        <dd>{value}</dd>
+          <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
+            <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+              <SheetHeader>
+                <SheetTitle>Reservation details</SheetTitle>
+                <SheetDescription>Reservation and client information.</SheetDescription>
+              </SheetHeader>{" "}
+              <aside className="admin-detail-rail">
+                <section className="admin-panel p-6">
+                  <h2 className="admin-panel-heading">Reservation details</h2>
+                  {current ? (
+                    <>
+                      <div className="mt-5 flex items-center gap-3">
+                        <span className="admin-avatar">
+                          {initials(client?.name ?? current.title)}
+                        </span>
+                        <div>
+                          <h3 className="text-sm font-medium">
+                            {client?.name ?? "Traveller account"}
+                          </h3>
+                          <p className="text-[10px] text-muted-foreground">
+                            {client?.country || "Country not supplied"}
+                          </p>
+                        </div>
                       </div>
-                    ))}
-                  </dl>
-                  <div className="mt-6 border-t border-border pt-5">
-                    <h4 className="text-[10px] font-medium">Journey stops</h4>
-                    {validateJourney(current.stops).map((stop, i) => (
-                      <p className="mt-2 text-[11px] text-muted-foreground" key={i}>
-                        {destinations.find((d) => d.slug === stop.destination)?.name} ·{" "}
-                        {stop.nights} {stop.nights === 1 ? "night" : "nights"}
-                      </p>
-                    ))}
-                  </div>
-                  <Button className="mt-6 w-full gap-2 !text-xs" onClick={() => edit(current)}>
-                    Edit reservation
-                    <ArrowUpRight size={14} />
-                  </Button>
-                </>
-              ) : (
-                <p className="mt-5 text-xs text-muted-foreground">
-                  Choose a reservation to see dates, client and recorded amounts.
-                </p>
-              )}
-            </section>
-            <section className="admin-panel p-5">
-              <h2 className="admin-panel-heading">Before confirming</h2>
-              <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-                Confirm supplier availability and written price/payment terms with the traveller.
-                This calendar does not check live availability or process payments.
-              </p>
-              <Link to="/admin/clients" className="mt-4 inline-block text-[11px] text-primary">
-                Open client directory →
-              </Link>
-            </section>
-          </aside>
+                      <h3 className="mt-5 text-lg font-medium">{current.title}</h3>
+                      <span className={`admin-status mt-3 inline-block ${current.status}`}>
+                        {current.status}
+                      </span>
+                      <dl className="mt-6 space-y-4 text-[11px]">
+                        {[
+                          ["Departure", current.starts_on],
+                          ["Return", tripEnd(current)],
+                          [
+                            "Trip total",
+                            current.total_nad === null
+                              ? "Not recorded"
+                              : formatNad(current.total_nad),
+                          ],
+                          [
+                            "Received",
+                            current.paid_nad === null
+                              ? "Not recorded"
+                              : formatNad(current.paid_nad),
+                          ],
+                        ].map(([key, value]) => (
+                          <div className="flex justify-between gap-4" key={key}>
+                            <dt className="text-muted-foreground">{key}</dt>
+                            <dd>{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                      <div className="mt-6 border-t border-border pt-5">
+                        <h4 className="text-[10px] font-medium">Journey stops</h4>
+                        {validateJourney(current.stops).map((stop, i) => (
+                          <p className="mt-2 text-[11px] text-muted-foreground" key={i}>
+                            {destinations.find((d) => d.slug === stop.destination)?.name} ·{" "}
+                            {stop.nights} {stop.nights === 1 ? "night" : "nights"}
+                          </p>
+                        ))}
+                      </div>
+                      <Button className="mt-6 w-full gap-2 !text-xs" onClick={() => edit(current)}>
+                        Edit reservation
+                        <ArrowUpRight size={14} />
+                      </Button>
+                    </>
+                  ) : (
+                    <p className="mt-5 text-xs text-muted-foreground">
+                      Choose a reservation to see dates, client and recorded amounts.
+                    </p>
+                  )}
+                </section>
+                <section className="admin-panel p-5">
+                  <h2 className="admin-panel-heading">Before confirming</h2>
+                  <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+                    Confirm supplier availability and written price/payment terms with the
+                    traveller. This calendar does not check live availability or process payments.
+                  </p>
+                  <Link to="/admin/clients" className="mt-4 inline-block text-[11px] text-primary">
+                    Open client directory →
+                  </Link>
+                </section>
+              </aside>
+            </SheetContent>
+          </Sheet>
         </div>
       </WorkspaceState>
+      {unscheduled.length > 0 && (
+        <div className="admin-panel mt-5 p-4 text-sm">
+          {unscheduled.length} previously confirmed booking
+          {unscheduled.length === 1 ? " needs" : "s need"} travel dates before appearing in the
+          calendar.{" "}
+          <Link to="/dashboard" className="text-primary underline">
+            Set dates in Enquiries
+          </Link>
+        </div>
+      )}
+      <Sheet
+        open={!!request}
+        onOpenChange={(value) => {
+          if (!value) setRequestId("");
+        }}
+      >
+        <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle>{request?.name}</SheetTitle>
+            <SheetDescription>Confirmed booking · {request?.booking_ref}</SheetDescription>
+          </SheetHeader>
+          {request && (
+            <div className="mt-6 space-y-5 text-sm">
+              <p className="font-medium">
+                {tripForCode(request.trip_code ?? "")?.name ?? "Safari booking"}
+              </p>
+              <p>
+                {request.confirmed_starts_on} — {request.confirmed_ends_on}
+              </p>
+              {request.email && (
+                <a className="block text-primary" href={`mailto:${request.email}`}>
+                  {request.email}
+                </a>
+              )}
+              {request.phone && (
+                <a
+                  className="block text-primary"
+                  href={`tel:${request.phone.replace(/[^+0-9]/g, "")}`}
+                >
+                  {request.phone}
+                </a>
+              )}
+              <p className="whitespace-pre-wrap">{request.brief}</p>
+              <Button asChild variant="outline">
+                <Link to="/dashboard">Open enquiries</Link>
+              </Button>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
       <Sheet
         open={open}
         onOpenChange={(value) => {

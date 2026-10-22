@@ -51,7 +51,9 @@ export async function loadWorkspace(
     allRows((a, b) =>
       client
         .from("enquiries")
-        .select("id,name,status,created_at,follow_up_on,residence")
+        .select(
+          "id,name,status,created_at,follow_up_on,residence,booking_ref,confirmed_starts_on,confirmed_ends_on,email,phone,brief,trip_code",
+        )
         .order("id")
         .range(a, b)
         .abortSignal(AbortSignal.timeout(10000)),

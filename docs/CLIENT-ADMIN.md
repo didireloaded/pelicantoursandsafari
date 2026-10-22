@@ -108,16 +108,28 @@ and link client reservations through the existing protected tools.
 ### Accepting a website booking request
 
 Open **Enquiries**, select the traveller's booking reference, then choose **Confirm
-booking** only after agreeing availability, price and terms. Approve the confirmation
-prompt. A successful save makes **Check my booking** display **Confirmed** for that
-reference plus the traveller's matching email/phone. A failed or conflicting save
-must be retried after refreshing; it does not confirm the request. Staff can close
-requests or move them back under review with the existing status selector.
+booking** after agreeing availability, price and terms. Enter the actual Travel
+start and Travel end dates, then **Confirm and add to calendar**. Start and end
+can match for a day tour. A successful atomic save makes **Check my booking** show
+**Confirmed** and adds the same enquiry to **Reservations**; no duplicate trip or
+client record is created. Failed or stale saves do not partially confirm or schedule.
 
-**Reservations** is the staff-maintained calendar. It links to Enquiries for accepting
-website requests; changing a standalone calendar reservation does not silently
-confirm a different booking request. Traveller reference emails go out at submission
-when an email is supplied; they acknowledge receipt, not acceptance of the booking.
+The main Reservations view is a full-width confirmed-only calendar. Click a
+traveller's name/initials to see the booking reference, contact and brief. Day tours
+appear once; multi-day requests appear on every day from start through end.
+Draft/closed enquiries and draft/cancelled manual trips never appear. Existing
+manually entered confirmed trips remain visible. The list tab retains manual-trip
+management. Older confirmed requests with no actual dates are flagged for staff to
+schedule with **Add to calendar**. Use **Change travel dates** in Enquiries to move
+a scheduled request. Closing it removes it from the calendar on refresh.
+
+Migration 0010_confirmed_booking_calendar owns the date columns, validation and
+staff+aal2 confirm_booking RPC. It preserves updated_at conflict checking and
+requires agreed dates for new confirmed booking requests, including direct status
+updates. Legacy confirmed requests are not assigned guessed dates. Other open
+admin workspaces refresh automatically on the existing minute interval; this is
+not a live availability or instant-booking service. Traveller receipt emails remain
+acknowledgements of submission, not acceptance.
 
 ### Staff profile photos and team circles
 

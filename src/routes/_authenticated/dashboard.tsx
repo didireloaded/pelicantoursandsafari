@@ -1,3 +1,4 @@
+import { ConfirmBooking } from "@/components/admin/confirm-booking";
 import { AppSelect } from "@/components/ui/app-select";
 import { Search, Clock3, Mail, RefreshCw, ChevronDown } from "lucide-react";
 import { initials } from "@/lib/admin-workspace";
@@ -519,18 +520,22 @@ function Dashboard() {
                   disabled={working}
                   onChange={(e) => {
                     const status = e.target.value as Status;
-                    if (
-                      status !== "confirmed" ||
-                      !current.booking_ref ||
-                      window.confirm(
-                        `Confirm booking ${current.booking_ref}? Availability, price and terms must be agreed.`,
-                      )
-                    )
-                      void update(current.id, { status });
+                    if (status === "confirmed" && current.booking_ref) {
+                      return;
+                    }
+                    void update(current.id, { status });
                   }}
                 >
                   {statuses.map((status) => (
-                    <option key={status.value} value={status.value}>
+                    <option
+                      key={status.value}
+                      value={status.value}
+                      disabled={
+                        status.value === "confirmed" &&
+                        !!current.booking_ref &&
+                        current.status !== "confirmed"
+                      }
+                    >
                       {status.label}
                     </option>
                   ))}
@@ -541,25 +546,28 @@ function Dashboard() {
                   <p className="mb-3 text-xs text-muted-foreground">
                     Booking {current.booking_ref} ·{" "}
                     {current.status === "confirmed"
-                      ? "Confirmed — visible in the traveller’s booking status."
+                      ? "Confirmed — visible in the traveller’s booking status. Travel dates appear in Reservations once scheduled."
                       : current.status === "closed"
                         ? "Closed — visible in the traveller’s booking status."
                         : "Confirm here once availability, price and terms have been agreed. The traveller’s status updates when saved."}
                   </p>
-                  {current.status !== "confirmed" && current.status !== "closed" && (
-                    <Button
-                      disabled={working}
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            `Confirm booking ${current.booking_ref} for ${current.name}? Only confirm after availability, price and terms have been agreed.`,
-                          )
-                        )
-                          void update(current.id, { status: "confirmed" });
+                  {current.status !== "closed" && (
+                    <ConfirmBooking
+                      key={current.id}
+                      enquiry={current}
+                      onSaved={(saved) => {
+                        setRows((previous) =>
+                          previous.map((row) => (row.id === saved.id ? saved : row)),
+                        );
+                        setFeedback((previous) => ({
+                          ...previous,
+                          [saved.id]: {
+                            ok: true,
+                            text: "Booking confirmed and added to the calendar.",
+                          },
+                        }));
                       }}
-                    >
-                      {working ? "Saving…" : "Confirm booking"}
-                    </Button>
+                    />
                   )}
                 </div>
               )}

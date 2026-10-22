@@ -2131,3 +2131,64 @@
     display: none;
   }
 }
+.admin-reservations-layout {
+  display: block;
+}
+.admin-confirmed-calendar .admin-calendar-cell {
+  min-height: 140px;
+  padding: 10px;
+}
+.admin-confirmed-calendar .admin-calendar-inner {
+  min-width: 740px;
+}
+.admin-confirmed-calendar .admin-calendar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  font-size: 11px;
+}
+.reservation-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 9px;
+}
+.admin-confirmed-calendar .is-outside-month {
+  background: color-mix(in oklch, var(--secondary) 45%, transparent);
+}
+@media (min-width: 1400px) {
+  .admin-confirmed-calendar .admin-calendar-cell {
+    min-height: 160px;
+  }
+}
+.reservation-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  margin-bottom: 20px;
+  padding: 14px 20px;
+}
+.reservation-summary > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.reservation-summary strong {
+  font-size: 18px;
+  color: var(--foreground);
+}
+.calendar-traveller-name {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}

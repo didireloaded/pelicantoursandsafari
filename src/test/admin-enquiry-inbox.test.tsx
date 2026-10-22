@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, within, waitFor } from "@testing-library/react";
 import { afterEach, it, expect, vi } from "vitest";
 import type { ReactNode } from "react";
@@ -17,7 +18,15 @@ vi.mock("sonner", () => ({ toast: { error: mocks.toast } }));
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     auth: { getUser: async () => ({ data: { user: { id: "staff" } }, error: null }) },
-    rpc: async () => ({ data: [], error: null }),
+    rpc: (name: string, args: unknown) =>
+      name === "confirm_booking"
+        ? {
+            abortSignal: async () => {
+              mocks.rpc(name, args);
+              return mocks.updates.shift();
+            },
+          }
+        : Promise.resolve({ data: [], error: null }),
     from(table: string) {
       let patch: unknown;
       const builder = {
@@ -139,23 +148,56 @@ it("retains failed note drafts, compares refreshed notes and saves against the n
   expect(screen.getByLabelText("Private team notes")).toHaveValue("My draft");
 });
 
-it("confirms a booking only after staff approval and keeps the optimistic revision check", async () => {
+it("confirms a booking with agreed dates and the original revision", async () => {
   const booking = { ...row("one", "Guest One"), booking_ref: "ENP1-ABCD" };
   mocks.rows = [booking];
   mocks.updates = [
-    { data: { ...booking, status: "confirmed", updated_at: "version-2" }, error: null },
+    {
+      data: {
+        ...booking,
+        status: "confirmed",
+        updated_at: "version-2",
+        confirmed_starts_on: "2027-06-22",
+        confirmed_ends_on: "2027-06-24",
+      },
+      error: null,
+    },
   ];
-  const consent = vi.spyOn(window, "confirm").mockReturnValue(false);
   const Page = Route.options.component!;
-  render(<Page />);
-  fireEvent.click(await screen.findByRole("button", { name: "Confirm booking" }));
-  expect(mocks.eq).not.toHaveBeenCalledWith("updated_at", "version-1");
-  consent.mockReturnValue(true);
-  fireEvent.click(screen.getByRole("button", { name: "Confirm booking" }));
-  await screen.findByText(
-    "Booking confirmed. The traveller will see Confirmed when checking this reference.",
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <Page />
+    </QueryClientProvider>,
   );
-  expect(mocks.eq).toHaveBeenCalledWith("updated_at", "version-1");
-  expect(screen.queryByRole("button", { name: "Confirm booking" })).toBeNull();
-  consent.mockRestore();
+  fireEvent.click(await screen.findByRole("button", { name: "Confirm booking" }));
+  expect(mocks.rpc).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByLabelText("Travel start"), { target: { value: "2027-06-22" } });
+  fireEvent.change(screen.getByLabelText("Travel end"), { target: { value: "2027-06-24" } });
+  fireEvent.click(screen.getByRole("button", { name: "Confirm and add to calendar" }));
+  await screen.findByText("Booking confirmed and added to the calendar.");
+  expect(mocks.rpc).toHaveBeenCalledWith("confirm_booking", {
+    _id: "one",
+    _updated_at: "version-1",
+    _starts_on: "2027-06-22",
+    _ends_on: "2027-06-24",
+  });
+});
+
+it("retains agreed travel dates when confirmation fails", async () => {
+  mocks.rows = [{ ...row("one", "Guest One"), booking_ref: "ENP1-ABCD" }];
+  mocks.updates = [{ data: null, error: { message: "changed" } }];
+  const Page = Route.options.component!;
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <Page />
+    </QueryClientProvider>,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Confirm booking" }));
+  fireEvent.change(screen.getByLabelText("Travel start"), { target: { value: "2027-06-22" } });
+  fireEvent.change(screen.getByLabelText("Travel end"), { target: { value: "2027-06-24" } });
+  fireEvent.click(screen.getByRole("button", { name: "Confirm and add to calendar" }));
+  expect(await screen.findByText(/Confirmation not saved/)).toBeVisible();
+  expect(screen.getByLabelText("Travel start")).toHaveValue("2027-06-22");
+  expect(screen.getByLabelText("Travel end")).toHaveValue("2027-06-24");
+  expect(screen.queryByText("Booking confirmed and added to the calendar.")).toBeNull();
 });

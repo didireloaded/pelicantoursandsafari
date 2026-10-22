@@ -55,6 +55,13 @@ export type AdminTrip = {
   created_at: string;
 };
 export type Lead = {
+  booking_ref?: string | null;
+  confirmed_starts_on?: string | null;
+  confirmed_ends_on?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  brief?: string;
+  trip_code?: string | null;
   id: string;
   name: string;
   status: string;

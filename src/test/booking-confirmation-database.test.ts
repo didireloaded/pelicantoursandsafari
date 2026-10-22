@@ -15,6 +15,15 @@ beforeAll(async () => {
     "drizzle/migrations/0005_booking_codes.sql",
   ])
     await db.exec(readFileSync(file, "utf8"));
+  await db.exec(
+    `create function auth.jwt() returns jsonb language sql stable as $$select jsonb_build_object('aal',current_setting('request.jwt.claim.aal',true))$$;`,
+  );
+  await db.exec(
+    readFileSync("drizzle/migrations/0003_client_admin_content.sql", "utf8").split(
+      "-- Client-managed content.",
+    )[0]!,
+  );
+  await db.exec(readFileSync("drizzle/migrations/0010_confirmed_booking_calendar.sql", "utf8"));
   await db.exec(`insert into user_roles(user_id,role) values('${staff}','staff');`);
 }, 30000);
 afterAll(() => db.close());
@@ -57,21 +66,37 @@ it("receives once, assigns one private reference, confirms with staff revision, 
   await expect(
     db.query("select * from lookup_booking($1,$2,$3)", [ref, "test@example.com", "b".repeat(64)]),
   ).rejects.toThrow();
-  await db.exec(`set request.jwt.claim.sub='${staff}';`);
+  await expect(
+    db.query("select confirm_booking($1,now(),'2027-06-22','2027-06-24')", [id]),
+  ).rejects.toThrow(/Staff verification/);
+  await db.exec(`set request.jwt.claim.sub='${staff}';set request.jwt.claim.aal='aal1';`);
+  await expect(
+    db.query("select confirm_booking($1,now(),'2027-06-22','2027-06-24')", [id]),
+  ).rejects.toThrow(/Staff verification/);
+  await db.exec(`set request.jwt.claim.sub='${staff}';set request.jwt.claim.aal='aal2';`);
   const revision = (
     await db.query<{ version: string }>(
       "select updated_at::text as version from enquiries where id=$1",
       [id],
     )
   ).rows[0]!.version;
-  expect(
-    (
-      await db.query(
-        "update enquiries set status='confirmed' where id=$1 and updated_at=$2::timestamptz returning id",
-        [id, revision],
-      )
-    ).rows,
-  ).toHaveLength(1);
+  await expect(
+    db.query("update enquiries set status='confirmed' where id=$1", [id]),
+  ).rejects.toThrow(/travel dates/);
+  await expect(
+    db.query("select confirm_booking($1,$2,'2027-06-24','2027-06-22')", [id, revision]),
+  ).rejects.toThrow(/valid travel dates/);
+  await db.query("select confirm_booking($1,$2,'2027-06-22','2027-06-24')", [id, revision]);
+  const scheduled = (
+    await db.query<{ status: string; start: string }>(
+      "select status,confirmed_starts_on::text as start from enquiries where id=$1",
+      [id],
+    )
+  ).rows[0]!;
+  expect(scheduled).toEqual({ status: "confirmed", start: "2027-06-22" });
+  await expect(
+    db.query("select confirm_booking($1,$2,'2027-06-22','2027-06-24')", [id, revision]),
+  ).rejects.toThrow(/changed/);
   expect(
     (
       await db.query(
