@@ -11,7 +11,13 @@ Deno.serve((request) =>
       .split(",")
       .map((x) => x.trim())
       .filter(Boolean),
-    gatewayKey: Deno.env.get("LOVABLE_API_KEY"),
+    ...(Deno.env.get("GOOGLE_AI_STUDIO_API_KEY")
+      ? {
+          gatewayKey: Deno.env.get("GOOGLE_AI_STUDIO_API_KEY"),
+          endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+          model: "gemini-2.5-flash",
+        }
+      : { gatewayKey: Deno.env.get("LOVABLE_API_KEY") }),
     authorize: async (token) => {
       const { data, error } = await client(token).auth.getUser(token);
       return !error && !!data.user;

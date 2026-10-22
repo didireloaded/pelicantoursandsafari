@@ -9,6 +9,8 @@ type Services = {
   authorize: (token: string) => Promise<boolean>;
   consumeQuota: (token: string) => Promise<"allowed" | "limited" | "unavailable">;
   fetchGateway: typeof fetch;
+  endpoint?: string;
+  model?: string;
 };
 export async function handlePlanRequest(request: Request, services: Services): Promise<Response> {
   const origin = request.headers.get("origin") ?? "";
@@ -69,14 +71,17 @@ export async function handlePlanRequest(request: Request, services: Services): P
       return fail(429, "Your planning limit has been reached. Try again later.");
     if (quota !== "allowed") return fail(503, "AI planning is temporarily unavailable.");
     const response = await services.fetchGateway(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      services.endpoint ?? "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${services.gatewayKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(travellerGatewayBody(input)),
+        body: JSON.stringify({
+          ...travellerGatewayBody(input),
+          ...(services.model ? { model: services.model } : {}),
+        }),
         signal: AbortSignal.timeout(45000),
       },
     );

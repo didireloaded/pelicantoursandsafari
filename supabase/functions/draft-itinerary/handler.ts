@@ -5,6 +5,8 @@ type Services = {
   authorize: (token: string) => Promise<"staff" | "traveller" | "invalid">;
   consumeQuota: (token: string) => Promise<"allowed" | "limited" | "unavailable">;
   fetchGateway: typeof fetch;
+  endpoint?: string;
+  model?: string;
 };
 export async function handleDraftRequest(request: Request, services: Services): Promise<Response> {
   const origin = request.headers.get("origin") ?? "";
@@ -55,14 +57,17 @@ export async function handleDraftRequest(request: Request, services: Services): 
     if (quota === "limited") return error(429, "Draft limit reached. Please try later.");
     if (quota !== "allowed") return error(503, "Drafting is temporarily unavailable.");
     const upstream = await services.fetchGateway(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      services.endpoint ?? "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${services.gatewayKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(gatewayDraftBody(input)),
+        body: JSON.stringify({
+          ...gatewayDraftBody(input),
+          ...(services.model ? { model: services.model } : {}),
+        }),
         signal: AbortSignal.timeout(45000),
       },
     );
