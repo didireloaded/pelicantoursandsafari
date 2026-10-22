@@ -13,6 +13,10 @@ const membersSchema = z.array(
   }),
 );
 type Member = z.infer<typeof membersSchema>[number];
+const requestsSchema = z.array(
+  z.object({ user_id: z.string().uuid(), email: z.string(), created_at: z.string() }),
+);
+type Request = z.infer<typeof requestsSchema>[number];
 function teamError(error: unknown) {
   const message =
     typeof error === "object" && error !== null && "message" in error ? String(error.message) : "";
@@ -34,6 +38,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
   const [role, setRole] = useState<"admin" | "staff">("staff");
   const [busy, setBusy] = useState(false);
   const [reload, setReload] = useState(0);
+  const [requests, setRequests] = useState<Request[]>([]);
   const lock = useRef(false);
   useEffect(() => {
     if (!verified) return;
@@ -52,8 +57,13 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
         const result = await supabase.rpc("team_members").abortSignal(AbortSignal.timeout(10000));
         if (result.error) throw result.error;
         const parsed = membersSchema.parse(result.data);
+        const pending = await supabase
+          .rpc("pending_team_requests")
+          .abortSignal(AbortSignal.timeout(10000));
+        const parsedRequests = pending.error ? [] : requestsSchema.parse(pending.data ?? []);
         if (active) {
           setMembers(parsed);
+          setRequests(parsedRequests);
           setCanManage(true);
         }
       } catch {
@@ -111,6 +121,58 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
         </p>
       ) : canManage ? (
         <>
+          {requests.length > 0 && (
+            <div className="mt-5 border-b border-border pb-5">
+              <h3 className="text-xs font-medium">Waiting for approval</h3>
+              <ul className="mt-3 divide-y divide-border">
+                {requests.map((request) => (
+                  <li key={request.user_id} className="flex flex-wrap items-center gap-3 py-3">
+                    <p className="min-w-0 flex-1 break-all text-xs">
+                      {request.email}
+                      <span className="block text-[10px] text-muted-foreground">
+                        Requested {new Date(request.created_at).toLocaleDateString("en-GB")}
+                      </span>
+                    </p>
+                    <Button
+                      className="!text-[10px]"
+                      disabled={busy || members.length >= 5}
+                      onClick={() =>
+                        void mutate(
+                          () =>
+                            supabase.rpc("decide_team_request", {
+                              _user_id: request.user_id,
+                              _approve: true,
+                              _role: "staff",
+                            }),
+                          `${request.email} approved. They now need to set up their authenticator.`,
+                        )
+                      }
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="!text-[10px]"
+                      disabled={busy}
+                      onClick={() => {
+                        if (window.confirm(`Decline access for ${request.email}?`))
+                          void mutate(
+                            () =>
+                              supabase.rpc("decide_team_request", {
+                                _user_id: request.user_id,
+                                _approve: false,
+                              }),
+                            "Request declined.",
+                          );
+                      }}
+                    >
+                      Decline
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <ul className="mt-5 divide-y divide-border">
             {members.map((member) => (
               <li key={member.user_id} className="flex flex-wrap items-center gap-3 py-4">

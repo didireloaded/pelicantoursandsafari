@@ -405,6 +405,33 @@ export type Database = {
         }
         Relationships: []
       }
+      team_access_requests: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          email: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          email: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          email?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       travel_details: {
         Row: {
           approved: boolean
@@ -533,6 +560,14 @@ export type Database = {
         Args: { network_hash: string }
         Returns: undefined
       }
+      decide_team_request: {
+        Args: {
+          _approve: boolean
+          _role?: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -549,6 +584,7 @@ export type Database = {
           trip_code: string
         }[]
       }
+      pending_team_requests: { Args: never; Returns: Json }
       publish_proposal: {
         Args: {
           _details: Json
@@ -571,6 +607,7 @@ export type Database = {
         Returns: undefined
       }
       remove_team_member: { Args: { _user_id: string }; Returns: undefined }
+      request_team_access: { Args: never; Returns: string }
       save_admin_client: {
         Args: { _data: Json; _id: string; _revision: number }
         Returns: Json

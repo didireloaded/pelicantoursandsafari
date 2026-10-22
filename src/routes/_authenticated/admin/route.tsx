@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       .rpc("is_staff", { _user_id: context.user.id })
       .abortSignal(AbortSignal.timeout(10000));
     if (result.error) throw new Error("Staff access could not be checked. Please retry.");
-    if (!result.data) throw redirect({ to: "/dashboard" });
+    if (!result.data) throw redirect({ to: "/access-request" });
     const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (assurance.error) throw new Error("Security check unavailable.");
     return { adminAssurance: assurance.data.currentLevel };
