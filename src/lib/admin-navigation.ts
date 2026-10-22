@@ -5,6 +5,11 @@ export const adminLinks = [
     description: "Your reservations, recent enquiries and next steps.",
   },
   {
+    to: "/admin/preview",
+    label: "Demo preview",
+    description: "Explore a fictional, read-only example of the workspace.",
+  },
+  {
     to: "/admin/clients",
     label: "Clients",
     description: "Client profiles, countries, sources and recorded spending.",

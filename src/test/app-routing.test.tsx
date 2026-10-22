@@ -26,6 +26,7 @@ const paths = [
   "/proposals",
   "/dashboard",
   "/admin",
+  "/admin/preview",
   "/admin/clients",
   "/admin/bookings",
   "/admin/packages",

@@ -46,6 +46,7 @@ import { Route as AuthenticatedAdminBookingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminClientsRouteImport } from './routes/_authenticated/admin/clients'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin/gallery'
 import { Route as AuthenticatedAdminPackagesRouteImport } from './routes/_authenticated/admin/packages'
+import { Route as AuthenticatedAdminPreviewRouteImport } from './routes/_authenticated/admin/preview'
 import { Route as AuthenticatedAdminProfileRouteImport } from './routes/_authenticated/admin/profile'
 import { Route as AuthenticatedAdminStaffRouteImport } from './routes/_authenticated/admin/staff'
 import { Route as AuthenticatedAdminTeamRouteImport } from './routes/_authenticated/admin/team'
@@ -246,6 +247,12 @@ const AuthenticatedAdminPackagesRoute =
     path: '/packages',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminPreviewRoute =
+  AuthenticatedAdminPreviewRouteImport.update({
+    id: '/preview',
+    path: '/preview',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminProfileRoute =
   AuthenticatedAdminProfileRouteImport.update({
     id: '/profile',
@@ -315,6 +322,7 @@ export interface FileRoutesByFullPath {
   '/admin/clients': typeof AuthenticatedAdminClientsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/packages': typeof AuthenticatedAdminPackagesRoute
+  '/admin/preview': typeof AuthenticatedAdminPreviewRoute
   '/admin/profile': typeof AuthenticatedAdminProfileRoute
   '/admin/staff': typeof AuthenticatedAdminStaffRoute
   '/admin/team': typeof AuthenticatedAdminTeamRoute
@@ -358,6 +366,7 @@ export interface FileRoutesByTo {
   '/admin/clients': typeof AuthenticatedAdminClientsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/packages': typeof AuthenticatedAdminPackagesRoute
+  '/admin/preview': typeof AuthenticatedAdminPreviewRoute
   '/admin/profile': typeof AuthenticatedAdminProfileRoute
   '/admin/staff': typeof AuthenticatedAdminStaffRoute
   '/admin/team': typeof AuthenticatedAdminTeamRoute
@@ -404,6 +413,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/clients': typeof AuthenticatedAdminClientsRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/packages': typeof AuthenticatedAdminPackagesRoute
+  '/_authenticated/admin/preview': typeof AuthenticatedAdminPreviewRoute
   '/_authenticated/admin/profile': typeof AuthenticatedAdminProfileRoute
   '/_authenticated/admin/staff': typeof AuthenticatedAdminStaffRoute
   '/_authenticated/admin/team': typeof AuthenticatedAdminTeamRoute
@@ -450,6 +460,7 @@ export interface FileRouteTypes {
     | '/admin/clients'
     | '/admin/gallery'
     | '/admin/packages'
+    | '/admin/preview'
     | '/admin/profile'
     | '/admin/staff'
     | '/admin/team'
@@ -493,6 +504,7 @@ export interface FileRouteTypes {
     | '/admin/clients'
     | '/admin/gallery'
     | '/admin/packages'
+    | '/admin/preview'
     | '/admin/profile'
     | '/admin/staff'
     | '/admin/team'
@@ -538,6 +550,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/clients'
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/packages'
+    | '/_authenticated/admin/preview'
     | '/_authenticated/admin/profile'
     | '/_authenticated/admin/staff'
     | '/_authenticated/admin/team'
@@ -839,6 +852,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPackagesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/preview': {
+      id: '/_authenticated/admin/preview'
+      path: '/preview'
+      fullPath: '/admin/preview'
+      preLoaderRoute: typeof AuthenticatedAdminPreviewRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/profile': {
       id: '/_authenticated/admin/profile'
       path: '/profile'
@@ -891,6 +911,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminClientsRoute: typeof AuthenticatedAdminClientsRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminPackagesRoute: typeof AuthenticatedAdminPackagesRoute
+  AuthenticatedAdminPreviewRoute: typeof AuthenticatedAdminPreviewRoute
   AuthenticatedAdminProfileRoute: typeof AuthenticatedAdminProfileRoute
   AuthenticatedAdminStaffRoute: typeof AuthenticatedAdminStaffRoute
   AuthenticatedAdminTeamRoute: typeof AuthenticatedAdminTeamRoute
@@ -905,6 +926,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminClientsRoute: AuthenticatedAdminClientsRoute,
     AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
     AuthenticatedAdminPackagesRoute: AuthenticatedAdminPackagesRoute,
+    AuthenticatedAdminPreviewRoute: AuthenticatedAdminPreviewRoute,
     AuthenticatedAdminProfileRoute: AuthenticatedAdminProfileRoute,
     AuthenticatedAdminStaffRoute: AuthenticatedAdminStaffRoute,
     AuthenticatedAdminTeamRoute: AuthenticatedAdminTeamRoute,

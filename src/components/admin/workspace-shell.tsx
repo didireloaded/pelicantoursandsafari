@@ -4,6 +4,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
+  PanelsTopLeft,
   Users,
   CalendarDays,
   BarChart3,
@@ -24,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { adminLinks } from "@/lib/admin-navigation";
 const icons = [
   LayoutDashboard,
+  PanelsTopLeft,
   Users,
   CalendarDays,
   BarChart3,
