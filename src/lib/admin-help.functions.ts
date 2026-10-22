@@ -26,7 +26,7 @@ export const askWorkspaceHelp = createServerFn({ method: "POST" })
         ? {
             gatewayKey: process.env["GOOGLE_AI_STUDIO_API_KEY"],
             endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-            model: "gemini-2.5-flash",
+            model: "gemini-3.8-flash",
           }
         : { gatewayKey: process.env["LOVABLE_API_KEY"] }),
       authorize: async (token) => {
