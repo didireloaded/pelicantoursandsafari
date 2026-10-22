@@ -33,6 +33,17 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [resendUntil, setResendUntil] = useState(0);
+  const [resendWaiting, setResendWaiting] = useState(false);
+  useEffect(() => {
+    if (!resendUntil) return;
+    setResendWaiting(true);
+    const timer = window.setTimeout(
+      () => setResendWaiting(false),
+      Math.max(0, resendUntil - Date.now()),
+    );
+    return () => window.clearTimeout(timer);
+  }, [resendUntil]);
   const lock = useRef(false);
   const field =
     "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary";
@@ -75,6 +86,45 @@ function AuthPage() {
       }
     } catch {
       setMsg("Sign-in could not be completed. Check your connection and try again.");
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  };
+  const resendConfirmation = async () => {
+    if (lock.current || Date.now() < resendUntil) return;
+    const address = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+      setMsg("Enter a valid email address above to request a confirmation email.");
+      return;
+    }
+    lock.current = true;
+    setBusy(true);
+    setMsg("");
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: address,
+        options: { emailRedirectTo: `${window.location.origin}${traveller ? next : "/admin"}` },
+      });
+      if (error) {
+        if (error.status === 429 || error.code === "over_email_send_rate_limit") {
+          setResendUntil(Date.now() + 60000);
+          setMsg("Please wait a minute before requesting another confirmation email.");
+        } else
+          setMsg(
+            "We couldn’t request a confirmation email. Please try again shortly or use Continue with Google for your Gmail account.",
+          );
+        return;
+      }
+      setResendUntil(Date.now() + 60000);
+      setMsg(
+        "If this email has an account waiting for confirmation, a new confirmation email has been requested. Check Gmail’s Spam and All Mail folders and use the newest link. If you originally used Google or Apple, use that sign-in button instead.",
+      );
+    } catch {
+      setMsg(
+        "The confirmation request could not be completed. Check your connection and try again.",
+      );
     } finally {
       lock.current = false;
       setBusy(false);
@@ -233,6 +283,15 @@ function AuthPage() {
             Forgot password?
           </Button>
         )}
+        <Button
+          type="button"
+          variant="link"
+          className="mt-3 block px-0"
+          disabled={busy || resendWaiting}
+          onClick={() => void resendConfirmation()}
+        >
+          {resendWaiting ? "Wait a minute before resending" : "Resend confirmation email"}
+        </Button>
         {msg && (
           <p role="status" className="mt-6 text-sm text-muted-foreground">
             {msg}

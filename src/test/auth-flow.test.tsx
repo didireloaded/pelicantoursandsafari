@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   signin: vi.fn(),
+  resend: vi.fn(),
   recovery: vi.fn(),
   update: vi.fn(),
   user: vi.fn(),
@@ -21,6 +22,7 @@ vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     auth: {
       signInWithPassword: mocks.signin,
+      resend: mocks.resend,
       resetPasswordForEmail: mocks.recovery,
       updateUser: mocks.update,
       getUser: mocks.user,
@@ -77,4 +79,38 @@ it("explains invalid credentials without requiring developer approval and normal
     email: "owner@example.com",
     password: "test-password",
   });
+});
+
+it("resends confirmation with a normalized email and cooldown without claiming delivery", async () => {
+  mocks.resend.mockResolvedValue({ error: null });
+  render(React.createElement(authPage));
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "LAURYN@example.com" } });
+  fireEvent.click(screen.getByRole("button", { name: "Resend confirmation email" }));
+  expect(await screen.findByRole("status")).toHaveTextContent(
+    "If this email has an account waiting for confirmation",
+  );
+  expect(mocks.resend).toHaveBeenCalledWith({
+    type: "signup",
+    email: "lauryn@example.com",
+    options: { emailRedirectTo: `${window.location.origin}/admin` },
+  });
+  expect(screen.getByRole("button", { name: "Wait a minute before resending" })).toBeDisabled();
+});
+it("handles a rate-limited confirmation request without saying it was sent", async () => {
+  mocks.resend.mockResolvedValue({ error: { status: 429 } });
+  render(React.createElement(authPage));
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "guest@example.com" } });
+  fireEvent.click(screen.getByRole("button", { name: "Resend confirmation email" }));
+  expect(await screen.findByRole("status")).toHaveTextContent("Please wait a minute");
+  expect(screen.getByRole("button", { name: "Wait a minute before resending" })).toBeDisabled();
+});
+it("requires an address and retains a retry after network failure", async () => {
+  mocks.resend.mockRejectedValue(new Error("offline"));
+  render(React.createElement(authPage));
+  fireEvent.click(screen.getByRole("button", { name: "Resend confirmation email" }));
+  expect(mocks.resend).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "guest@example.com" } });
+  fireEvent.click(screen.getByRole("button", { name: "Resend confirmation email" }));
+  expect(await screen.findByRole("status")).toHaveTextContent("Check your connection");
+  expect(screen.getByRole("button", { name: "Resend confirmation email" })).not.toBeDisabled();
 });
