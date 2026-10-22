@@ -73,7 +73,7 @@ export function Footer() {
           <a href={`mailto:${company.email}`} className="block break-words">{company.email}</a>
         </div>
       </div>
-      <div className="mx-auto flex max-w-[1440px] flex-wrap gap-6 px-5 pb-8 text-sm md:px-10"><Link to="/stay" className="text-primary">Places to stay</Link><Link to="/trips" className="text-sm hover:text-clay">My trips</Link><Link to="/journey" className="text-primary">Build my journey</Link><Link to="/match">Safari match</Link><Link to="/shortlist" search={{saved:"[]"}}>Shortlist</Link><Link to="/travel-guide">Travel guide</Link><Link to="/proposals" search={{}}>My proposals</Link></div>
+      <div className="mx-auto flex max-w-[1440px] flex-wrap gap-6 px-5 pb-8 text-sm md:px-10"><Link to="/stay" className="text-primary">Places to stay</Link><Link to="/trips" className="text-sm hover:text-clay">My trips</Link><Link to="/journey" className="text-primary">Build my journey</Link><Link to="/match">Safari match</Link><Link to="/shortlist" search={{saved:"[]"}}>Shortlist</Link><Link to="/travel-guide">Travel guide</Link><Link to="/proposals" search={{}}>My proposals</Link><Link to="/book" search={{}}>Request a booking</Link><Link to="/booking">Check my booking</Link></div>
       <p className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} {company.legal} · Windhoek, Namibia</p>
     </footer>
   );
