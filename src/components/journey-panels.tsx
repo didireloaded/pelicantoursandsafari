@@ -37,9 +37,9 @@ export function JourneyPanels() {
   const [active, setActive] = useState(0);
   return (
     <Section className="pt-0 md:pt-0">
-      <h2 className="text-3xl font-semibold md:text-4xl">Your next adventure starts here</h2>
+      <h2 className="text-3xl font-semibold md:text-4xl">Three ways to start planning</h2>
       <p className="mt-4 max-w-2xl text-muted-foreground">
-        Explore an idea, shape a journey or choose when to travel.
+        Browse tours, bring destinations and stays together, or check when to travel.
       </p>
       <div className="journey-panels relative mt-8 overflow-hidden rounded-lg bg-foreground">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden md:block">

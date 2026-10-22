@@ -162,7 +162,7 @@ export function PlanCTA() {
   return (
     <section className="bg-primary text-primary-foreground">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-5 py-16 lg:flex-row lg:items-end lg:justify-between md:px-10 md:py-20">
-        <h2 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">Let's plan your Namibian story.</h2>
+        <h2 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">Tell us where you want to go.</h2>
         <div className="flex flex-wrap gap-3">
           <Link to="/tailor-made" className="rounded-lg bg-background px-6 py-3.5 text-sm font-semibold text-foreground">Plan Your Safari</Link>
           <a href={whatsapp()} target="_blank" rel="noreferrer" className="rounded-lg border border-primary-foreground/40 px-6 py-3.5 text-sm font-semibold">WhatsApp Kamwi</a>

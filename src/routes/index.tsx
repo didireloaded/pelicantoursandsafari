@@ -52,8 +52,8 @@ function Home() {
       <JourneyPanels />
 
       <Section className="border-t border-border/60">
-        <h2 className="text-3xl font-semibold md:text-4xl">Find your kind of journey</h2>
-        <p className="mt-4 max-w-2xl text-muted-foreground">Explore the experiences in our safari catalogue, or let Pelican help you choose.</p>
+        <h2 className="text-3xl font-semibold md:text-4xl">What would you like to see?</h2>
+        <p className="mt-4 max-w-2xl text-muted-foreground">Start with wildlife, the coast or the desert. Browse the safari ideas below, or ask Pelican to help you choose.</p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from(new Set(Object.values(safariInterests).flat())).map(interest => {
             const count = safaris.filter(s => safariInterests[s.slug]?.includes(interest)).length;
@@ -67,7 +67,7 @@ function Home() {
 
       <Section className="pt-0 md:pt-0">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="text-4xl font-bold tracking-tight md:text-6xl">Safari <span className="text-clay">journeys</span></h2>
+          <h2 className="text-4xl font-bold tracking-tight md:text-6xl">Safaris <span className="text-clay">& tours</span></h2>
           <Link to="/safaris" className="text-sm font-semibold text-primary">All safaris →</Link>
         </div>
         <div className="mt-10 divide-y divide-border/70 border-y border-border/70">
@@ -102,7 +102,7 @@ function Home() {
       <Section className="grid gap-10 md:grid-cols-12 md:items-center">
         <div className="md:col-span-5">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-clay">Tailor-made</p>
-          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">A trip shaped around you.</h2>
+          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">Choose the places. We'll plan the route.</h2>
           <p className="mt-6 text-lg text-muted-foreground">{company.specialty}</p>
           <Link to="/tailor-made" className="mt-8 inline-block rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground">Plan Your Safari</Link>
         </div>

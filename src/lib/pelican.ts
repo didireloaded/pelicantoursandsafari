@@ -29,19 +29,17 @@ export const company = {
   name: "Pelican Tours and Safaris",
   legal: "Pelican Tours and Safaris CC",
   intro:
-    "Pelican Tours and Safaris CC is a proudly Namibian tour operator offering professionally guided travel experiences throughout Namibia, as well as selected routes into Botswana and Zimbabwe.",
+    "Based in Windhoek, Pelican Tours and Safaris CC guides trips across Namibia, with selected routes into Botswana and Zimbabwe.",
   lead:
-    "Led by Kamwi Kays, the company provides travellers with memorable adventures ranging from city tours to Big Five safaris and multi-day regional expeditions.",
+    "Kamwi Kays leads Pelican Tours and Safaris. The catalogue covers Windhoek city tours, Etosha wildlife safaris and longer regional trips.",
   specialty:
-    "We specialise in delivering reliable, well-planned, and experience-driven journeys tailored to the needs of both local and international travellers.",
-  philosophy: "Every tour should be unique and tell a story. Each itinerary is designed not only as a trip, but as a complete travel experience.",
-  values: ["Authenticity", "Personal connection", "High-quality guiding", "Attention to detail", "Creating long-lasting memories"],
+    "Choose the places that interest you, share your dates and group size, and Pelican will help shape a route before you confirm a booking.",
+  philosophy: "Every tour should be unique and tell a story.",
+  values: ["Start with the places you want to see", "Allow time for the road between stops", "Agree the details before confirming"],
   why: [
-    "Professional and friendly service",
-    "Knowledgeable guiding across Namibia and neighbouring countries",
-    "Flexible and tailor-made itineraries",
-    "Emphasis on Big Five and wildlife-rich adventures",
-    "Reliable logistics and safe transport",
+    "Windhoek city tours, Etosha wildlife safaris and selected cross-border routes",
+    "A Safari Brief built around your dates, group and interests",
+    "An itinerary, costs and terms to review before a booking is confirmed",
   ],
   serve: [
     "International tourists from Europe, the USA, South Africa and beyond",
