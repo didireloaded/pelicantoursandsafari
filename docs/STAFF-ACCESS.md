@@ -30,20 +30,21 @@ Infrastructure routes are not staff pages: `/lovable/email/auth/preview` and `/l
 
 ## Database functions
 
-| Function(s)                                                                                                                   | Who can use it / effect                                                |
-| ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `save_staff_profile`                                                                                                          | Staff + aal2, caller's own name/photo only; revision required          |
-| `staff_directory`                                                                                                             | Staff + aal2 after migration 0011; current role holders only           |
-| `save_admin_client`, `save_admin_trip`, `save_site_content`                                                                   | Staff + aal2, validated and conflict-checked writes                    |
-| `confirm_booking`                                                                                                             | Staff + aal2; atomic confirmed dates/status, updated-at check          |
-| `touch_staff_presence`, `consume_admin_help`                                                                                  | Staff + aal2; limited presence/help operations                         |
-| `consume_ai_draft_request`, `publish_proposal`                                                                                | Legacy staff guard; quotas or expected proposal version still required |
-| `team_members`, `pending_team_requests`, `set_team_member`, `remove_team_member`, `decide_team_request`                       | Admin + aal2 only; five-seat, self/last-admin protections              |
-| `request_team_access`                                                                                                         | Confirmed signed-in self only; no role self-grant                      |
-| `published_site_content`                                                                                                      | Public, published snapshots only                                       |
-| `has_role`, `is_staff`, `can_manage_site`, `can_manage_team`                                                                  | Boolean authorization helpers; do not grant permissions                |
-| `valid_trip_stops`                                                                                                            | Pure stop validation helper                                            |
-| `submit_enquiry`, `lookup_booking`, `assign_booking_ref`, `assign_enquiry_ref`, `record_page_view`, `consume_routing_request` | Service-role only; direct browser RPC denied even to staff             |
+| Function(s)                                                                                                                   | Who can use it / effect                                                                      |
+| ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `save_staff_profile`                                                                                                          | Staff + aal2, caller's own name/photo only; revision required                                |
+| `staff_directory`                                                                                                             | Staff + aal2 after migration 0011; current role holders only                                 |
+| `save_admin_client`, `save_admin_trip`, `save_site_content`                                                                   | Staff + aal2, validated and conflict-checked writes                                          |
+| `confirm_booking`                                                                                                             | Staff + aal2; atomic confirmed dates/status, updated-at check                                |
+| `touch_staff_presence`, `consume_admin_help`                                                                                  | Staff + aal2; limited presence/help operations                                               |
+| `consume_traveller_plan_request`                                                                                              | Signed-in caller; per-user/global planning quota; deployed availability not established here |
+| `consume_ai_draft_request`, `publish_proposal`                                                                                | Legacy staff guard; quotas or expected proposal version still required                       |
+| `team_members`, `pending_team_requests`, `set_team_member`, `remove_team_member`, `decide_team_request`                       | Admin + aal2 only; five-seat, self/last-admin protections                                    |
+| `request_team_access`                                                                                                         | Confirmed signed-in self only; no role self-grant                                            |
+| `published_site_content`                                                                                                      | Public, published snapshots only                                                             |
+| `has_role`, `is_staff`, `can_manage_site`, `can_manage_team`                                                                  | Boolean authorization helpers; do not grant permissions                                      |
+| `valid_trip_stops`                                                                                                            | Pure stop validation helper                                                                  |
+| `submit_enquiry`, `lookup_booking`, `assign_booking_ref`, `assign_enquiry_ref`, `record_page_view`, `consume_routing_request` | Service-role only; direct browser RPC denied even to staff                                   |
 
 Trigger helpers (`touch_updated_at`, private audit/date/limit helpers) are database internals, not user actions. The legacy `plan-safari` adapter also references `consume_traveller_plan_request`; it is absent from current generated RPC types, so its deployed availability is **not established** by this audit.
 
@@ -55,8 +56,11 @@ Trigger helpers (`touch_updated_at`, private audit/date/limit helpers) are datab
 - `journey-route`: validated/rate-limited routing service; needs configured routing provider.
 - `plan-safari`: signed-in traveller/staff, quota and Lovable provider; deployment/quota function availability not verified here.
 - `draft-itinerary`: staff role, quota and Lovable provider; older handler does not independently enforce aal2.
-- `deliver-enquiry-emails`: worker/scheduler authorization, not a staff browser action.
-- `enquiry-email-webhook`: provider signature, not a staff browser action.
+- `deliver-enquiry-emails` and `enquiry-email-webhook`: empty local directories, no tracked handlers. They are **not established callable features** in this checkout. Current app email sending uses the server-side Resend helper; a queued worker/webhook flow must not be assumed deployed.
+
+## MCP tools
+
+`list_safaris` reads the fixed public catalogue. `list_enquiries` and `update_enquiry` require OAuth and use the caller’s database token/RLS; updates require the exact `expected_updated_at`. Real OAuth consent was not retested in this change. `update_enquiry` cannot supply confirmed travel dates, so attempting a new booking confirmation through that tool is blocked by the date trigger; use the dashboard confirmation action.
 
 ## Expected RLS / privilege denials
 
@@ -79,3 +83,17 @@ There were **no unexpected missing grants or RLS policies blocking intended staf
 ## Verification
 
 Isolated SQL tests run actual migrations/policies: own WebP-path insertion → `save_staff_profile` → staff read, nonstaff/aal1/anonymous denial, wrong-prefix rejection, stale revision rejection, direct-write denial, directory MFA and removed-role filtering. UI tests verify saved-name directory rendering and own-only edit link; route tests cover all workspace routes. Live browser upload/save/sidebar evidence is recorded in the release notes when completed; isolated tests alone do not establish live upload success.
+
+### Live walkthrough result
+
+Published application verified on 22 October 2026 with the existing authorized test account (admin + aal2):
+
+1. Used the normal macOS file picker to upload synthetic `/tmp/pelican-staff-flow-test.webp`; the browser extension's direct chooser API lacked file-URL permission, and that permission was left unchanged.
+2. UI reported private upload completed; `save_staff_profile` returned confirmed success and the avatar appeared in the sidebar.
+3. After publishing the dedicated pages, `/admin/profile` loaded the persisted photo. Saved a temporary display name; sidebar updated immediately.
+4. `/admin/staff` loaded the real current roster with the saved name/photo and an edit link only on the caller's card. No RLS error occurred.
+5. Restored original display name and removed the test photo association through the same profile save. The synthetic storage object remains private; no delete permission was added merely for test cleanup.
+
+Evidence: `/tmp/pelican-profile-live-photo.png`, `/tmp/pelican-staff-directory-live.png`. No other staff profile, role or customer record was changed. Ordinary-staff versus admin denials were checked in isolated tests/schema inspection; the live browser session itself was an administrator.
+
+Validation: 239 tests across 52 files passed; TypeScript and production build passed. ESLint: no errors, 13 pre-existing warnings. Migration 0011 was applied and read-only verified in Lovable, synced from GitHub, and retested from its exact committed SQL. Application publication reported “Your website was updated.”
