@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Approve this exact project preview for booking/enquiry submissions and add booking-status links to short-reference emails; existing staff received-payment recording preserved. 27 tests passed; booking form validation and invalid lookup checked in browser, appearance unchanged.
+- [ ] Booking operational verification: successful receipt/email delivery and staff payment save/read-back still need a controlled live request and staff MFA session; no real emails or money records changed during this check. Publish to update the live website.
+
 - [x] Switch all three AI features to Lovable AI and remove the unused Google AI Studio secret. Both legacy functions redeployed; all three gateway request shapes returned verified answers; 25 regression tests passed. Website appearance unchanged.
 - [ ] Operational AI end-to-end verification: traveller planner is blocked by missing public.consume_traveller_plan_request (PGRST202), and localhost is not in the configured origin allowlist. Private staff flows still require staff plus authenticator verification; no security bypass or unrelated migration applied.
 

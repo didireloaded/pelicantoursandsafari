@@ -40,3 +40,16 @@ it("keeps each provider idempotency key and rendered payload stable across retri
   expect(mocks.send.mock.calls[1]?.[0]).toEqual(mocks.send.mock.calls[3]?.[0]);
   expect(mocks.send.mock.calls[0]?.[0].idempotencyKey).not.toBe(mocks.send.mock.calls[1]?.[0].idempotencyKey);
 });
+it("delivers the private booking reference and booking lookup destination with stable retry keys", async () => {
+  mocks.send.mockResolvedValue({ sent: true });
+  await sendEnquiryEmails(brief, "internal-receipt", "ENP1-7K3Q");
+  const traveller = mocks.send.mock.calls.find(([options]) => options.to === brief.email)?.[0];
+  expect(traveller).toEqual(expect.objectContaining({
+    subject: "We received your safari enquiry — ENP1-7K3Q",
+    idempotencyKey: "enquiry/internal-receipt/traveller",
+    html: expect.stringContaining('href="https://pelicantoursandsafari.com/booking"'),
+  }));
+  expect(traveller?.text).toContain("ENP1-7K3Q");
+  await sendEnquiryEmails(brief, "internal-receipt", "ENP1-7K3Q");
+  expect(mocks.send.mock.calls[0]?.[0]).toEqual(mocks.send.mock.calls[2]?.[0]);
+});

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Section, meta } from "@/components/site";
 import { bookingStages } from "@/lib/booking";
 import { lookupBooking, type BookingLookup } from "@/lib/booking.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/booking")({
   head: () => meta("Check my booking", "Look up the status of your Pelican booking request with your booking reference."),
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/booking")({
 });
 
 function BookingLookupPage() {
+  const checkBooking = useServerFn(lookupBooking);
   const [ref, setRef] = useState("");
   const [contact, setContact] = useState("");
   const [busy, setBusy] = useState(false);
@@ -20,7 +22,7 @@ function BookingLookupPage() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
-    try { setResult(await lookupBooking({ data: { ref, contact } })); }
+    try { setResult(await checkBooking({ data: { ref, contact } })); }
     catch { setResult({ found: false, error: "Booking look-up is unavailable. Please contact Pelican." }); }
     finally { setBusy(false); }
   }

@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { enquiryAllowedOrigins } from "./enquiry-origins";
 export const submitTripEnquiry = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => data)
   .handler(async ({ data }) => {
@@ -8,10 +9,7 @@ export const submitTripEnquiry = createServerFn({ method: "POST" })
     const { submitServerEnquiry } = await import("./enquiry-submit.server");
     const receipt = await submitServerEnquiry(data, getRequest(), {
       trustedCloudflareIngress: process.env["ENQUIRY_TRUST_CLOUDFLARE_IP"] === "true",
-      allowedOrigins: (process.env["ENQUIRY_ALLOWED_ORIGINS"] ?? "")
-        .split(",")
-        .map((x) => x.trim())
-        .filter(Boolean),
+      allowedOrigins: enquiryAllowedOrigins(process.env["ENQUIRY_ALLOWED_ORIGINS"]),
       rateSalt: process.env["ENQUIRY_RATE_SALT"],
       databaseUrl: process.env["SUPABASE_URL"],
       serviceKey: process.env["SUPABASE_SERVICE_ROLE_KEY"],
