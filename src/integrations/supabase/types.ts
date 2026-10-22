@@ -526,6 +526,7 @@ export type Database = {
       }
       assign_enquiry_ref: { Args: { _enquiry: string }; Returns: string }
       can_manage_site: { Args: never; Returns: boolean }
+      can_manage_team: { Args: never; Returns: boolean }
       consume_admin_help: { Args: never; Returns: undefined }
       consume_ai_draft_request: { Args: never; Returns: boolean }
       consume_routing_request: {
@@ -569,6 +570,7 @@ export type Database = {
         Args: { _network_hash: string; _path: string }
         Returns: undefined
       }
+      remove_team_member: { Args: { _user_id: string }; Returns: undefined }
       save_admin_client: {
         Args: { _data: Json; _id: string; _revision: number }
         Returns: Json
@@ -587,6 +589,10 @@ export type Database = {
         }
         Returns: Json
       }
+      set_team_member: {
+        Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
+        Returns: undefined
+      }
       staff_directory: {
         Args: never
         Returns: {
@@ -598,6 +604,7 @@ export type Database = {
         Args: { network_hash: string; payload: Json }
         Returns: string
       }
+      team_members: { Args: never; Returns: Json }
       touch_staff_presence: { Args: never; Returns: undefined }
       valid_trip_stops: { Args: { stops: Json }; Returns: boolean }
     }
