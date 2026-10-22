@@ -173,7 +173,7 @@ export function Bookings() {
                   className={`admin-pill ${view === "list" ? "is-selected" : ""}`}
                   onClick={() => setView("list")}
                 >
-                  Reservations
+                  Manual entries
                 </button>
               </div>
               {view === "list" && (
@@ -229,13 +229,14 @@ export function Bookings() {
                     </button>
                   ))
                 ) : (
-                  <div className="admin-empty">No reservations match these filters.</div>
+                  <div className="admin-empty">No manual entries match these filters.</div>
                 )}
               </div>
             )}
             {view === "list" && !data?.trips.length && (
               <p className="mt-5 text-center text-xs text-muted-foreground">
-                No reservations recorded yet. Start with a client, then create a draft request.
+                No manual reservations recorded yet. Website bookings appear in the calendar after
+                confirmation.
               </p>
             )}
           </section>
