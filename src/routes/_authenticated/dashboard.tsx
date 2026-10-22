@@ -1,4 +1,6 @@
 import { ConfirmBooking } from "@/components/admin/confirm-booking";
+import { useAdminSampleMode } from "@/lib/admin-sample-mode";
+import { SampleEnquiries } from "@/components/admin/sample-enquiries";
 import { AppSelect } from "@/components/ui/app-select";
 import { Search, Clock3, Mail, RefreshCw, ChevronDown } from "lucide-react";
 import { initials } from "@/lib/admin-workspace";
@@ -52,9 +54,13 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: Dashboard,
+  component: EnquiryScreen,
 });
 
+function EnquiryScreen() {
+  const sample = useAdminSampleMode();
+  return sample ? <SampleEnquiries /> : <Dashboard />;
+}
 function Dashboard() {
   const [rows, setRows] = useState<Enquiry[]>([]);
   const [staff, setStaff] = useState<boolean | null>(null);

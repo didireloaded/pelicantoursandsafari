@@ -102,7 +102,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
     <section className="admin-panel mt-6 max-w-3xl p-6">
       <div className="flex items-center gap-2">
         <Users size={17} className="text-primary" />
-        <h2 className="admin-panel-heading">Your team</h2>
+        <h2 className="admin-panel-heading">Manage access</h2>
         {canManage && (
           <span className="ml-auto text-xs text-muted-foreground">
             {members.length} / 5 accounts
