@@ -8,6 +8,7 @@ const state = vi.hoisted(() => ({
   })),
 }));
 vi.mock("@tanstack/react-router", () => ({
+  Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
   createFileRoute: () => (config: object) => ({
     options: config,
     useRouteContext: () => ({
