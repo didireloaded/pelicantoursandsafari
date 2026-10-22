@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { oauthReturnPath } from "@/lib/oauth-return-path";
 import { Section } from "@/components/site";
@@ -93,7 +94,47 @@ function AuthPage() {
       setBusy(false);
     }
   };
-  return (
+  const RETURN_KEY = "pelican_oauth_return";
+  useEffect(() => {
+    let cancelled = false;
+    const stored = sessionStorage.getItem(RETURN_KEY);
+    if (!stored) return;
+    void supabase.auth.getSession().then(({ data }) => {
+      if (cancelled || !data.session) return;
+      sessionStorage.removeItem(RETURN_KEY);
+      const target = stored === "/" ? "/dashboard" : stored;
+      window.location.assign(target);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const google = async () => {
+    if (lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setMsg("");
+    sessionStorage.setItem(RETURN_KEY, next);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/auth`,
+      });
+      if (result.error) {
+        sessionStorage.removeItem(RETURN_KEY);
+        setMsg(result.error.message || "Google sign-in could not be started. Please try again.");
+        return;
+      }
+      if (result.redirected) return;
+      sessionStorage.removeItem(RETURN_KEY);
+      window.location.assign(next === "/" ? "/dashboard" : next);
+    } catch {
+      sessionStorage.removeItem(RETURN_KEY);
+      setMsg("Google sign-in could not be completed. Check your connection and try again.");
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  };
     <Section className="pt-32">
       <div className="mx-auto max-w-md">
         <p className="text-sm uppercase tracking-[0.2em] text-clay">
