@@ -91,12 +91,9 @@ function Dashboard() {
       try {
         const user = await supabase.auth.getUser();
         if (user.error || !user.data.user) throw new Error("Sign-in unavailable");
-        const roles = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.data.user.id);
+        const roles = await supabase.rpc("can_manage_site");
         if (roles.error) throw roles.error;
-        const ok = !!roles.data?.length;
+        const ok = !!roles.data;
         if (!active) return;
         setStaff(ok);
         if (!ok) return;

@@ -73,7 +73,7 @@ function Proposals() {
   async function load() {
     setLoading(true);
     try {
-      const role = await supabase.rpc("is_staff", { _user_id: user.id });
+      const role = await supabase.rpc("can_manage_site");
       if (role.error) throw role.error;
       setStaff(!!role.data);
       const [p, v, r] = await Promise.all([

@@ -28,9 +28,9 @@ function ManageTrips() {
   const [busy, setBusy] = useState(false);
   const load = async () => {
     try {
-      const { data: roles, error: r } = await supabase.from("user_roles").select("role");
+      const { data: verified, error: r } = await supabase.rpc("can_manage_site");
       if (r) throw r;
-      const ok = !!roles?.some((r) => r.role === "staff" || r.role === "admin");
+      const ok = !!verified;
       setStaff(ok);
       if (ok) {
         const { data, error } = await supabase

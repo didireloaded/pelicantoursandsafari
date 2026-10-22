@@ -39,7 +39,7 @@ function Manage() {
   const lock = useRef(false);
   async function load() {
     try {
-      const role = await supabase.rpc("is_staff", { _user_id: user.id });
+      const role = await supabase.rpc("can_manage_site");
       if (role.error) throw role.error;
       setStaff(!!role.data);
       if (!role.data) return;
