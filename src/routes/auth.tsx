@@ -70,7 +70,7 @@ function AuthPage() {
             ? error.message
             : traveller
               ? "Check your email to confirm your account, then sign in. Pelican will assign your trip or private proposal."
-              : "Confirm your email, then ask the owner or a team administrator to add this email in Settings → Team. You can also use Google or Apple with the same approved email.",
+              : "Confirm your email, then sign in. Your access request goes to a Pelican administrator for approval.",
         );
       }
     } catch {
