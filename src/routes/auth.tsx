@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { oauthReturnPath } from "@/lib/oauth-return-path";
 import { Section } from "@/components/site";
@@ -93,6 +94,47 @@ function AuthPage() {
       setBusy(false);
     }
   };
+  const RETURN_KEY = "pelican_oauth_return";
+  useEffect(() => {
+    let cancelled = false;
+    const stored = sessionStorage.getItem(RETURN_KEY);
+    if (!stored) return;
+    void supabase.auth.getSession().then(({ data }) => {
+      if (cancelled || !data.session) return;
+      sessionStorage.removeItem(RETURN_KEY);
+      const target = stored === "/" ? "/dashboard" : stored;
+      window.location.assign(target);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const google = async () => {
+    if (lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setMsg("");
+    sessionStorage.setItem(RETURN_KEY, next);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/auth`,
+      });
+      if (result.error) {
+        sessionStorage.removeItem(RETURN_KEY);
+        setMsg(result.error.message || "Google sign-in could not be started. Please try again.");
+        return;
+      }
+      if (result.redirected) return;
+      sessionStorage.removeItem(RETURN_KEY);
+      window.location.assign(next === "/" ? "/dashboard" : next);
+    } catch {
+      sessionStorage.removeItem(RETURN_KEY);
+      setMsg("Google sign-in could not be completed. Check your connection and try again.");
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  };
   return (
     <Section className="pt-32">
       <div className="mx-auto max-w-md">
@@ -135,6 +177,27 @@ function AuthPage() {
             Forgot password?
           </Button>
         )}
+        <div className="mt-8 flex items-center gap-4 text-xs uppercase tracking-[0.2em] text-clay">
+          <span aria-hidden className="h-px flex-1 bg-foreground/15" />
+          or
+          <span aria-hidden className="h-px flex-1 bg-foreground/15" />
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="mt-6 w-full"
+          disabled={busy}
+          onClick={google}
+        >
+          <svg aria-hidden viewBox="0 0 24 24" className="mr-2 h-4 w-4">
+            <path fill="#EA4335" d="M12 5.04c1.62 0 3.06.56 4.2 1.66l3.12-3.12C17.4 1.76 14.94.75 12 .75 7.62.75 3.84 3.27 2.04 6.94l3.66 2.84C6.6 7.02 9.08 5.04 12 5.04z" />
+            <path fill="#4285F4" d="M23.25 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.32-5.17 3.32-8.82z" />
+            <path fill="#FBBC05" d="M5.7 14.22a7.2 7.2 0 0 1 0-4.44L2.04 6.94a11.26 11.26 0 0 0 0 10.12l3.66-2.84z" />
+            <path fill="#34A853" d="M12 23.25c3.04 0 5.6-1 7.46-2.72l-3.86-3c-1.07.72-2.44 1.15-3.6 1.15-2.92 0-5.4-1.98-6.3-4.71l-3.66 2.84c1.8 3.66 5.58 6.44 9.96 6.44z" />
+          </svg>
+          Continue with Google
+        </Button>
         {msg && (
           <p role="status" className="mt-6 text-sm text-muted-foreground">
             {msg}
