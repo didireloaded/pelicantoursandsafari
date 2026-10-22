@@ -2111,3 +2111,23 @@
 .enquiry-extra .enquiry-workflow {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.admin-team-circles > button {
+  gap: 0;
+}
+.admin-team-circles .admin-team-avatar {
+  margin-left: -8px;
+  border: 2px solid var(--background);
+  overflow: hidden;
+}
+.admin-team-circles .admin-team-avatar:first-child {
+  margin-left: 0;
+}
+.admin-team-circles .admin-team-popover {
+  right: auto;
+  left: 0;
+}
+@media (max-width: 640px) {
+  .admin-topbar .admin-team-circles + div {
+    display: none;
+  }
+}

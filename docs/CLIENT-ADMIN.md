@@ -118,3 +118,23 @@ requests or move them back under review with the existing status selector.
 website requests; changing a standalone calendar reservation does not silently
 confirm a different booking request. Traveller reference emails go out at submission
 when an email is supplied; they acknowledge receipt, not acceptance of the booking.
+
+### Staff profile photos and team circles
+
+Open Settings → Your profile after completing authenticator verification. Enter a
+display name, optionally upload a JPEG/PNG/WebP photo, then Save profile. Remove
+profile photo switches back to initials after saving. The photo stays private to
+verified staff and is never automatically published to the public website.
+
+Overlapping circles at the top-left show up to five staff whose workspace activity
+was seen in the last two minutes. The list refreshes each minute while the tab is
+visible. It is recent activity, not proof of an active login session. Photos fall
+back to initials when missing or unavailable. Updating a profile refreshes the
+current workspace immediately; other open workspaces refresh on their next check.
+
+Migration 0009_staff_profiles owns the private profile records and revision-checked
+save_staff_profile function. It always saves auth.uid(), verifies staff+aal2, and
+accepts only an existing site-media photo under that user's own upload prefix.
+Removing a profile photo unlinks it; it does not delete a stored file or alter any
+other staff member's profile. Existing staff private media upload/read policies
+remain in force. Account sign-in and membership permissions are unchanged.

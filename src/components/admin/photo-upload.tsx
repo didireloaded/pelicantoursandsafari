@@ -38,7 +38,9 @@ export function PhotoUpload({
   path,
   onChange,
   onBusy,
+  purpose = "content",
 }: {
+  purpose?: "content" | "profile";
   userId: string;
   path: string | null;
   onChange: (path: string) => void;
@@ -66,14 +68,18 @@ export function PhotoUpload({
             try {
               const blob = await preparePhoto(file);
               const next = `${userId}/${crypto.randomUUID()}.webp`;
-              const result = await supabase.storage
-                .from("site-media")
-                .upload(next, blob, { contentType: "image/webp", cacheControl: "60", upsert: false });
+              const result = await supabase.storage.from("site-media").upload(next, blob, {
+                contentType: "image/webp",
+                cacheControl: "60",
+                upsert: false,
+              });
               if (result.error)
                 throw new Error("Upload not confirmed. Check your sign-in and retry.");
               onChange(next);
               setMessage(
-                "Photo uploaded privately. Save and publish the entry to show it on the website.",
+                purpose === "profile"
+                  ? "Photo uploaded privately. Save your profile to use it in the workspace."
+                  : "Photo uploaded privately. Save and publish the entry to show it on the website.",
               );
             } catch (error) {
               setMessage(error instanceof Error ? error.message : "Photo could not be uploaded.");
@@ -87,11 +93,23 @@ export function PhotoUpload({
         />
       </label>
       <p className="text-sm text-muted-foreground">
-        JPEG, PNG or WebP, up to 12 MB. We resize to 1920 pixels and remove embedded metadata.
-        Upload only photos you have permission to publish.
+        JPEG, PNG or WebP, up to 12 MB. We resize to 1920 pixels and remove embedded metadata.{" "}
+        {purpose === "profile"
+          ? "Your photo is visible only to authorized staff in the workspace."
+          : "Upload only photos you have permission to publish."}
       </p>
       <p role="status">{busy ? "Preparing and uploading photo…" : message}</p>
-      {path && <ContentPhoto path={path} alt="Uploaded photograph preview" />}
+      {path && (
+        <ContentPhoto
+          path={path}
+          alt="Uploaded photograph preview"
+          className={
+            purpose === "profile"
+              ? "h-24 w-24 rounded-full object-cover"
+              : "h-64 w-full rounded-lg object-cover"
+          }
+        />
+      )}
     </div>
   );
 }

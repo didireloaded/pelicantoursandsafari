@@ -164,7 +164,7 @@ function RootComponent() {
     select: (state) => ({
       path: state.location.pathname,
       context: state.matches.at(-1)?.context as
-        { user?: { email?: string }; adminAssurance?: string } | undefined,
+        { user?: { id?: string; email?: string }; adminAssurance?: string } | undefined,
     }),
   });
   const privatePage =
@@ -190,6 +190,7 @@ function RootComponent() {
         >
           <WorkspaceShell
             email={current.context?.user?.email ?? "Staff"}
+            userId={current.context?.user?.id ?? ""}
             ready={current.context?.adminAssurance === "aal2"}
           >
             <main id="main-content" tabIndex={-1}>

@@ -20,6 +20,9 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: { auth: { mfa: { listFactors: state.listFactors } } },
 }));
+vi.mock("@/components/admin/staff-profile", () => ({
+  StaffProfile: () => <div>Your profile</div>,
+}));
 import { Route } from "@/routes/_authenticated/admin/account";
 afterEach(cleanup);
 it("shows verified security status without redundant setup or codes", async () => {

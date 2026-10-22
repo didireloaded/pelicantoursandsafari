@@ -1,3 +1,4 @@
+import { StaffAvatar } from "./staff-avatar";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
@@ -18,7 +19,6 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { initials } from "@/lib/admin-workspace";
 import { adminLinks } from "@/lib/admin-navigation";
 const icons = [
   LayoutDashboard,
@@ -35,9 +35,11 @@ export function WorkspaceShell({
   children,
   email,
   ready,
+  userId,
 }: {
   children: ReactNode;
   email: string;
+  userId?: string;
   ready: boolean;
 }) {
   const location = useLocation();
@@ -99,7 +101,15 @@ export function WorkspaceShell({
         .order("display_name")
         .abortSignal(AbortSignal.timeout(10000));
       if (rows.error) throw rows.error;
-      return rows.data ?? [];
+      const profiles = await supabase
+        .from("staff_profiles")
+        .select("user_id,display_name,avatar_path")
+        .abortSignal(AbortSignal.timeout(10000));
+      if (profiles.error) throw profiles.error;
+      return (rows.data ?? []).map((person) => ({
+        ...person,
+        ...profiles.data?.find((profile) => profile.user_id === person.user_id),
+      }));
     },
     refetchInterval: 60000,
     refetchIntervalInBackground: false,
@@ -125,7 +135,8 @@ export function WorkspaceShell({
     </>
   );
   const current = adminLinks.find((item) => item.to === location.pathname)?.label ?? "Workspace";
-  const name = email.split("@")[0] || "Pelican staff";
+  const ownProfile = team.data?.find((person) => person.user_id === userId);
+  const name = ownProfile?.display_name || email.split("@")[0] || "Pelican staff";
   const filtered = search.trim()
     ? adminLinks.filter((item) =>
         (item.label + " " + item.description).toLowerCase().includes(search.trim().toLowerCase()),
@@ -157,7 +168,9 @@ export function WorkspaceShell({
             View website
           </a>
           <Link to="/admin/account" className="admin-profile">
-            <span className="admin-avatar">{initials(name)}</span>
+            <span className="admin-avatar">
+              <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
+            </span>
             <span className="min-w-0">
               <strong className="block truncate text-xs">{name}</strong>
               <span className="block text-[10px] text-muted-foreground">Staff account</span>
@@ -184,6 +197,52 @@ export function WorkspaceShell({
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
+          <div className="admin-team-circles relative">
+            <button
+              className="flex items-center gap-1"
+              aria-label="Recently active staff"
+              aria-expanded={teamOpen}
+              onClick={() => setTeamOpen(!teamOpen)}
+            >
+              {team.data?.length ? (
+                team.data.slice(0, 5).map((person) => (
+                  <span
+                    key={person.user_id}
+                    className="admin-avatar admin-team-avatar"
+                    title={person.display_name}
+                  >
+                    <StaffAvatar path={person.avatar_path ?? null} name={person.display_name} />
+                  </span>
+                ))
+              ) : (
+                <span className="admin-avatar admin-team-avatar">
+                  <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
+                </span>
+              )}
+              <span className="ml-2 hidden text-[11px] text-muted-foreground xl:block">
+                Your team
+              </span>
+            </button>
+            {teamOpen && (
+              <div className="admin-team-popover">
+                <strong className="text-xs">Recently active team</strong>
+                <p className="my-2 text-[11px] text-muted-foreground">
+                  Activity within the last two minutes.
+                </p>
+                {team.isError ? (
+                  <p className="text-xs">Team activity unavailable.</p>
+                ) : team.data?.length ? (
+                  team.data.map((person) => (
+                    <p className="py-1 text-xs" key={person.user_id}>
+                      {person.display_name}
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-xs">Your current session</p>
+                )}
+              </div>
+            )}
+          </div>
           <div className="text-xs text-muted-foreground">
             Workspace <span className="mx-2 opacity-40">/</span>
             <span className="font-medium text-foreground">{current}</span>
@@ -207,50 +266,6 @@ export function WorkspaceShell({
                   ))
                 ) : (
                   <p>No matching sections.</p>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="relative ml-auto">
-            <button
-              className="flex items-center gap-1"
-              aria-label="Recently signed-in staff"
-              aria-expanded={teamOpen}
-              onClick={() => setTeamOpen(!teamOpen)}
-            >
-              {team.data?.length ? (
-                team.data.slice(0, 3).map((person) => (
-                  <span
-                    key={person.user_id}
-                    className="admin-avatar admin-team-avatar"
-                    title={person.display_name}
-                  >
-                    {initials(person.display_name)}
-                  </span>
-                ))
-              ) : (
-                <span className="admin-avatar admin-team-avatar">{initials(name)}</span>
-              )}
-              <span className="ml-2 hidden text-[11px] text-muted-foreground xl:block">
-                Your team
-              </span>
-            </button>
-            {teamOpen && (
-              <div className="admin-team-popover">
-                <strong className="text-xs">Signed in recently</strong>
-                <p className="my-2 text-[11px] text-muted-foreground">
-                  Activity within the last two minutes.
-                </p>
-                {team.isError ? (
-                  <p className="text-xs">Team activity unavailable.</p>
-                ) : team.data?.length ? (
-                  team.data.map((person) => (
-                    <p className="py-1 text-xs" key={person.user_id}>
-                      {person.display_name}
-                    </p>
-                  ))
-                ) : (
-                  <p className="text-xs">Your current session</p>
                 )}
               </div>
             )}
