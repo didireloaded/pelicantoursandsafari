@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Switch all three AI features to Lovable AI, verify their requests and deployed dependencies, then remove the unused Google AI Studio secret.
+- [x] Switch all three AI features to Lovable AI and remove the unused Google AI Studio secret. Both legacy functions redeployed; all three gateway request shapes returned verified answers; 25 regression tests passed. Website appearance unchanged.
+- [ ] Operational AI end-to-end verification: traveller planner is blocked by missing public.consume_traveller_plan_request (PGRST202), and localhost is not in the configured origin allowlist. Private staff flows still require staff plus authenticator verification; no security bypass or unrelated migration applied.
 
 - [ ] Codex migration coordination: blocked on platform Git sync. Commit 468dd49 is not in local history; sender still uses the old domain and VITE_SITE_ORIGIN is absent from .env. Preserve saved Search Console work; do not publish until merged main is loaded. Git sync must be completed through Lovable Git settings, not manual pulls.
 
