@@ -46,7 +46,7 @@ function AuthPage() {
   }, [resendUntil]);
   const lock = useRef(false);
   const field =
-    "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary";
+    "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary";
   const go = async (e: React.FormEvent) => {
     e.preventDefault();
     if (lock.current) return;

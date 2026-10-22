@@ -80,7 +80,7 @@ function ResetPassword() {
                 required
                 minLength={8}
                 autoComplete="new-password"
-                className="mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary"
+                className="mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

@@ -27,7 +27,7 @@ function Safaris() {
   const [compared, setCompared] = useState<string[]>([]);
   const matches = findSafaris(country, destination, interest);
   const selected = safaris.filter((s) => compared.includes(s.slug));
-  const field = "w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary";
+  const field = "w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary";
   return (
     <>
       <PageHero eyebrow="Safaris & tours" title="Guided" accent="journeys" image="leopard">

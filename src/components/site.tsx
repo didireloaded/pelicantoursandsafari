@@ -35,10 +35,10 @@ export function Header() {
           <Link to="/tailor-made" className="hidden rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground md:inline-block">
             Plan Your Safari
           </Link>
-          <a href={`tel:+${company.contacts[0]?.tel ?? ""}`} aria-label="Call Pelican" className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground md:hidden">
+          <a href={`tel:+${company.contacts[0]?.tel ?? ""}`} aria-label="Call Pelican" className="grid h-11 w-11 place-items-center rounded-lg bg-primary text-primary-foreground md:hidden">
             <Phone className="h-4 w-4" />
           </a>
-          <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-controls="mobile-navigation" aria-expanded={open} onClick={() => setOpen(!open)} className="lg:hidden">
+          <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-controls="mobile-navigation" aria-expanded={open} onClick={() => setOpen(!open)} className="h-11 w-11 lg:hidden">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>

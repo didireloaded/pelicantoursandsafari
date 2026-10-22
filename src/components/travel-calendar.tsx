@@ -9,7 +9,7 @@ export function TravelCalendar() {
   const [month, setMonth] = useState("");
   const guidance = calendarGuidance(destination, Number(month));
   const field =
-    "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary";
+    "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary";
   return (
     <section
       id="travel-calendar"

@@ -80,7 +80,7 @@ function TailorMade() {
     return false;
   };
   const steps = ["Your journey", "Dates & travellers", "Travel preferences", "Review your brief"];
-  const field = "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary";
+  const field = "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary";
   const toggle = (values: string[], value: string) => values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
   const move = (index: number, change: number) => setPlaces((prev) => { const next = [...prev]; const target = index + change; const value = next[index]; const other = next[target]; if (value && other) { next[index] = other; next[target] = value; } return next; });
   const summary = [

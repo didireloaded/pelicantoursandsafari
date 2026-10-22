@@ -13,7 +13,7 @@ export function ContactEnquiry() {
   const [error, setError] = useState("");
   const lock = useRef(false);
   const pending = useRef<{ fingerprint: string; id: string } | null>(null);
-  const field = "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary";
+  const field = "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

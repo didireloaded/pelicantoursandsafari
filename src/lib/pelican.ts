@@ -34,7 +34,7 @@ export const company = {
     "Kamwi Kays leads Pelican Tours and Safaris. The catalogue covers Windhoek city tours, Etosha wildlife safaris and longer regional trips.",
   specialty:
     "Choose the places that interest you, share your dates and group size, and Pelican will help shape a route before you confirm a booking.",
-  philosophy: "Every tour should be unique and tell a story.",
+  philosophy: "Start with the places you want to see, then agree the route and details before confirming.",
   values: ["Start with the places you want to see", "Allow time for the road between stops", "Agree the details before confirming"],
   why: [
     "Windhoek city tours, Etosha wildlife safaris and selected cross-border routes",
