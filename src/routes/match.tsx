@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { TravellerItinerary } from "@/components/traveller-itinerary";
@@ -78,7 +79,7 @@ function Match() {
           </label>
           <label>
             Travel style
-            <select
+            <AppSelect
               className={field}
               value={style}
               onChange={(e) => {
@@ -89,7 +90,7 @@ function Match() {
               {["Open to suggestions", "Private guided", "Small group"].map((x) => (
                 <option key={x}>{x}</option>
               ))}
-            </select>
+            </AppSelect>
           </label>
         </div>
         <Button type="submit">See safari inspiration</Button>

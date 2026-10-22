@@ -73,7 +73,7 @@ export function HelpPanel() {
           onChange={(event) => setQuestion(event.target.value)}
         />
         <div className="mt-2 flex items-center justify-between gap-2">
-          <span className="text-[9px] text-muted-foreground">Read-only · no changes made</span>
+          <span />
           <button
             aria-label="Ask question"
             disabled={busy || !question.trim()}
@@ -96,9 +96,6 @@ export function HelpPanel() {
       {answer && (
         <div className="admin-help-answer" role="status">
           {answer}
-          <p className="mt-3 text-[10px] text-muted-foreground">
-            Based on current aggregate records. Check important details before acting.
-          </p>
         </div>
       )}
     </section>

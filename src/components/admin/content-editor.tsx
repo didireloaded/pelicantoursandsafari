@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { ZodError } from "zod";
 import { Strip } from "@/components/site";
 import { useBlocker } from "@tanstack/react-router";
@@ -22,7 +23,7 @@ import {
 import { saveContent, staffContent } from "@/lib/site-content-api";
 
 const field =
-  "mt-2 w-full border-b border-foreground/25 bg-transparent py-3 outline-none focus:border-primary";
+  "mt-2 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30";
 const newPhoto = (): PhotoContent => ({
   destination: "etosha",
   path: "",
@@ -121,16 +122,19 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
   const p = data as PackageContent;
   const photo = data as PhotoContent;
   return (
-    <>
-      <h1 className="text-4xl font-bold md:text-6xl">
-        {kind === "package" ? "Packages" : "Gallery"}
-      </h1>
-      <p className="mt-5 max-w-2xl text-muted-foreground">
-        {kind === "package"
-          ? "Create a package with its own page, itinerary and verified prices. Existing safari categories remain available under Travel information."
-          : "Add photographs to your destination albums. Use the display order to arrange photos; lower numbers appear first."}
-      </p>
-      <p role="status" className="my-5">
+    <div className="admin-content-editor">
+      <div className="admin-page-heading">
+        <div>
+          <p className="admin-eyebrow">YOUR WEBSITE</p>
+          <h1 className="mt-2">{kind === "package" ? "Packages" : "Gallery"}</h1>
+          <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+            {kind === "package"
+              ? "Create a package with its own page, itinerary and verified prices. Existing safari categories remain available under Travel information."
+              : "Add photographs to your destination albums. Use the display order to arrange photos; lower numbers appear first."}
+          </p>
+        </div>
+      </div>
+      <p role="status" className="my-5 text-sm">
         {message || (!loaded ? "Loading your content…" : "")}
       </p>
       <div className="flex flex-wrap gap-3">
@@ -160,9 +164,9 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
           Reload saved version
         </Button>
       </div>
-      <label className="mt-6 block">
+      <label className="admin-panel mt-6 block max-w-4xl p-5 text-xs">
         Choose an entry
-        <select
+        <AppSelect
           className={field}
           disabled={busy || uploading}
           value={selected?.id ?? ""}
@@ -179,14 +183,13 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
                 ? JSON.stringify(row.draft) === JSON.stringify(row.published)
                   ? "Live"
                   : "Live + draft changes"
-                : "Draft"}{" "}
-              · v{row.revision}
+                : "Draft"}
             </option>
           ))}
-        </select>
+        </AppSelect>
       </label>
       <form
-        className="mt-8 max-w-4xl space-y-6"
+        className="admin-panel admin-form mt-6 max-w-4xl space-y-6 p-6"
         onSubmit={(event) => {
           event.preventDefault();
           void save("save");
@@ -270,17 +273,17 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
               </fieldset>
               <label className="block">
                 Existing cover photograph
-                <select
+                <AppSelect
                   className={field}
                   value={p.image}
                   onChange={(event) => change({ ...p, image: event.target.value })}
                 >
                   {images.map((image) => (
                     <option key={image} value={image}>
-                      {image.replaceAll("-", " ")}
+                      {image.replaceAll("-", " ").replace(/^./, (letter) => letter.toUpperCase())}
                     </option>
                   ))}
-                </select>
+                </AppSelect>
               </label>
               <PhotoUpload
                 userId={userId}
@@ -327,7 +330,7 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
             <>
               <label className="block">
                 Destination album
-                <select
+                <AppSelect
                   className={field}
                   value={photo.destination}
                   onChange={(event) => change({ ...photo, destination: event.target.value })}
@@ -337,7 +340,7 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
                       {place.name}
                     </option>
                   ))}
-                </select>
+                </AppSelect>
               </label>
               <PhotoUpload
                 userId={userId}
@@ -479,7 +482,11 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
                 className="flex flex-wrap items-center gap-4 border-b border-border py-3"
               >
                 <span>
-                  v{entry.revision} · {entry.action} · {new Date(entry.changed_at).toLocaleString()}
+                  Version {entry.revision} ·{" "}
+                  {{ save: "Draft saved", publish: "Published", unpublish: "Unpublished" }[
+                    entry.action
+                  ] ?? "Updated"}{" "}
+                  · {new Date(entry.changed_at).toLocaleString()}
                 </span>
                 <Button
                   variant="ghost"
@@ -514,6 +521,6 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
           )}
         </section>
       )}
-    </>
+    </div>
   );
 }

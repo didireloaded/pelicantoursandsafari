@@ -118,3 +118,27 @@ describe("staff help boundary", () => {
     expect((await answerAdminQuestion({ question: "Help" }, request(), s)).answer).toBeUndefined();
   });
 });
+
+it("does not misreport a context failure as an exhausted quota or expose backend text", async () => {
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  const result = await answerAdminQuestion(
+    { question: "Bookings?" },
+    new Request("https://pelicantoursandsafari.com/help", {
+      headers: { origin: "https://pelicantoursandsafari.com", authorization: "Bearer session" },
+    }),
+    {
+      allowedOrigins: ["https://pelicantoursandsafari.com"],
+      gatewayKey: "test",
+      authorize: async () => true,
+      consume: async () => {},
+      context: async () => {
+        throw new Error("private backend detail");
+      },
+      fetchGateway: vi.fn(),
+    },
+  );
+  expect(result.error).toContain("workspace summary");
+  expect(result.error).not.toMatch(/limit|private backend/);
+  expect(JSON.stringify(log.mock.calls)).not.toContain("private backend");
+  log.mockRestore();
+});

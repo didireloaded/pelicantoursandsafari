@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useRef, useState } from "react";
 import { Plus, Search, MapPin, Mail, Phone, ArrowUpRight, Users } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -153,7 +154,7 @@ export function Clients({ userId }: { userId: string }) {
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </label>
-              <select
+              <AppSelect
                 aria-label="Filter clients by source"
                 className="admin-pill max-w-full"
                 value={source}
@@ -163,7 +164,7 @@ export function Clients({ userId }: { userId: string }) {
                 {clientSources.map((s) => (
                   <option key={s}>{s}</option>
                 ))}
-              </select>
+              </AppSelect>
             </div>
             <div className="admin-client-grid">
               {rows.map((client) => {
@@ -372,14 +373,14 @@ export function Clients({ userId }: { userId: string }) {
               ))}
               <label>
                 Client source
-                <select
+                <AppSelect
                   value={form.source}
                   onChange={(e) => change({ source: e.target.value as ClientInput["source"] })}
                 >
                   {clientSources.map((s) => (
                     <option key={s}>{s}</option>
                   ))}
-                </select>
+                </AppSelect>
               </label>
               <label>
                 Private notes

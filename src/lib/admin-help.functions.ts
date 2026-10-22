@@ -7,6 +7,7 @@ export const askWorkspaceHelp = createServerFn({ method: "POST" })
     const { createClient } = await import("@supabase/supabase-js");
     const { loadWorkspace } = await import("./admin-workspace-api");
     const { assistantContext } = await import("./admin-workspace");
+    const { enquiryAllowedOrigins } = await import("./enquiry-origins");
     const { company } = await import("./pelican");
     const url = process.env["SUPABASE_URL"]!;
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
@@ -16,12 +17,9 @@ export const askWorkspaceHelp = createServerFn({ method: "POST" })
         auth: { persistSession: false, autoRefreshToken: false },
       });
     return answerAdminQuestion(data, getRequest(), {
-      allowedOrigins: (
-        process.env["ENQUIRY_ALLOWED_ORIGINS"] ?? "https://pelicantoursandsafari.com"
-      )
-        .split(",")
-        .map((v) => v.trim())
-        .filter(Boolean),
+      allowedOrigins: enquiryAllowedOrigins(
+        process.env["ENQUIRY_ALLOWED_ORIGINS"] ?? "https://pelicantoursandsafari.com",
+      ),
       gatewayKey: process.env["LOVABLE_API_KEY"],
       authorize: async (token) => {
         const c = client(token);

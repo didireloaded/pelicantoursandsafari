@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { destinations } from "@/lib/pelican";
@@ -25,7 +26,7 @@ export function TravelCalendar() {
       <div className="mt-6 grid gap-6 sm:grid-cols-2 print:hidden">
         <label>
           Calendar destination
-          <select
+          <AppSelect
             className={field}
             value={destination}
             onChange={(event) => setDestination(event.target.value)}
@@ -35,11 +36,11 @@ export function TravelCalendar() {
                 {item.name}
               </option>
             ))}
-          </select>
+          </AppSelect>
         </label>
         <label>
           Travel month
-          <select
+          <AppSelect
             className={field}
             value={month}
             onChange={(event) => setMonth(event.target.value)}
@@ -50,7 +51,7 @@ export function TravelCalendar() {
                 {name}
               </option>
             ))}
-          </select>
+          </AppSelect>
         </label>
       </div>
       <p role="status" className="mt-6 font-semibold">

@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { Section } from "@/components/site";
@@ -56,7 +57,7 @@ function JourneyPage() {
           <JourneyDistances stops={stops} onRoute={setRoadRoute} />
           <label className="mt-6 block">
             Explore a destination
-            <select
+            <AppSelect
               value={selected}
               onChange={(e) => setSelected(e.target.value)}
               className="mt-2 w-full border-b bg-transparent py-3"
@@ -66,7 +67,7 @@ function JourneyPage() {
                   {d.name}
                 </option>
               ))}
-            </select>
+            </AppSelect>
           </label>
           <h2 className="mt-8 text-2xl font-semibold">{destination?.name}</h2>
           <Link

@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ItineraryDraft } from "@/components/itinerary-draft";
@@ -132,7 +133,7 @@ function Proposals() {
         <>
           <label className="mt-8 block">
             Select proposal
-            <select
+            <AppSelect
               className="mt-2 w-full border-b bg-transparent py-3"
               value={current?.id ?? ""}
               onChange={(e) => setSelected(e.target.value)}
@@ -145,7 +146,7 @@ function Proposals() {
                   {p.title}
                 </option>
               ))}
-            </select>
+            </AppSelect>
           </label>
           {!current && (
             <p className="mt-6">
@@ -175,7 +176,7 @@ function Proposals() {
                   <h2 className="text-3xl">{current.title}</h2>
                   <label className="mt-4 block">
                     Proposal version
-                    <select
+                    <AppSelect
                       className="ml-4 border-b bg-transparent py-2"
                       value={viewing.id}
                       onChange={(e) => setVersionId(e.target.value)}
@@ -185,7 +186,7 @@ function Proposals() {
                           Version {v.version}
                         </option>
                       ))}
-                    </select>
+                    </AppSelect>
                   </label>
                   <p className="mt-4">
                     Total: {viewing.currency}{" "}
@@ -356,7 +357,7 @@ function Proposals() {
                   <div className="grid gap-6 md:grid-cols-3">
                     <label>
                       Currency
-                      <select
+                      <AppSelect
                         className="mt-2 w-full border-b bg-transparent py-3"
                         value={draft.currency}
                         onChange={(e) => setDraft({ ...draft, currency: e.target.value })}
@@ -364,7 +365,7 @@ function Proposals() {
                         {["NAD", "USD", "EUR", "GBP", "ZAR"].map((x) => (
                           <option key={x}>{x}</option>
                         ))}
-                      </select>
+                      </AppSelect>
                     </label>
                     <label>
                       Total quote

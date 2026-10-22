@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Section } from "@/components/site";
@@ -55,7 +56,7 @@ function StayIndex() {
         ].map(([label, value, setter, options]) => (
           <label key={label as string}>
             {label as string}
-            <select
+            <AppSelect
               className="mt-2 w-full border-b bg-transparent py-3"
               value={value as string}
               onChange={(e) => (setter as (v: string) => void)(e.target.value)}
@@ -66,7 +67,7 @@ function StayIndex() {
                   {text}
                 </option>
               ))}
-            </select>
+            </AppSelect>
           </label>
         ))}
       </div>

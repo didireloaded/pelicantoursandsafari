@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useRef, useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
@@ -66,15 +67,15 @@ function BookPage() {
         <form onSubmit={submit} aria-busy={busy} className="mt-10 max-w-3xl">
           <fieldset disabled={busy} className="grid gap-6 sm:grid-cols-2">
             <label className="sm:col-span-2">Trip
-              <select className={field} value={code} onChange={(e) => setCode(e.target.value)}>
+              <AppSelect className={field} value={code} onChange={(e) => setCode(e.target.value)}>
                 {bookableTrips.map((t) => <option key={t.code} value={t.code}>{t.name} ({t.code})</option>)}
-              </select>
+              </AppSelect>
             </label>
             <label>Your name<input className={field} autoComplete="name" required maxLength={200} value={name} onChange={(e) => setName(e.target.value)} /></label>
             <label>Preferred contact
-              <select className={field} value={pref} onChange={(e) => setPref(e.target.value as typeof pref)}>
+              <AppSelect className={field} value={pref} onChange={(e) => setPref(e.target.value as typeof pref)}>
                 <option>Email</option><option>WhatsApp</option><option>Phone</option>
-              </select>
+              </AppSelect>
             </label>
             <label>Email address<input className={field} type="email" autoComplete="email" maxLength={255} value={email} onChange={(e) => setEmail(e.target.value)} /></label>
             <label>Phone / WhatsApp<input className={field} type="tel" autoComplete="tel" maxLength={50} value={phone} onChange={(e) => setPhone(e.target.value)} /></label>

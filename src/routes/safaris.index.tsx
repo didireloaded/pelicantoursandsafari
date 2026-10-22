@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { PublishedPackages } from "@/components/published-packages";
 import { useApprovedSafariPackages } from "@/lib/approved-travel-details";
 import { SafariPackageSummary } from "@/components/approved-safari-package";
@@ -34,9 +35,9 @@ function Safaris() {
       </PageHero>
       <Section className="pt-0 md:pt-0">
         <div className="mb-8 grid gap-6 border-t border-border/60 py-6 md:grid-cols-3">
-          <label className="text-sm">Country<select aria-label="Country" className={field} value={country} onChange={(e) => { filter({ ...search, country: e.target.value || undefined, destination: undefined }); }}><option value="">All countries</option>{["Namibia", "Botswana", "Zimbabwe"].map((c) => <option key={c}>{c}</option>)}</select></label>
-          <label className="text-sm">Destination<select aria-label="Destination" className={field} value={destination} onChange={(e) => filter({ ...search, destination: e.target.value || undefined })}><option value="">All destinations</option>{destinations.filter((d) => !country || d.country === country).map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}</select></label>
-          <label className="text-sm">Experience<select aria-label="Experience" className={field} value={interest} onChange={(e) => filter({ ...search, interest: e.target.value || undefined })}><option value="">All experiences</option>{Array.from(new Set(Object.values(safariInterests).flat())).map((x) => <option key={x}>{x}</option>)}</select></label>
+          <label className="text-sm">Country<AppSelect aria-label="Country" className={field} value={country} onChange={(e) => { filter({ ...search, country: e.target.value || undefined, destination: undefined }); }}><option value="">All countries</option>{["Namibia", "Botswana", "Zimbabwe"].map((c) => <option key={c}>{c}</option>)}</AppSelect></label>
+          <label className="text-sm">Destination<AppSelect aria-label="Destination" className={field} value={destination} onChange={(e) => filter({ ...search, destination: e.target.value || undefined })}><option value="">All destinations</option>{destinations.filter((d) => !country || d.country === country).map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}</AppSelect></label>
+          <label className="text-sm">Experience<AppSelect aria-label="Experience" className={field} value={interest} onChange={(e) => filter({ ...search, interest: e.target.value || undefined })}><option value="">All experiences</option>{Array.from(new Set(Object.values(safariInterests).flat())).map((x) => <option key={x}>{x}</option>)}</AppSelect></label>
         </div>
         <p aria-live="polite" className="mb-5 text-sm text-muted-foreground">{matches.length} {matches.length === 1 ? "safari category" : "safari categories"} · Published packages follow below</p>
         {!matches.length && <div className="border-y border-border py-12"><h2 className="text-2xl font-semibold">A journey shaped around you.</h2><Button asChild className="mt-6"><Link to="/tailor-made" search={destination ? { destinations: destination } : {}}>Ask us to build it</Link></Button><Button variant="ghost" className="ml-3" onClick={() => { filter({}); }}>Clear filters</Button></div>}

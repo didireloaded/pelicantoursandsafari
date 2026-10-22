@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -177,7 +178,7 @@ function ManageTrips() {
           </label>
           <label className="block">
             Booking status
-            <select
+            <AppSelect
               value={status}
               onChange={(e) => setStatus(e.target.value as Trip["status"])}
               className={field}
@@ -185,14 +186,14 @@ function ManageTrips() {
               <option value="draft">Draft — staff only</option>
               <option value="confirmed">Confirmed by Pelican</option>
               <option value="cancelled">Cancelled</option>
-            </select>
+            </AppSelect>
           </label>
           <ol className="divide-y border-y border-border">
             {stops.map((s, i) => (
               <li key={i} className="py-4">
                 <label>
                   Destination
-                  <select
+                  <AppSelect
                     className={field}
                     value={s.destination}
                     onChange={(e) =>
@@ -208,11 +209,11 @@ function ManageTrips() {
                         {d.name}
                       </option>
                     ))}
-                  </select>
+                  </AppSelect>
                 </label>
                 <label className="mt-3 block">
                   Confirmed accommodation
-                  <select
+                  <AppSelect
                     className={field}
                     value={s.stay ?? ""}
                     onChange={(e) =>
@@ -237,7 +238,7 @@ function ManageTrips() {
                           {t.name}
                         </option>
                       ))}
-                  </select>
+                  </AppSelect>
                 </label>
                 <label className="mt-3 block">
                   Nights

@@ -1,5 +1,6 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { AdminNavigation } from "@/components/admin/navigation";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -33,7 +34,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const navigate = useNavigate();
   const [rows, setRows] = useState<Enquiry[]>([]);
   const [staff, setStaff] = useState<boolean | null>(null);
   const [filter, setFilter] = useState<Status | "all">("all");
@@ -138,27 +138,23 @@ function Dashboard() {
       setLoadingMore(false);
     }
   }
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate({ to: "/" });
-  };
 
   if (staff === null)
     return (
-      <Section className="pt-32">
+      <Section className="admin-enquiries">
         <p>Loading…</p>
       </Section>
     );
   if (!staff)
     return (
-      <Section className="pt-32">
+      <Section className="admin-enquiries">
         <h1 className="font-display text-4xl">Access pending</h1>
         <p className="mt-4 max-w-lg text-muted-foreground">
           Your account is signed in but has not been given staff access yet. Ask a Pelican
           administrator to grant it.
         </p>
-        <Button variant="outline" className="mt-8" onClick={signOut}>
-          Sign out
+        <Button asChild variant="outline" className="mt-8">
+          <Link to="/admin/account">Open settings</Link>
         </Button>
       </Section>
     );
@@ -191,17 +187,17 @@ function Dashboard() {
         (!!r.follow_up_on &&
           r.follow_up_on < today &&
           !["confirmed", "closed"].includes(r.status))) &&
-      [r.name, r.email, r.phone, r.id, r.brief, r.booking_ref, r.trip_code, r.enquiry_ref].some((v) =>
-        v?.toLowerCase().includes(query.toLowerCase()),
+      [r.name, r.email, r.phone, r.id, r.brief, r.booking_ref, r.trip_code, r.enquiry_ref].some(
+        (v) => v?.toLowerCase().includes(query.toLowerCase()),
       ),
   );
   return (
-    <Section className="pt-32">
+    <Section className="admin-enquiries">
       <AdminNavigation />
-      <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-8">
+      <div className="admin-page-heading">
         <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-clay">Pelican team</p>
-          <h1 className="mt-3 font-display text-5xl">Enquiries</h1>
+          <p className="admin-eyebrow">Pelican team</p>
+          <h1 className="mt-2">Enquiries</h1>
         </div>
         <div className="flex gap-3">
           <Button asChild variant="ghost">
@@ -215,12 +211,12 @@ function Dashboard() {
           <Button asChild variant="ghost">
             <Link to="/content-manage">Approved content</Link>
           </Button>
-          <Button variant="ghost" onClick={signOut}>
-            Sign out
-          </Button>
         </div>
       </div>
-      <nav className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Filter by status">
+      <nav
+        className="admin-enquiry-tabs mt-6 flex flex-wrap gap-2 text-xs"
+        aria-label="Filter by status"
+      >
         {[{ value: "all" as const, label: "All" }, ...statuses].map((s) => {
           const n =
             s.value === "all" ? rows.length : rows.filter((r) => r.status === s.value).length;
@@ -235,7 +231,7 @@ function Dashboard() {
           );
         })}
       </nav>
-      <div className="mt-6 flex flex-wrap gap-6">
+      <div className="admin-panel admin-form mt-5 flex flex-wrap items-center gap-5 p-5">
         <label>
           Search enquiries
           <input
@@ -258,13 +254,17 @@ function Dashboard() {
           use Namibia time; reminders appear here.
         </p>
       </div>
-      <ul className="mt-6 divide-y divide-border border-y border-border">
+      <ul className="admin-enquiry-list mt-6 space-y-3">
         {shown.map((r) => (
-          <li key={r.id} className="py-5">
+          <li key={r.id} className="admin-panel p-5">
             <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_auto]">
               <button className="text-left" onClick={() => void showHistory(r.id)}>
-                <span className="text-lg font-medium">{r.name}</span>
-                {(r.booking_ref ?? r.enquiry_ref) && <span className="ml-3 text-sm font-semibold text-clay">{r.booking_ref ?? r.enquiry_ref}</span>}
+                <span className="text-sm font-medium">{r.name}</span>
+                {(r.booking_ref ?? r.enquiry_ref) && (
+                  <span className="ml-3 text-sm font-semibold text-clay">
+                    {r.booking_ref ?? r.enquiry_ref}
+                  </span>
+                )}
                 <span className="ml-3 text-sm text-muted-foreground">
                   {new Date(r.created_at).toLocaleString()} · {r.contact_preference}
                 </span>
@@ -272,7 +272,7 @@ function Dashboard() {
               <span className="text-sm text-muted-foreground">
                 {[r.email, r.phone].filter(Boolean).join(" · ")}
               </span>
-              <select
+              <AppSelect
                 aria-label="Status"
                 className="border-b border-foreground/25 bg-transparent py-2"
                 value={r.status}
@@ -283,15 +283,17 @@ function Dashboard() {
                     {s.label}
                   </option>
                 ))}
-              </select>
+              </AppSelect>
             </div>
             {open === r.id && (
               <div className="mt-5 grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
-                  <p className="text-sm break-all">Reference: {r.booking_ref ?? r.enquiry_ref ?? r.id}</p>
+                  <p className="text-sm break-all">
+                    Reference: {r.booking_ref ?? r.enquiry_ref ?? "Legacy enquiry"}
+                  </p>
                   <label className="block">
                     Assigned to
-                    <select
+                    <AppSelect
                       className="ml-3 border-b bg-transparent py-2"
                       value={r.assigned_to ?? ""}
                       onChange={(e) => void update(r.id, { assigned_to: e.target.value || null })}
@@ -302,7 +304,7 @@ function Dashboard() {
                           {u.email}
                         </option>
                       ))}
-                    </select>
+                    </AppSelect>
                   </label>
                   <label className="block">
                     Follow up on
@@ -314,9 +316,7 @@ function Dashboard() {
                     />
                   </label>
                 </div>
-                <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-                  {r.brief}
-                </pre>
+                <div className="whitespace-pre-wrap text-sm leading-relaxed">{r.brief}</div>
                 <label className="text-sm">
                   Team notes
                   <textarea

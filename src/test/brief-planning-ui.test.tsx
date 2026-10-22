@@ -1,11 +1,17 @@
-vi.mock("@/lib/site-content-api", () => ({ usePublishedContent: () => ({ data: [], isPending: false, isError: false }) }));
+import { chooseOption } from "./select-option";
+vi.mock("@/lib/site-content-api", () => ({
+  usePublishedContent: () => ({ data: [], isPending: false, isError: false }),
+}));
 import type { ComponentType, ReactNode } from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ submit: vi.fn() }));
 vi.mock("@tanstack/react-router", () => ({
-  createFileRoute: () => (options: { component: ComponentType }) => ({ options, useSearch: () => ({}) }),
+  createFileRoute: () => (options: { component: ComponentType }) => ({
+    options,
+    useSearch: () => ({}),
+  }),
 }));
 vi.mock("@/components/site", () => ({
   PageHero: () => <div />,
@@ -20,7 +26,10 @@ vi.mock("@/components/safari-planning", () => ({
 vi.mock("@/lib/enquiry-submit.functions", () => ({ submitTripEnquiry: mocks.submit }));
 import { Route } from "@/routes/tailor-made";
 
-afterEach(() => { cleanup(); vi.clearAllMocks(); });
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
 function openBrief() {
   const Component = Route.options.component as ComponentType;
   render(<Component />);
@@ -39,11 +48,13 @@ it("retains the editable budget and safari experience in the reviewed brief", ()
   openBrief();
   fireEvent.click(screen.getByRole("button", { name: "3. Travel preferences" }));
   fireEvent.change(screen.getByLabelText(/Budget per person/), { target: { value: "25000" } });
-  fireEvent.change(screen.getByLabelText("Safari experience"), { target: { value: "Been on safari before" } });
+  chooseOption("Safari experience", "Been on safari before");
   fireEvent.click(screen.getByRole("button", { name: "4. Review your brief" }));
   expect(screen.getByText("NAD 25000 per person (subject to quote)")).toBeInTheDocument();
   expect(screen.getByText("Been on safari before")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Send brief to Pelican" }));
   expect(mocks.submit).not.toHaveBeenCalled();
-  expect(screen.getByText("Please add your name and an email or phone number.")).toBeInTheDocument();
+  expect(
+    screen.getByText("Please add your name and an email or phone number."),
+  ).toBeInTheDocument();
 });

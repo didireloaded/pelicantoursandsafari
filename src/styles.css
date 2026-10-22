@@ -618,7 +618,7 @@
   font-size: 11px;
   font-weight: 500;
 }
-.admin-form input,
+.admin-form input:not([type="checkbox"]):not([type="radio"]),
 .admin-form textarea,
 .admin-form select {
   display: block;
@@ -860,4 +860,80 @@
 
 .pelican-admin .admin-legacy-nav {
   display: none;
+}
+
+/* Shared dropdown popovers use Pelican's own surfaces on every device. */
+.pelican-select-trigger {
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  gap: 12px;
+  font-size: 12px;
+  text-align: left;
+}
+.pelican-select-menu {
+  max-height: min(360px, 65dvh);
+  border-radius: 12px;
+  border-color: var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 10px 35px #0002;
+}
+.pelican-select-menu [role="option"] {
+  min-height: 38px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 12px;
+  border-radius: 7px;
+}
+.pelican-select-menu [role="option"][data-highlighted] {
+  background: var(--secondary);
+  color: var(--primary);
+}
+.pelican-select-menu [role="option"][data-state="checked"] {
+  color: var(--primary);
+  font-weight: 600;
+}
+.admin-enquiry-tabs button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: var(--card);
+}
+.admin-enquiry-tabs button.border-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.admin-enquiry-tabs button.border-primary span {
+  color: inherit;
+}
+.admin-enquiry-list .pelican-select-trigger {
+  min-width: 155px;
+}
+.admin-enquiry-list input,
+.admin-enquiry-list textarea {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: var(--background);
+}
+.admin-content-editor .admin-form h2 {
+  font-size: 20px;
+}
+.admin-content-editor .admin-form h3 {
+  font-size: 15px;
+}
+
+.admin-form label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+.admin-form input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  accent-color: var(--primary);
 }

@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useMemo, useState } from "react";
 import {
   LineChart,
@@ -94,7 +95,7 @@ export function Analytics() {
         </div>
         <label className="admin-pill">
           Period
-          <select
+          <AppSelect
             aria-label="Analytics period"
             className="ml-2 bg-transparent"
             value={period}
@@ -103,7 +104,7 @@ export function Analytics() {
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
             <option value="90">Last 90 days</option>
-          </select>
+          </AppSelect>
         </label>
       </div>
       <WorkspaceState

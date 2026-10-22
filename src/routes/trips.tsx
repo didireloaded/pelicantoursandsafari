@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,7 +80,7 @@ function Trips() {
         <>
           <label className="mt-8 block">
             Select trip
-            <select
+            <AppSelect
               className="mt-2 block w-full border-b bg-transparent py-3"
               value={trip.id}
               onChange={(e) => {
@@ -92,7 +93,7 @@ function Trips() {
                   {t.title} · {t.starts_on}
                 </option>
               ))}
-            </select>
+            </AppSelect>
           </label>
           <h2 className="mt-8 text-3xl font-semibold">{trip.title}</h2>
           <p className="mt-3">

@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -157,7 +158,7 @@ export function ItineraryDraft({
           <div>
             <label>
               Approved tour detail
-              <select
+              <AppSelect
                 className="mt-2 w-full border-b bg-transparent py-3"
                 disabled={busy}
                 value={selected}
@@ -169,7 +170,7 @@ export function ItineraryDraft({
                     {entry.title}
                   </option>
                 ))}
-              </select>
+              </AppSelect>
             </label>
             <Button
               type="button"

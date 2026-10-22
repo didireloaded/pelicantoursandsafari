@@ -22,13 +22,17 @@ export async function answerAdminQuestion(
   const token = /^Bearer (\S+)$/i.exec(request.headers.get("authorization") ?? "")?.[1];
   if (!token || token.length > 8192)
     return { error: "Sign in and verify your authenticator first." };
+  let stage = "authorization";
   try {
     if (!(await services.authorize(token)))
       return { error: "Staff access and authenticator verification are required." };
     if (!services.gatewayKey)
       return { error: "Help is temporarily unavailable. Your records have not changed." };
+    stage = "quota";
     await services.consume(token);
+    stage = "context";
     const context = await services.context(token);
+    stage = "gateway";
     const response = await services.fetchGateway(
       services.endpoint ?? "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
@@ -60,6 +64,7 @@ export async function answerAdminQuestion(
             ? "Help is busy. Please retry shortly."
             : "Help could not load an answer. No records were changed.",
       };
+    stage = "response";
     const value = await response.json();
     const choice = value.choices?.[0];
     const text = choice?.message?.content;
@@ -71,10 +76,23 @@ export async function answerAdminQuestion(
     )
       return { error: "The answer could not be checked. Please retry." };
     return { answer: text.trim() };
-  } catch {
+  } catch (error) {
+    // Log only a bounded stage/name, never a question, record, token or provider body.
+    console.error("[admin-help]", stage, error instanceof Error ? error.name : "RequestError");
+    const quotaReached =
+      stage === "quota" &&
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      /limit reached/i.test(String(error.message));
     return {
-      error:
-        "Help is unavailable or your request limit was reached. Please retry later. No records were changed.",
+      error: quotaReached
+        ? "You have reached the help limit. Please try again later."
+        : stage === "context"
+          ? "Your workspace summary could not be loaded. Please retry."
+          : stage === "authorization"
+            ? "Your sign-in could not be checked. Please sign in again."
+            : "Help could not connect. Please try again shortly.",
     };
   }
 }

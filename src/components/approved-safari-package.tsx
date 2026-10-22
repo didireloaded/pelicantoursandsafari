@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useState } from "react";
 import {
   activeConversions,
@@ -83,7 +84,7 @@ export function SafariPackageDetails({ details, sourceUrl, updatedAt }: Approved
           {!!conversions.length && (
             <label className="mt-5 block">
               Display currency{" "}
-              <select
+              <AppSelect
                 className="ml-3 border bg-transparent p-2"
                 value={actualCurrency}
                 onChange={(event) => setCurrency(event.target.value)}
@@ -92,7 +93,7 @@ export function SafariPackageDetails({ details, sourceUrl, updatedAt }: Approved
                 {conversions.map((rate) => (
                   <option key={rate.currency}>{rate.currency}</option>
                 ))}
-              </select>
+              </AppSelect>
             </label>
           )}
           {selected && (

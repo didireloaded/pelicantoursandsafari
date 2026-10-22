@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { AdminNavigation } from "@/components/admin/navigation";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
@@ -82,7 +83,7 @@ function Manage() {
         <>
           <label className="mt-8 block">
             Edit content
-            <select
+            <AppSelect
               className={field}
               value={selected}
               onChange={(e) => {
@@ -106,7 +107,7 @@ function Manage() {
                   {r.title} ({r.approved ? "Published" : "Draft"})
                 </option>
               ))}
-            </select>
+            </AppSelect>
           </label>
           <form
             className="mt-8 space-y-6"
@@ -183,7 +184,7 @@ function Manage() {
           >
             <label className="block">
               Category
-              <select
+              <AppSelect
                 className={field}
                 value={form.category}
                 onChange={(e) => {
@@ -206,7 +207,7 @@ function Manage() {
                 ].map((x) => (
                   <option key={x}>{x}</option>
                 ))}
-              </select>
+              </AppSelect>
             </label>
             <label className="block">
               Title

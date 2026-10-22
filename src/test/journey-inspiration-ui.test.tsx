@@ -1,3 +1,4 @@
+import { chooseOption } from "./select-option";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
@@ -42,15 +43,15 @@ it("keeps every panel action visible and makes focus select its background", () 
 it("updates seasonal guidance and transfers only the selected destination to the brief", () => {
   render(<TravelCalendar />);
   expect(screen.queryByRole("link", { name: /Plan a journey/ })).toBeNull();
-  fireEvent.change(screen.getByLabelText("Travel month"), { target: { value: "9" } });
+  chooseOption("Travel month", "September");
   expect(screen.getByRole("status")).toHaveTextContent("September in Etosha National Park");
   expect(screen.getByText(/short rainy season/)).toBeVisible();
-  fireEvent.change(screen.getByLabelText("Calendar destination"), { target: { value: "chobe" } });
+  chooseOption("Calendar destination", "Chobe");
   expect(screen.getByText(/Month-specific conditions/)).toBeVisible();
   expect(screen.getByRole("link", { name: /Plan a journey/ })).toHaveAttribute(
     "href",
     "/tailor-made?destinations=chobe",
   );
-  fireEvent.change(screen.getByLabelText("Travel month"), { target: { value: "" } });
+  chooseOption("Travel month", "Choose a month");
   expect(screen.queryByRole("link", { name: /Plan a journey/ })).toBeNull();
 });

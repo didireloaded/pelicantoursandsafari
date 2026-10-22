@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { Button } from "@/components/ui/button";
 import { safaris } from "@/lib/pelican";
 import { emptySafariPackage, type SafariPackage } from "@/lib/safari-package";
@@ -21,7 +22,7 @@ export function SafariPackageEditor({
       {catalogueSelection && (
         <label className="block">
           Catalogue safari
-          <select
+          <AppSelect
             className={field}
             value={slug}
             onChange={(event) =>
@@ -37,7 +38,7 @@ export function SafariPackageEditor({
                 {safari.name}
               </option>
             ))}
-          </select>
+          </AppSelect>
         </label>
       )}
       {value && (
@@ -254,7 +255,7 @@ export function SafariPackageEditor({
                 <legend>Conversion {index + 1}</legend>
                 <label className="block">
                   Currency
-                  <select
+                  <AppSelect
                     className={field}
                     value={rate.currency}
                     onChange={(event) =>
@@ -270,7 +271,7 @@ export function SafariPackageEditor({
                   >
                     <option>USD</option>
                     <option>EUR</option>
-                  </select>
+                  </AppSelect>
                 </label>
                 <label className="block">
                   Foreign currency per 1 NAD

@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
@@ -113,7 +114,7 @@ export function TravellerItinerary() {
         <fieldset disabled={busy} className="space-y-6">
           <label className="block">
             Destination
-            <select
+            <AppSelect
               className={field}
               value={destination}
               onChange={(e) => {
@@ -126,7 +127,7 @@ export function TravellerItinerary() {
                   {d.name}
                 </option>
               ))}
-            </select>
+            </AppSelect>
           </label>
           <div className="grid gap-6 md:grid-cols-3">
             <label>

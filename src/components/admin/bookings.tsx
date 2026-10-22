@@ -1,3 +1,4 @@
+import { AppSelect } from "@/components/ui/app-select";
 import { useRef, useState } from "react";
 import { Link, useBlocker } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -170,7 +171,10 @@ export function Bookings() {
               <div className="admin-tabs">
                 <button
                   className={`admin-pill ${view === "calendar" ? "is-selected" : ""}`}
-                  onClick={() => setView("calendar")}
+                  onClick={() => {
+                    setDay("");
+                    setView("calendar");
+                  }}
                 >
                   Calendar
                 </button>
@@ -181,7 +185,7 @@ export function Bookings() {
                   Reservations
                 </button>
               </div>
-              <select
+              <AppSelect
                 aria-label="Reservation status"
                 className="admin-pill"
                 value={status}
@@ -191,7 +195,7 @@ export function Bookings() {
                 <option value="confirmed">Confirmed</option>
                 <option value="draft">Draft requests</option>
                 <option value="cancelled">Cancelled</option>
-              </select>
+              </AppSelect>
             </div>
             {day && (
               <button className="mb-4 text-[11px] text-primary" onClick={() => setDay("")}>
@@ -273,6 +277,7 @@ export function Bookings() {
                               aria-label={`Show reservations on ${date}`}
                               onClick={() => {
                                 setDay(date);
+                                setSelected(trips[0]?.id ?? "");
                                 setView("list");
                               }}
                             >
@@ -283,7 +288,11 @@ export function Bookings() {
                                 className={`admin-calendar-item ${trip.status}`}
                                 title={`${trip.title} · ${trip.status}`}
                                 key={trip.id}
-                                onClick={() => setSelected(trip.id)}
+                                onClick={() => {
+                                  setDay(date);
+                                  setSelected(trip.id);
+                                  setView("list");
+                                }}
                               >
                                 {trip.title}
                               </button>
@@ -440,7 +449,7 @@ export function Bookings() {
             <fieldset disabled={busy} className="space-y-4">
               <label>
                 Client
-                <select
+                <AppSelect
                   required
                   value={form.client_id}
                   onChange={(e) => change({ client_id: e.target.value })}
@@ -452,7 +461,7 @@ export function Bookings() {
                       {c.archived ? " (archived)" : ""}
                     </option>
                   ))}
-                </select>
+                </AppSelect>
               </label>
               <label>
                 Journey title
@@ -475,14 +484,14 @@ export function Bookings() {
                 </label>
                 <label>
                   Status
-                  <select
+                  <AppSelect
                     value={form.status}
                     onChange={(e) => change({ status: e.target.value as BookingInput["status"] })}
                   >
                     <option value="draft">Draft request</option>
                     <option value="confirmed">Confirmed</option>
                     <option value="cancelled">Cancelled</option>
-                  </select>
+                  </AppSelect>
                 </label>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -517,7 +526,7 @@ export function Bookings() {
                   <div key={i} className="space-y-3 border-b border-border pb-4">
                     <label>
                       Destination {i + 1}
-                      <select
+                      <AppSelect
                         value={stop.destination}
                         onChange={(e) =>
                           change({
@@ -532,11 +541,11 @@ export function Bookings() {
                             {d.name}
                           </option>
                         ))}
-                      </select>
+                      </AppSelect>
                     </label>
                     <label>
                       Accommodation (optional)
-                      <select
+                      <AppSelect
                         value={stop.stay ?? ""}
                         onChange={(e) =>
                           change({
@@ -560,7 +569,7 @@ export function Bookings() {
                               {s.name}
                             </option>
                           ))}
-                      </select>
+                      </AppSelect>
                     </label>
                     <label>
                       Nights

@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/_authenticated/admin/account")({ component: Account });
 function Account() {
-  const { user } = Route.useRouteContext();
+  const { user, adminAssurance } = Route.useRouteContext();
+  const verifiedSession = adminAssurance === "aal2";
+  const [securityLoaded, setSecurityLoaded] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [factors, setFactors] = useState<{ id: string; status: string }[]>([]);
@@ -14,6 +16,7 @@ function Account() {
     void supabase.auth.mfa.listFactors().then((result) => {
       if (result.error) setMessage("Security status could not be loaded.");
       else setFactors(result.data.totp);
+      setSecurityLoaded(true);
     });
   }, []);
   async function verify(id: string) {
@@ -35,39 +38,59 @@ function Account() {
   }
   return (
     <>
-      <h1 className="text-4xl md:text-6xl">Your account</h1>
-      <p className="mt-5">Signed in as {user.email}</p>
+      <div className="admin-page-heading">
+        <div>
+          <p className="admin-eyebrow">YOUR WORKSPACE</p>
+          <h1 className="mt-2">Settings</h1>
+          <p>Manage your account and sign-in.</p>
+        </div>
+      </div>
+      <section className="admin-panel max-w-xl p-6">
+        <h2 className="admin-panel-heading">Your account</h2>
+        <p className="mt-3 text-sm">{user.email}</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {user.email_confirmed_at ? "Email verified" : "Email verification pending"}
+        </p>
+      </section>
       <p role="status" className="mt-5">
         {message}
       </p>
-      <section className="mt-8 max-w-xl space-y-5 border-t border-border pt-6">
-        <h2 className="text-2xl">Authenticator security</h2>
-        <p>
-          An authenticator app is required to publish packages and photos. Staff access is assigned
-          by your website manager; registering an account never grants editing access.
-        </p>
-        {!factors.some((factor) => factor.status === "verified") && !enrollment && (
-          <Button
-            disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              try {
-                const result = await supabase.auth.mfa.enroll({
-                  factorType: "totp",
-                  friendlyName: `Pelican ${Date.now()}`,
-                });
-                if (result.error) throw result.error;
-                setEnrollment({ id: result.data.id, qr: result.data.totp.qr_code });
-              } catch {
-                setMessage("Authenticator setup unavailable. Please retry.");
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            Set up authenticator
-          </Button>
+      <section className="admin-panel mt-6 max-w-xl space-y-5 p-6">
+        <h2 className="admin-panel-heading">Sign-in security</h2>
+        {verifiedSession ? (
+          <p className="text-sm text-primary">
+            Your sign-in is verified. Your account is protected.
+          </p>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Verify your authenticator to manage the workspace.
+          </p>
         )}
+        {securityLoaded &&
+          !verifiedSession &&
+          !factors.some((factor) => factor.status === "verified") &&
+          !enrollment && (
+            <Button
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                try {
+                  const result = await supabase.auth.mfa.enroll({
+                    factorType: "totp",
+                    friendlyName: `Pelican ${Date.now()}`,
+                  });
+                  if (result.error) throw result.error;
+                  setEnrollment({ id: result.data.id, qr: result.data.totp.qr_code });
+                } catch {
+                  setMessage("Authenticator setup unavailable. Please retry.");
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              Set up authenticator
+            </Button>
+          )}
         {enrollment && (
           <>
             <p>
@@ -85,34 +108,35 @@ function Account() {
             />
           </>
         )}
-        {(enrollment || factors.some((factor) => factor.status === "verified")) && (
-          <form
-            className="space-y-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              const id =
-                enrollment?.id ?? factors.find((factor) => factor.status === "verified")?.id;
-              if (id) void verify(id);
-            }}
-          >
-            <label className="block">
-              Authenticator code
-              <input
-                required
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                pattern="[0-9]{6}"
-                maxLength={6}
-                className="mt-2 block w-full border-b bg-transparent py-3"
-                value={code}
-                onChange={(event) => setCode(event.target.value)}
-              />
-            </label>
-            <Button disabled={busy}>Verify code</Button>
-          </form>
-        )}
+        {!verifiedSession &&
+          (enrollment || factors.some((factor) => factor.status === "verified")) && (
+            <form
+              className="space-y-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const id =
+                  enrollment?.id ?? factors.find((factor) => factor.status === "verified")?.id;
+                if (id) void verify(id);
+              }}
+            >
+              <label className="block">
+                Authenticator code
+                <input
+                  required
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  className="mt-2 block w-full border-b bg-transparent py-3"
+                  value={code}
+                  onChange={(event) => setCode(event.target.value)}
+                />
+              </label>
+              <Button disabled={busy}>Verify code</Button>
+            </form>
+          )}
       </section>
-      <div className="mt-10 flex flex-wrap gap-4">
+      <div className="admin-panel mt-6 flex max-w-xl flex-wrap gap-4 p-6">
         <Button
           variant="outline"
           disabled={busy}
