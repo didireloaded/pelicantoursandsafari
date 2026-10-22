@@ -1,5 +1,6 @@
 import { useStaffProfiles } from "@/lib/staff-profiles";
 import { AdminSampleModeProvider } from "@/lib/admin-sample-mode";
+import { sampleStaff } from "@/lib/admin-sample-data";
 import { StaffAvatar } from "./staff-avatar";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
@@ -45,6 +46,7 @@ export function WorkspaceShell({
   const [teamOpen, setTeamOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [sampleMode, setSampleMode] = useState(false);
+  const sampleEnabled = sampleMode && sampleAvailable;
   const sidebar = useRef<HTMLElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -89,7 +91,7 @@ export function WorkspaceShell({
   const profiles = useStaffProfiles(ready);
   const team = useQuery({
     queryKey: ["staff-presence"],
-    enabled: ready,
+    enabled: ready && !sampleEnabled,
     queryFn: async () => {
       if (document.visibilityState === "visible") {
         const ping = await supabase.rpc("touch_staff_presence");
@@ -104,15 +106,16 @@ export function WorkspaceShell({
       if (rows.error) throw rows.error;
       return rows.data ?? [];
     },
-    refetchInterval: 60000,
+    refetchInterval: sampleEnabled ? false : 60000,
     refetchIntervalInBackground: false,
     retry: 0,
   });
-  const people = (team.data ?? []).map((person) => ({
-    ...person,
-    ...profiles.data?.find((profile) => profile.user_id === person.user_id),
-  }));
-  const sampleEnabled = sampleMode && sampleAvailable;
+  const people = sampleEnabled
+    ? sampleStaff.map((person) => ({ user_id: person.id, display_name: person.name, avatar_path: null }))
+    : (team.data ?? []).map((person) => ({
+        ...person,
+        ...profiles.data?.find((profile) => profile.user_id === person.user_id),
+      }));
   const nav = (
     <>
       {adminLinks.map((item, i) => {
@@ -242,11 +245,11 @@ export function WorkspaceShell({
             </button>
             {teamOpen && (
               <div className="admin-team-popover">
-                <strong className="text-xs">Recently active team</strong>
+                <strong className="text-xs">{sampleEnabled ? "Sample team" : "Recently active team"}</strong>
                 <p className="my-2 text-xs text-muted-foreground">
-                  Activity within the last two minutes.
+                  {sampleEnabled ? "Fictional profiles for presentation." : "Activity within the last two minutes."}
                 </p>
-                {team.isError ? (
+                {!sampleEnabled && team.isError ? (
                   <p className="text-xs">Team activity unavailable.</p>
                 ) : people.length ? (
                   people.map((person) => (
