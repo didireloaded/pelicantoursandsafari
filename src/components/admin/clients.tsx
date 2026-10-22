@@ -186,7 +186,7 @@ export function Clients({ userId }: { userId: string }) {
                       <span className="admin-avatar">{initials(client.name)}</span>
                     )}
                     <strong className="block truncate text-xs font-medium">{client.name}</strong>
-                    <span className="mt-1 block truncate text-[10px] text-muted-foreground">
+                    <span className="mt-1 block truncate text-xs text-muted-foreground">
                       {client.country || "Country not supplied"}
                     </span>
                     <div className="admin-client-meta">
@@ -239,11 +239,11 @@ export function Clients({ userId }: { userId: string }) {
                       </span>
                     )}
                     <h2 className="mt-4 text-xl font-medium">{current.name}</h2>
-                    <p className="mt-1 text-[11px] text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {current.country || "Country not supplied"}
                     </p>
                   </div>
-                  <dl className="mt-6 space-y-4 text-[11px]">
+                  <dl className="mt-6 space-y-4 text-xs">
                     <div className="flex justify-between gap-4">
                       <dt className="text-muted-foreground">Client source</dt>
                       <dd>{current.source}</dd>
@@ -261,11 +261,11 @@ export function Clients({ userId }: { userId: string }) {
                       <dd>{data?.trips.filter((t) => t.client_id === current.id).length ?? 0}</dd>
                     </div>
                   </dl>
-                  <p className="mt-3 text-[9px] text-muted-foreground">
+                  <p className="mt-3 text-xs text-muted-foreground">
                     Spending is the received amount recorded by staff, not a quote or automatic
                     payment feed.
                   </p>
-                  <div className="mt-5 space-y-3 border-t border-border pt-5 text-[11px]">
+                  <div className="mt-5 space-y-3 border-t border-border pt-5 text-xs">
                     {current.email && (
                       <a
                         className="flex items-center gap-2 break-all"
@@ -318,7 +318,7 @@ export function Clients({ userId }: { userId: string }) {
                     )}
                   </section>
                   <button
-                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-[11px] font-medium text-primary-foreground"
+                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-xs font-medium text-primary-foreground"
                     onClick={() => edit(current)}
                   >
                     Edit client <ArrowUpRight size={13} />
@@ -332,13 +332,13 @@ export function Clients({ userId }: { userId: string }) {
             </section>
             <section className="admin-panel p-5">
               <h2 className="admin-panel-heading">Client sources</h2>
-              <p className="mt-1 text-[10px] text-muted-foreground">
+              <p className="mt-1 text-xs text-muted-foreground">
                 How your current clients found Pelican.
               </p>
               {sources.length ? (
                 sources.map((s) => (
                   <div key={s.name} className="mt-4">
-                    <div className="mb-1 flex justify-between text-[10px]">
+                    <div className="mb-1 flex justify-between text-xs">
                       <span>{s.name}</span>
                       <span>{s.count}</span>
                     </div>

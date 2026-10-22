@@ -4,7 +4,6 @@ import { useWorkspace } from "@/lib/admin-workspace-api";
 import { dayUtc, isActiveTrip, tripEnd, initials } from "@/lib/admin-workspace";
 import { WorkspaceState } from "./workspace-state";
 import { HelpPanel } from "./help-panel";
-import { ContentPhoto } from "@/components/content-photo";
 export function Overview() {
   const query = useWorkspace();
   const data = query.data;
@@ -16,13 +15,18 @@ export function Overview() {
   const clients = data?.clients.filter((c) => !c.archived) ?? [];
   const leads = data?.leads ?? [];
   const open = leads.filter((l) => !["closed", "confirmed"].includes(l.status));
+  const newEnquiries = open.filter((l) => l.status === "new").length;
+  const followUpsDue = open.filter((l) => l.follow_up_on && l.follow_up_on <= today).length;
+  const undatedBookings = leads.filter(
+    (l) => l.booking_ref && l.status === "confirmed" && !l.confirmed_starts_on,
+  ).length;
   return (
     <>
       <div className="admin-page-heading">
         <div>
-          <p className="admin-eyebrow">YOUR PELICAN WORKSPACE</p>
-          <h1 className="mt-2">A good day for a new journey.</h1>
-          <p>Your guests, upcoming safaris and the details that need your attention.</p>
+          <p className="admin-eyebrow">PELICAN WORKSPACE</p>
+          <h1 className="mt-2">Today’s overview</h1>
+          <p>Enquiries, confirmed journeys and follow-ups in one place.</p>
         </div>
         <Link
           to="/admin/bookings"
@@ -56,7 +60,7 @@ export function Overview() {
             {
               label: "Open enquiries",
               value: open.length,
-              note: "Requests waiting to become journeys",
+              note: "Requests awaiting a decision",
               Icon: Mail,
               to: "/dashboard",
             },
@@ -84,11 +88,9 @@ export function Overview() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="admin-panel-heading">Upcoming journeys</h2>
-                  <p className="mt-1 text-[10px] text-muted-foreground">
-                    A clear view of the next departures.
-                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">Confirmed departures ahead.</p>
                 </div>
-                <Link to="/admin/bookings" className="text-[10px] text-primary">
+                <Link to="/admin/bookings" className="text-xs text-primary">
                   View calendar →
                 </Link>
               </div>
@@ -100,7 +102,7 @@ export function Overview() {
                       <span className="admin-avatar">{initials(client?.name ?? trip.title)}</span>
                       <span className="min-w-0 flex-1">
                         <strong className="block truncate text-xs font-medium">{trip.title}</strong>
-                        <small className="block text-[10px] text-muted-foreground">
+                        <small className="block text-xs text-muted-foreground">
                           {client?.name ?? "Traveller account"} · {trip.starts_on} — {tripEnd(trip)}
                         </small>
                       </span>
@@ -122,7 +124,7 @@ export function Overview() {
             <section className="admin-panel p-6">
               <div className="flex items-center justify-between">
                 <h2 className="admin-panel-heading">Recent enquiries</h2>
-                <Link to="/dashboard" className="text-[10px] text-primary">
+                <Link to="/dashboard" className="text-xs text-primary">
                   Open inbox →
                 </Link>
               </div>
@@ -132,12 +134,10 @@ export function Overview() {
                   .slice(0, 4)
                   .map((lead) => (
                     <Link to="/dashboard" key={lead.id} className="admin-row">
-                      <span className="admin-avatar !h-8 !w-8 !text-[10px]">
-                        {initials(lead.name)}
-                      </span>
+                      <span className="admin-avatar !h-8 !w-8 !text-xs">{initials(lead.name)}</span>
                       <div className="flex-1">
                         <strong className="block text-xs font-medium">{lead.name}</strong>
-                        <small className="text-[10px] text-muted-foreground">
+                        <small className="text-xs text-muted-foreground">
                           {lead.created_at.slice(0, 10)} ·{" "}
                           {lead.residence || "Country not supplied"}
                         </small>
@@ -152,32 +152,26 @@ export function Overview() {
           </div>
           <aside className="admin-detail-rail">
             <section className="admin-panel p-5">
-              <h2 className="admin-panel-heading">A little closer to the wild.</h2>
-              <div className="mt-4 overflow-hidden rounded-xl">
-                <img
-                  src="/images/rhino-640.webp"
-                  alt="Rhino in Namibia"
-                  width="640"
-                  height="427"
-                  className="h-32 w-full object-cover"
-                  loading="lazy"
-                />
+              <h2 className="admin-panel-heading">Needs attention</h2>
+              <div className="mt-3 divide-y divide-border">
+                <Link to="/dashboard" className="admin-row justify-between">
+                  <span>New enquiries</span>
+                  <strong>{newEnquiries}</strong>
+                </Link>
+                <Link to="/dashboard" className="admin-row justify-between">
+                  <span>Follow-ups due</span>
+                  <strong>{followUpsDue}</strong>
+                </Link>
+                <Link to="/admin/bookings" className="admin-row justify-between">
+                  <span>Confirmed requests needing dates</span>
+                  <strong>{undatedBookings}</strong>
+                </Link>
               </div>
-              <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-                Build the journeys your guests will remember. Start with the details, then make them
-                your own.
-              </p>
-              <Link
-                to="/admin/packages"
-                className="mt-4 inline-block text-[11px] font-medium text-primary"
-              >
-                Manage packages →
-              </Link>
             </section>
             <HelpPanel />
             <section className="admin-panel p-5">
               <h2 className="admin-panel-heading">Ready to publish?</h2>
-              <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
                 Save a draft, preview it, then publish. Your website updates without a code
                 deployment.
               </p>

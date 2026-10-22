@@ -159,7 +159,7 @@ export function WorkspaceShell({
           <img src="/pelican-logo.png" alt="" />
           <span>
             Pelican
-            <span className="block text-[10px] font-normal uppercase tracking-[.2em] opacity-60">
+            <span className="block text-xs font-normal uppercase tracking-[.2em] opacity-60">
               Tours & safaris
             </span>
           </span>
@@ -177,7 +177,7 @@ export function WorkspaceShell({
             </span>
             <span className="min-w-0">
               <strong className="block truncate text-xs">{name}</strong>
-              <span className="block text-[10px] text-muted-foreground">Staff account</span>
+              <span className="block text-xs text-muted-foreground">Staff account</span>
             </span>
             <ChevronDown size={14} className="ml-auto" />
           </Link>
@@ -223,14 +223,14 @@ export function WorkspaceShell({
                   <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
                 </span>
               )}
-              <span className="ml-2 hidden text-[11px] text-muted-foreground xl:block">
+              <span className="ml-2 hidden text-xs text-muted-foreground xl:block">
                 Your team
               </span>
             </button>
             {teamOpen && (
               <div className="admin-team-popover">
                 <strong className="text-xs">Recently active team</strong>
-                <p className="my-2 text-[11px] text-muted-foreground">
+                <p className="my-2 text-xs text-muted-foreground">
                   Activity within the last two minutes.
                 </p>
                 {team.isError ? (

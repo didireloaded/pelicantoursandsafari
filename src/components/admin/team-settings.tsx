@@ -104,7 +104,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
         <Users size={17} className="text-primary" />
         <h2 className="admin-panel-heading">Your team</h2>
         {canManage && (
-          <span className="ml-auto text-[11px] text-muted-foreground">
+          <span className="ml-auto text-xs text-muted-foreground">
             {members.length} / 5 accounts
           </span>
         )}
@@ -129,12 +129,12 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
                   <li key={request.user_id} className="flex flex-wrap items-center gap-3 py-3">
                     <p className="min-w-0 flex-1 break-all text-xs">
                       {request.email}
-                      <span className="block text-[10px] text-muted-foreground">
+                      <span className="block text-xs text-muted-foreground">
                         Requested {new Date(request.created_at).toLocaleDateString("en-GB")}
                       </span>
                     </p>
                     <Button
-                      className="!text-[10px]"
+                      className="!text-xs"
                       disabled={busy || members.length >= 5}
                       onClick={() =>
                         void mutate(
@@ -152,7 +152,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
                     </Button>
                     <Button
                       variant="ghost"
-                      className="!text-[10px]"
+                      className="!text-xs"
                       disabled={busy}
                       onClick={() => {
                         if (window.confirm(`Decline access for ${request.email}?`))
@@ -176,7 +176,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
           <ul className="mt-5 divide-y divide-border">
             {members.map((member) => (
               <li key={member.user_id} className="flex flex-wrap items-center gap-3 py-4">
-                <span className="admin-avatar !h-8 !w-8 !text-[10px]">
+                <span className="admin-avatar !h-8 !w-8 !text-xs">
                   {initials(member.email.split("@")[0] ?? "Team")}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -184,7 +184,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
                     {member.email}
                     {member.user_id === userId ? " · You" : ""}
                   </p>
-                  <p className="mt-1 text-[10px] text-muted-foreground">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {member.role === "admin"
                       ? "Administrator · manages team access"
                       : "Team member · manages trips and content"}
@@ -192,7 +192,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
                 </div>
                 <AppSelect
                   aria-label={`Role for ${member.email}`}
-                  className="!w-36 !text-[10px]"
+                  className="!w-36 !text-xs"
                   disabled={busy || loading || member.user_id === userId}
                   value={member.role}
                   onChange={(event) => {
@@ -214,7 +214,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
                 </AppSelect>
                 <Button
                   variant="ghost"
-                  className="!text-[10px]"
+                  className="!text-xs"
                   disabled={busy || loading || member.user_id === userId}
                   onClick={() => {
                     if (
@@ -248,7 +248,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
             }}
           >
             <h3 className="text-xs font-medium">Add an approved team member</h3>
-            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               Share the{" "}
               <a
                 href="/auth?next=%2Fadmin"
@@ -323,7 +323,7 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
       {verified && (
         <Button
           variant="link"
-          className="mt-3 px-0 !text-[11px]"
+          className="mt-3 px-0 !text-xs"
           disabled={busy || loading}
           onClick={() => setReload((value) => value + 1)}
         >
