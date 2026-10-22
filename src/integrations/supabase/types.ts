@@ -67,6 +67,7 @@ export type Database = {
           contact_preference: string | null
           created_at: string
           email: string | null
+          enquiry_ref: string | null
           follow_up_on: string | null
           id: string
           name: string
@@ -87,6 +88,7 @@ export type Database = {
           contact_preference?: string | null
           created_at?: string
           email?: string | null
+          enquiry_ref?: string | null
           follow_up_on?: string | null
           id?: string
           name: string
@@ -107,6 +109,7 @@ export type Database = {
           contact_preference?: string | null
           created_at?: string
           email?: string | null
+          enquiry_ref?: string | null
           follow_up_on?: string | null
           id?: string
           name?: string
@@ -521,6 +524,7 @@ export type Database = {
         Args: { _enquiry: string; _trip_code: string }
         Returns: string
       }
+      assign_enquiry_ref: { Args: { _enquiry: string }; Returns: string }
       can_manage_site: { Args: never; Returns: boolean }
       consume_admin_help: { Args: never; Returns: undefined }
       consume_ai_draft_request: { Args: never; Returns: boolean }
