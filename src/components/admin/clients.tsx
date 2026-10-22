@@ -285,6 +285,38 @@ export function Clients({ userId }: { userId: string }) {
                       <p className="whitespace-pre-wrap text-muted-foreground">{current.notes}</p>
                     )}
                   </div>
+                  <section className="client-reservation-summary">
+                    <h3>Journeys & payments</h3>
+                    {(data?.trips ?? [])
+                      .filter((trip) => trip.client_id === current.id)
+                      .map((trip) => (
+                        <div key={trip.id}>
+                          <strong>{trip.title}</strong>
+                          <span>
+                            {trip.starts_on} · {trip.status}
+                          </span>
+                          <dl>
+                            <div>
+                              <dt>Trip total</dt>
+                              <dd>
+                                {trip.total_nad === null
+                                  ? "Not recorded"
+                                  : formatNad(trip.total_nad)}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>Received</dt>
+                              <dd>
+                                {trip.paid_nad === null ? "Not recorded" : formatNad(trip.paid_nad)}
+                              </dd>
+                            </div>
+                          </dl>
+                        </div>
+                      ))}
+                    {!data?.trips.some((trip) => trip.client_id === current.id) && (
+                      <p>No linked reservations yet.</p>
+                    )}
+                  </section>
                   <button
                     className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-[11px] font-medium text-primary-foreground"
                     onClick={() => edit(current)}

@@ -1908,3 +1908,206 @@
   white-space: normal;
   line-height: 1.4;
 }
+
+/* Content library: browse first, edit only the selected entry. */
+.content-library-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0 18px;
+}
+.content-library-toolbar input {
+  flex: 1;
+  min-width: 180px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: var(--card);
+  font-size: 13px;
+}
+.content-library-toolbar > span {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.content-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+.content-library-card {
+  overflow: hidden;
+  text-align: left;
+  transition: box-shadow 0.18s;
+}
+.content-library-card:hover {
+  box-shadow: 0 8px 24px #0000000c;
+}
+.content-library-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.content-library-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.content-library-copy {
+  padding: 16px;
+}
+.content-library-copy h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.content-library-copy > span:last-child {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.content-library-state {
+  font-size: 10px;
+  color: var(--primary);
+  border-radius: 20px;
+  background: var(--secondary);
+  padding: 4px 9px;
+}
+.content-library-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  font-size: 12px;
+}
+.admin-content-sheet .admin-form {
+  margin-top: 16px;
+  box-shadow: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.enquiry-extra {
+  margin: 0 24px 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.enquiry-extra summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.enquiry-extra .enquiry-contact-grid {
+  padding: 16px 0;
+}
+.enquiry-extra .enquiry-workflow {
+  padding: 12px 0 0;
+}
+.enquiry-reply-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 24px 20px;
+}
+.enquiry-reply-actions a {
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 12px;
+}
+.enquiry-reply-actions a + a {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+.enquiry-inbox .enquiry-detail-header {
+  border-bottom: 0;
+  padding-bottom: 20px;
+}
+.enquiry-inbox .enquiry-detail-tabs {
+  padding-top: 4px;
+}
+.enquiry-inbox .enquiry-message {
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--secondary);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.enquiry-inbox .enquiry-list-item {
+  padding: 14px 16px;
+}
+.enquiry-inbox .enquiry-list-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  font-size: 12px;
+}
+.client-reservation-summary {
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+  padding-top: 20px;
+  font-size: 11px;
+}
+.client-reservation-summary h3 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.client-reservation-summary > div {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.client-reservation-summary strong,
+.client-reservation-summary span {
+  display: block;
+}
+.client-reservation-summary span,
+.client-reservation-summary > p {
+  color: var(--muted-foreground);
+  margin-top: 6px;
+}
+.client-reservation-summary dl {
+  margin-top: 10px;
+}
+.client-reservation-summary dl > div {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .content-library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .content-library-image {
+    height: 100px;
+  }
+  .content-library-copy {
+    padding: 12px;
+  }
+  .content-library-copy h2 {
+    font-size: 12px;
+  }
+  .enquiry-extra {
+    margin-inline: 16px;
+  }
+  .enquiry-reply-actions {
+    padding-inline: 16px;
+  }
+}
+.enquiry-brief-preview {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+.enquiry-detail-header > .pelican-select-trigger {
+  width: auto;
+  min-width: 120px;
+  font-size: 11px;
+}
+.enquiry-extra .enquiry-workflow {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}

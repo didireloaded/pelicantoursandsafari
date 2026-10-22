@@ -2,14 +2,14 @@
 
 Six main screens, using Pelican's existing fonts, colours, controls and page shell:
 
-| Screen | Address | Purpose |
-| --- | --- | --- |
-| Home | /admin | Task links and publishing instructions; no telemetry |
-| Packages | /admin/packages | Create package pages, descriptions, destinations, experiences, cover photo, day-by-day itinerary, inclusions/exclusions, seasonal NAD rates and optional sourced conversions |
-| Gallery | /admin/gallery | Upload photos, destination albums, captions, alternative descriptions and numeric display order |
-| Enquiries | /dashboard | Existing staff inbox, assignment and follow-up tools |
-| Travel information | /content-manage | Existing verified information and catalogue safari detail editor |
-| Account | /admin/account | Authenticator enrollment/challenge, password recovery and sign-out |
+| Screen             | Address         | Purpose                                                                                                                                                                      |
+| ------------------ | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home               | /admin          | Task links and publishing instructions; no telemetry                                                                                                                         |
+| Packages           | /admin/packages | Create package pages, descriptions, destinations, experiences, cover photo, day-by-day itinerary, inclusions/exclusions, seasonal NAD rates and optional sourced conversions |
+| Gallery            | /admin/gallery  | Upload photos, destination albums, captions, alternative descriptions and numeric display order                                                                              |
+| Enquiries          | /dashboard      | Existing staff inbox, assignment and follow-up tools                                                                                                                         |
+| Travel information | /content-manage | Existing verified information and catalogue safari detail editor                                                                                                             |
+| Account            | /admin/account  | Authenticator enrollment/challenge, password recovery and sign-out                                                                                                           |
 
 ## Update flow
 
@@ -83,3 +83,24 @@ Five distinct team account IDs (admin and staff combined) are allowed. Transacti
 Initial deployment has one existing staff account and zero administrators. No person was granted or upgraded by this release. The first owner must be identified and explicitly authorized once through a trusted operator; public signups cannot claim ownership. Once that owner is established, they approve and remove the other accounts in Settings without routine developer intervention. The owner's reported invalid-credentials failure was observed only as two rejected password attempts; the exact account/sign-in method is still needed for account-specific diagnosis. Password mismatch, account existence, provider identity and staff permissions must not be conflated.
 
 Sign-in presents Google/Apple first, normalizes email without modifying passwords, gives helpful invalid-credentials guidance, and permits existing passwords shorter than the new-signup minimum. Signed-in nonstaff users opening /admin go to Access pending instead of looping through sign-in. Account recovery is initiated only by the user and remains non-enumerating. Email verification and staff MFA remain separate.
+
+### Compact library and enquiry workspace (22 October)
+
+Packages and Gallery now open as a searchable card library (12 entries per page).
+Gallery can be filtered by destination. Selecting an entry opens the existing
+revision-checked draft/publish editor in a side panel; closing a dirty panel asks
+before discarding. No public content or publishing permissions changed.
+
+Enquiries put the traveller message, reply links and editable status first.
+Contact information, assignment and follow-up are under an optional disclosure;
+activity remains under More details. Explicit note saving and conflict comparison
+remain intact. Client details show linked reservations and actual staff-recorded
+trip totals/received amounts. Empty amounts are not represented as zero.
+
+Design references: Dribbble customer-inbox search, including Pickolab Studio's
+“CRM Dashboard - Inbox Page” and the customer support inbox examples. Adapted
+message-first hierarchy and compact browsing to the existing Pelican workspace.
+Overview, Analytics and public site styling are unchanged. Traveller-side profile
+photo upload and automatic conversion of booking requests into client records
+are not implemented by this layout change; staff can already add private photos
+and link client reservations through the existing protected tools.

@@ -1,6 +1,13 @@
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { AppSelect } from "@/components/ui/app-select";
 import { ZodError } from "zod";
-import { Strip } from "@/components/site";
+import { Photo, Strip } from "@/components/site";
 import { useBlocker } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -40,6 +47,10 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [album, setAlbum] = useState("");
   const [preview, setPreview] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [history, setHistory] = useState<
@@ -73,6 +84,7 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
   };
   const choose = (row?: ContentRow) => {
     if (dirty && !window.confirm("Discard unsaved changes?")) return;
+    setEditorOpen(true);
     setSelected(row);
     setData(row?.draft ?? (kind === "package" ? blankPackage() : newPhoto()));
     newId.current = crypto.randomUUID();
@@ -121,6 +133,17 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
   }
   const p = data as PackageContent;
   const photo = data as PhotoContent;
+  const titleFor = (row: ContentRow) =>
+    kind === "package"
+      ? (row.draft as PackageContent).title
+      : (row.draft as PhotoContent).caption || (row.draft as PhotoContent).alt;
+  const filtered = rows.filter(
+    (row) =>
+      titleFor(row).toLowerCase().includes(search.toLowerCase()) &&
+      (!album || kind !== "photo" || (row.draft as PhotoContent).destination === album),
+  );
+  const pageCount = Math.max(1, Math.ceil(filtered.length / 12));
+  const currentPage = Math.min(page, pageCount - 1);
   return (
     <div className="admin-content-editor">
       <div className="admin-page-heading">
@@ -129,13 +152,13 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
           <h1 className="mt-2">{kind === "package" ? "Packages" : "Gallery"}</h1>
           <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
             {kind === "package"
-              ? "Create a package with its own page, itinerary and verified prices. Existing safari categories remain available under Travel information."
-              : "Add photographs to your destination albums. Use the display order to arrange photos; lower numbers appear first."}
+              ? "Your packages, ready to edit and publish."
+              : "Choose a destination to manage its photographs."}
           </p>
         </div>
       </div>
       <p role="status" className="my-5 text-sm">
-        {message || (!loaded ? "Loading your content…" : "")}
+        {!editorOpen && (message || (!loaded ? "Loading your content…" : ""))}
       </p>
       <div className="flex flex-wrap gap-3">
         <Button variant="outline" disabled={busy || uploading} onClick={() => choose()}>
@@ -164,363 +187,470 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
           Reload saved version
         </Button>
       </div>
-      <label className="admin-panel mt-6 block max-w-4xl p-5 text-xs">
-        Choose an entry
-        <AppSelect
-          className={field}
-          disabled={busy || uploading}
-          value={selected?.id ?? ""}
-          onChange={(event) => choose(rows.find((row) => row.id === event.target.value))}
-        >
-          <option value="">New entry</option>
-          {rows.map((row) => (
-            <option key={row.id} value={row.id}>
-              {kind === "package"
-                ? (row.draft as PackageContent).title
-                : `${destinations.find((place) => place.slug === (row.draft as PhotoContent).destination)?.name} — ${(row.draft as PhotoContent).caption || (row.draft as PhotoContent).alt}`}{" "}
-              ·{" "}
-              {row.published
-                ? JSON.stringify(row.draft) === JSON.stringify(row.published)
-                  ? "Live"
-                  : "Live + draft changes"
-                : "Draft"}
-            </option>
-          ))}
-        </AppSelect>
-      </label>
-      <form
-        className="admin-panel admin-form mt-6 max-w-4xl space-y-6 p-6"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void save("save");
+      <div className="content-library-toolbar">
+        <input
+          aria-label="Search content"
+          placeholder={kind === "package" ? "Find a package…" : "Find a photo…"}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(0);
+          }}
+        />
+        {kind === "photo" && (
+          <AppSelect
+            aria-label="Destination album"
+            value={album}
+            onChange={(e) => {
+              setAlbum(e.target.value);
+              setPage(0);
+            }}
+          >
+            <option value="">All destinations</option>
+            {destinations.map((place) => (
+              <option key={place.slug} value={place.slug}>
+                {place.name}
+              </option>
+            ))}
+          </AppSelect>
+        )}
+        <span>
+          {filtered.length} {kind === "package" ? "packages" : "photos"}
+        </span>
+      </div>
+      <div className="content-library-grid">
+        {filtered.slice(currentPage * 12, currentPage * 12 + 12).map((row) => {
+          const entry = row.draft as PackageContent;
+          const picture = row.draft as PhotoContent;
+          const path = kind === "package" ? entry.coverPath : picture.path;
+          return (
+            <button
+              key={row.id}
+              className="admin-panel content-library-card"
+              disabled={busy || uploading}
+              onClick={() => choose(row)}
+            >
+              {path ? (
+                <ContentPhoto path={path} alt="" className="content-library-image" />
+              ) : kind === "package" ? (
+                <Photo
+                  name={entry.image}
+                  alt=""
+                  pan={false}
+                  className="content-library-image object-cover"
+                  sizes="(min-width: 1024px) 250px, 45vw"
+                />
+              ) : (
+                <div className="content-library-image bg-secondary" />
+              )}
+              <div className="content-library-copy">
+                <span className="content-library-state">
+                  {row.published
+                    ? JSON.stringify(row.draft) === JSON.stringify(row.published)
+                      ? "Live"
+                      : "Unpublished changes"
+                    : "Draft"}
+                </span>
+                <h2>{titleFor(row)}</h2>
+                <span>
+                  {kind === "photo"
+                    ? destinations.find((place) => place.slug === picture.destination)?.name
+                    : "Edit package"}{" "}
+                  ↗
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      {loaded && !filtered.length && (
+        <div className="admin-panel admin-empty">
+          {rows.length
+            ? "No matching entries. Try another search."
+            : "Nothing added yet. Create your first entry above."}
+        </div>
+      )}
+      {pageCount > 1 && (
+        <nav className="content-library-pagination" aria-label="Content pages">
+          <Button
+            variant="outline"
+            disabled={currentPage === 0}
+            onClick={() => setPage(currentPage - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {currentPage + 1} of {pageCount}
+          </span>
+          <Button
+            variant="outline"
+            disabled={currentPage + 1 === pageCount}
+            onClick={() => setPage(currentPage + 1)}
+          >
+            Next
+          </Button>
+        </nav>
+      )}
+      <Sheet
+        open={editorOpen}
+        onOpenChange={(value) => {
+          if (busy || uploading) return;
+          if (!value && dirty && !window.confirm("Discard unsaved changes?")) return;
+          if (!value) setDirty(false);
+          setEditorOpen(value);
         }}
       >
-        <fieldset disabled={busy || uploading || !loaded} className="space-y-6">
-          {kind === "package" ? (
-            <>
-              {(
-                [
-                  ["title", "Package name", 200],
-                  ["summary", "Short description", 400],
-                  ["description", "Full description", 12000],
-                ] as const
-              ).map(([key, label, max]) => (
-                <label className="block" key={key}>
-                  {label}
-                  {key === "title" ? (
-                    <input
-                      required
-                      maxLength={max}
+        <SheetContent className="w-full overflow-y-auto sm:max-w-3xl admin-content-sheet">
+          <SheetHeader>
+            <SheetTitle>
+              {selected ? "Edit" : "New"} {kind === "package" ? "package" : "photo"}
+            </SheetTitle>
+            <SheetDescription>Save a draft, then publish when ready.</SheetDescription>
+          </SheetHeader>
+          <p role="status" className="mt-4 text-sm">
+            {message}
+          </p>
+          <form
+            className="admin-panel admin-form mt-6 max-w-4xl space-y-6 p-6"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void save("save");
+            }}
+          >
+            <fieldset disabled={busy || uploading || !loaded} className="space-y-6">
+              {kind === "package" ? (
+                <>
+                  {(
+                    [
+                      ["title", "Package name", 200],
+                      ["summary", "Short description", 400],
+                      ["description", "Full description", 12000],
+                    ] as const
+                  ).map(([key, label, max]) => (
+                    <label className="block" key={key}>
+                      {label}
+                      {key === "title" ? (
+                        <input
+                          required
+                          maxLength={max}
+                          className={field}
+                          value={p[key]}
+                          onChange={(event) => change({ ...p, [key]: event.target.value })}
+                        />
+                      ) : (
+                        <textarea
+                          required
+                          rows={key === "description" ? 5 : 2}
+                          maxLength={max}
+                          className={field}
+                          value={p[key]}
+                          onChange={(event) => change({ ...p, [key]: event.target.value })}
+                        />
+                      )}
+                    </label>
+                  ))}
+                  <fieldset className="border border-border p-5">
+                    <legend>Destinations</legend>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {destinations.map((place) => (
+                        <label key={place.slug} className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={p.destinations.includes(place.slug)}
+                            onChange={(event) =>
+                              change({
+                                ...p,
+                                destinations: event.target.checked
+                                  ? [...p.destinations, place.slug]
+                                  : p.destinations.filter((slug) => slug !== place.slug),
+                              })
+                            }
+                          />
+                          {place.name}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <fieldset className="border border-border p-5">
+                    <legend>Experiences</legend>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {planningInterests.map((interest) => (
+                        <label key={interest} className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={p.interests.includes(interest)}
+                            onChange={(event) =>
+                              change({
+                                ...p,
+                                interests: event.target.checked
+                                  ? [...p.interests, interest]
+                                  : p.interests.filter((item) => item !== interest),
+                              })
+                            }
+                          />
+                          {interest}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <label className="block">
+                    Existing cover photograph
+                    <AppSelect
                       className={field}
-                      value={p[key]}
-                      onChange={(event) => change({ ...p, [key]: event.target.value })}
-                    />
-                  ) : (
-                    <textarea
-                      required
-                      rows={key === "description" ? 5 : 2}
-                      maxLength={max}
-                      className={field}
-                      value={p[key]}
-                      onChange={(event) => change({ ...p, [key]: event.target.value })}
-                    />
+                      value={p.image}
+                      onChange={(event) => change({ ...p, image: event.target.value })}
+                    >
+                      {images.map((image) => (
+                        <option key={image} value={image}>
+                          {image
+                            .replaceAll("-", " ")
+                            .replace(/^./, (letter) => letter.toUpperCase())}
+                        </option>
+                      ))}
+                    </AppSelect>
+                  </label>
+                  <PhotoUpload
+                    userId={userId}
+                    path={p.coverPath}
+                    onChange={(path) => change({ ...p, coverPath: path })}
+                    onBusy={setUploading}
+                  />
+                  {p.coverPath && (
+                    <>
+                      <label className="block">
+                        Describe the cover photograph
+                        <input
+                          required
+                          className={field}
+                          maxLength={300}
+                          value={p.coverAlt}
+                          onChange={(event) => change({ ...p, coverAlt: event.target.value })}
+                        />
+                      </label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => change({ ...p, coverPath: null, coverAlt: "" })}
+                      >
+                        Use existing cover instead
+                      </Button>
+                    </>
                   )}
-                </label>
-              ))}
-              <fieldset className="border border-border p-5">
-                <legend>Destinations</legend>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {destinations.map((place) => (
-                    <label key={place.slug} className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={p.destinations.includes(place.slug)}
-                        onChange={(event) =>
-                          change({
-                            ...p,
-                            destinations: event.target.checked
-                              ? [...p.destinations, place.slug]
-                              : p.destinations.filter((slug) => slug !== place.slug),
-                          })
-                        }
+                  <details className="border-y border-border py-5">
+                    <summary className="cursor-pointer text-xl">
+                      Itinerary, inclusions & pricing (optional)
+                    </summary>
+                    <div className="mt-5">
+                      <SafariPackageEditor
+                        catalogueSelection={false}
+                        slug=""
+                        value={p.details}
+                        onChange={(_, details) => details && change({ ...p, details })}
                       />
-                      {place.name}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-              <fieldset className="border border-border p-5">
-                <legend>Experiences</legend>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {planningInterests.map((interest) => (
-                    <label key={interest} className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={p.interests.includes(interest)}
-                        onChange={(event) =>
-                          change({
-                            ...p,
-                            interests: event.target.checked
-                              ? [...p.interests, interest]
-                              : p.interests.filter((item) => item !== interest),
-                          })
-                        }
-                      />
-                      {interest}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-              <label className="block">
-                Existing cover photograph
-                <AppSelect
-                  className={field}
-                  value={p.image}
-                  onChange={(event) => change({ ...p, image: event.target.value })}
-                >
-                  {images.map((image) => (
-                    <option key={image} value={image}>
-                      {image.replaceAll("-", " ").replace(/^./, (letter) => letter.toUpperCase())}
-                    </option>
-                  ))}
-                </AppSelect>
-              </label>
-              <PhotoUpload
-                userId={userId}
-                path={p.coverPath}
-                onChange={(path) => change({ ...p, coverPath: path })}
-                onBusy={setUploading}
-              />
-              {p.coverPath && (
+                    </div>
+                  </details>
+                </>
+              ) : (
                 <>
                   <label className="block">
-                    Describe the cover photograph
+                    Destination album
+                    <AppSelect
+                      className={field}
+                      value={photo.destination}
+                      onChange={(event) => change({ ...photo, destination: event.target.value })}
+                    >
+                      {destinations.map((place) => (
+                        <option key={place.slug} value={place.slug}>
+                          {place.name}
+                        </option>
+                      ))}
+                    </AppSelect>
+                  </label>
+                  <PhotoUpload
+                    userId={userId}
+                    path={photo.path || null}
+                    onChange={(path) => change({ ...photo, path })}
+                    onBusy={setUploading}
+                  />
+                  <label className="block">
+                    Describe the photo for accessibility
                     <input
                       required
                       className={field}
                       maxLength={300}
-                      value={p.coverAlt}
-                      onChange={(event) => change({ ...p, coverAlt: event.target.value })}
+                      value={photo.alt}
+                      onChange={(event) => change({ ...photo, alt: event.target.value })}
                     />
                   </label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => change({ ...p, coverPath: null, coverAlt: "" })}
-                  >
-                    Use existing cover instead
-                  </Button>
+                  <label className="block">
+                    Caption (optional)
+                    <textarea
+                      className={field}
+                      maxLength={600}
+                      value={photo.caption}
+                      onChange={(event) => change({ ...photo, caption: event.target.value })}
+                    />
+                  </label>
+                  <label className="block">
+                    Display order
+                    <input
+                      type="number"
+                      min="0"
+                      max="9999"
+                      step="1"
+                      required
+                      className={field}
+                      value={photo.position}
+                      onChange={(event) =>
+                        change({ ...photo, position: Number(event.target.value) })
+                      }
+                    />
+                  </label>
                 </>
               )}
-              <details className="border-y border-border py-5">
-                <summary className="cursor-pointer text-xl">
-                  Itinerary, inclusions & pricing (optional)
-                </summary>
-                <div className="mt-5">
-                  <SafariPackageEditor
-                    catalogueSelection={false}
-                    slug=""
-                    value={p.details}
-                    onChange={(_, details) => details && change({ ...p, details })}
-                  />
-                </div>
-              </details>
-            </>
-          ) : (
-            <>
-              <label className="block">
-                Destination album
-                <AppSelect
-                  className={field}
-                  value={photo.destination}
-                  onChange={(event) => change({ ...photo, destination: event.target.value })}
-                >
-                  {destinations.map((place) => (
-                    <option key={place.slug} value={place.slug}>
-                      {place.name}
-                    </option>
-                  ))}
-                </AppSelect>
-              </label>
-              <PhotoUpload
-                userId={userId}
-                path={photo.path || null}
-                onChange={(path) => change({ ...photo, path })}
-                onBusy={setUploading}
-              />
-              <label className="block">
-                Describe the photo for accessibility
-                <input
-                  required
-                  className={field}
-                  maxLength={300}
-                  value={photo.alt}
-                  onChange={(event) => change({ ...photo, alt: event.target.value })}
-                />
-              </label>
-              <label className="block">
-                Caption (optional)
-                <textarea
-                  className={field}
-                  maxLength={600}
-                  value={photo.caption}
-                  onChange={(event) => change({ ...photo, caption: event.target.value })}
-                />
-              </label>
-              <label className="block">
-                Display order
-                <input
-                  type="number"
-                  min="0"
-                  max="9999"
-                  step="1"
-                  required
-                  className={field}
-                  value={photo.position}
-                  onChange={(event) => change({ ...photo, position: Number(event.target.value) })}
-                />
-              </label>
-            </>
-          )}
-          <p className="text-sm text-muted-foreground">
-            Publishing confirms you have checked the facts, prices and permissions. This does not
-            create live availability or instant bookings.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Button type="submit">Save draft</Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                try {
-                  parseContent(kind, data);
-                  setPreview(true);
-                  setMessage("");
-                } catch {
-                  setMessage("Complete the required fields before previewing.");
-                }
-              }}
-            >
-              Preview
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                if (window.confirm("Publish this version to the public website?"))
-                  void save("publish");
-              }}
-            >
-              Publish
-            </Button>
-            {selected?.published && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  if (window.confirm("Hide this entry from the public website?"))
-                    void save("unpublish");
-                }}
-              >
-                Unpublish
-              </Button>
-            )}
-          </div>
-        </fieldset>
-      </form>
-      {preview && (
-        <section aria-label="Draft preview" className="mt-10 border border-border p-6">
-          <p className="text-sm text-clay">Private draft preview</p>
-          {kind === "package" ? (
-            <>
-              <h2 className="mt-4 text-3xl">{p.title}</h2>
-              <p className="mt-4">{p.description}</p>
-              {p.coverPath ? (
-                <ContentPhoto path={p.coverPath} alt={p.coverAlt} />
-              ) : (
-                <Strip src={p.image} className="mt-5 h-64 w-full" />
-              )}
-              <div className="mt-8">
-                <SafariPackageDetails
-                  details={p.details}
-                  sourceUrl="https://pelicantoursandsafari.com/contact"
-                  updatedAt={new Date().toISOString()}
-                />
-              </div>
-            </>
-          ) : (
-            <figure>
-              <ContentPhoto path={photo.path} alt={photo.alt} />
-              <figcaption className="mt-3">{photo.caption}</figcaption>
-            </figure>
-          )}
-        </section>
-      )}
-      {selected && (
-        <section className="mt-10 border-t border-border pt-6">
-          <h2 className="text-2xl">Version history</h2>
-          <Button
-            className="mt-4"
-            variant="outline"
-            disabled={busy}
-            onClick={async () => {
-              const result = await supabase
-                .from("site_content_history")
-                .select("revision,draft,action,changed_at")
-                .eq("content_id", selected.id)
-                .order("revision", { ascending: false })
-                .limit(20);
-              if (result.error) setMessage("History could not be loaded.");
-              else setHistory(result.data ?? []);
-            }}
-          >
-            Load recent versions
-          </Button>
-          <ul className="mt-4 space-y-3">
-            {history.map((entry) => (
-              <li
-                key={entry.revision}
-                className="flex flex-wrap items-center gap-4 border-b border-border py-3"
-              >
-                <span>
-                  Version {entry.revision} ·{" "}
-                  {{ save: "Draft saved", publish: "Published", unpublish: "Unpublished" }[
-                    entry.action
-                  ] ?? "Updated"}{" "}
-                  · {new Date(entry.changed_at).toLocaleString()}
-                </span>
+              <p className="text-sm text-muted-foreground">
+                Publishing confirms you have checked the facts, prices and permissions. This does
+                not create live availability or instant bookings.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button type="submit">Save draft</Button>
                 <Button
-                  variant="ghost"
-                  disabled={busy || uploading}
+                  type="button"
+                  variant="outline"
                   onClick={() => {
                     try {
-                      const restored = parseContent(kind, entry.draft);
-                      if (
-                        !dirty ||
-                        window.confirm("Replace your unsaved changes with this version?")
-                      )
-                        change(restored);
+                      parseContent(kind, data);
+                      setPreview(true);
+                      setMessage("");
                     } catch {
-                      setMessage("This version cannot be opened. Contact your website manager.");
+                      setMessage("Complete the required fields before previewing.");
                     }
                   }}
                 >
-                  Use as draft
+                  Preview
                 </Button>
-              </li>
-            ))}
-          </ul>
-          {selected.published && kind === "package" && (
-            <a
-              href={`/packages/${selected.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-block text-primary underline"
-            >
-              View published package ↗
-            </a>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm("Publish this version to the public website?"))
+                      void save("publish");
+                  }}
+                >
+                  Publish
+                </Button>
+                {selected?.published && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (window.confirm("Hide this entry from the public website?"))
+                        void save("unpublish");
+                    }}
+                  >
+                    Unpublish
+                  </Button>
+                )}
+              </div>
+            </fieldset>
+          </form>
+          {preview && (
+            <section aria-label="Draft preview" className="mt-10 border border-border p-6">
+              <p className="text-sm text-clay">Private draft preview</p>
+              {kind === "package" ? (
+                <>
+                  <h2 className="mt-4 text-3xl">{p.title}</h2>
+                  <p className="mt-4">{p.description}</p>
+                  {p.coverPath ? (
+                    <ContentPhoto path={p.coverPath} alt={p.coverAlt} />
+                  ) : (
+                    <Strip src={p.image} className="mt-5 h-64 w-full" />
+                  )}
+                  <div className="mt-8">
+                    <SafariPackageDetails
+                      details={p.details}
+                      sourceUrl="https://pelicantoursandsafari.com/contact"
+                      updatedAt={new Date().toISOString()}
+                    />
+                  </div>
+                </>
+              ) : (
+                <figure>
+                  <ContentPhoto path={photo.path} alt={photo.alt} />
+                  <figcaption className="mt-3">{photo.caption}</figcaption>
+                </figure>
+              )}
+            </section>
           )}
-        </section>
-      )}
+          {selected && (
+            <section className="mt-10 border-t border-border pt-6">
+              <h2 className="text-2xl">Version history</h2>
+              <Button
+                className="mt-4"
+                variant="outline"
+                disabled={busy}
+                onClick={async () => {
+                  const result = await supabase
+                    .from("site_content_history")
+                    .select("revision,draft,action,changed_at")
+                    .eq("content_id", selected.id)
+                    .order("revision", { ascending: false })
+                    .limit(20);
+                  if (result.error) setMessage("History could not be loaded.");
+                  else setHistory(result.data ?? []);
+                }}
+              >
+                Load recent versions
+              </Button>
+              <ul className="mt-4 space-y-3">
+                {history.map((entry) => (
+                  <li
+                    key={entry.revision}
+                    className="flex flex-wrap items-center gap-4 border-b border-border py-3"
+                  >
+                    <span>
+                      Version {entry.revision} ·{" "}
+                      {{ save: "Draft saved", publish: "Published", unpublish: "Unpublished" }[
+                        entry.action
+                      ] ?? "Updated"}{" "}
+                      · {new Date(entry.changed_at).toLocaleString()}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      disabled={busy || uploading}
+                      onClick={() => {
+                        try {
+                          const restored = parseContent(kind, entry.draft);
+                          if (
+                            !dirty ||
+                            window.confirm("Replace your unsaved changes with this version?")
+                          )
+                            change(restored);
+                        } catch {
+                          setMessage(
+                            "This version cannot be opened. Contact your website manager.",
+                          );
+                        }
+                      }}
+                    >
+                      Use as draft
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+              {selected.published && kind === "package" && (
+                <a
+                  href={`/packages/${selected.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-6 inline-block text-primary underline"
+                >
+                  View published package ↗
+                </a>
+              )}
+            </section>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

@@ -337,7 +337,7 @@ function Dashboard() {
         <div>
           <p className="admin-eyebrow">PEOPLE, PLANS & NEXT STEPS</p>
           <h1 className="mt-2">Enquiries</h1>
-          <p>Your conversations, with the details in one place.</p>
+          <p>Choose a traveller, read their plans, and get in touch.</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -437,7 +437,9 @@ function Dashboard() {
                           <span className={`enquiry-status ${row.status}`}>
                             {statusLabel(row.status)}
                           </span>
-                          <span>{isOverdue(row) ? "Follow-up overdue" : reference(row)}</span>
+                          <span className="enquiry-brief-preview">
+                            {isOverdue(row) ? "Follow-up overdue" : row.brief}
+                          </span>
                           {drafts[row.id] !== undefined &&
                             drafts[row.id] !== (row.staff_notes ?? "") && (
                               <span title="Unsaved notes">●</span>
@@ -497,96 +499,99 @@ function Dashboard() {
                 <div className="flex items-start gap-3">
                   <span className="admin-avatar">{initials(current.name)}</span>
                   <div className="min-w-0">
-                    <p className="enquiry-reference">{reference(current)}</p>
+                    <p className="enquiry-reference">{topic(current)}</p>
                     <h2>{current.name}</h2>
-                    <p className="enquiry-received">
-                      {topic(current)} · {formatDate(current.created_at)}
-                    </p>
+                    <p className="enquiry-received">{formatDate(current.created_at)}</p>
                   </div>
                 </div>
-                <span className={`enquiry-status ${current.status}`}>
-                  {statusLabel(current.status)}
-                </span>
+                <AppSelect
+                  aria-label="Enquiry status"
+                  value={current.status}
+                  disabled={working}
+                  onChange={(e) => void update(current.id, { status: e.target.value as Status })}
+                >
+                  {statuses.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </AppSelect>
               </header>
-              <dl className="enquiry-contact-grid">
-                {current.email && (
-                  <div>
-                    <dt>Email</dt>
-                    <dd>
-                      <a href={`mailto:${current.email}`}>{current.email}</a>
-                    </dd>
-                  </div>
-                )}
+              <div className="enquiry-reply-actions">
+                {current.email && <a href={`mailto:${current.email}`}>Reply by email ↗</a>}
                 {current.phone && (
-                  <div>
-                    <dt>Phone / WhatsApp</dt>
-                    <dd>
-                      <a href={`tel:${current.phone.replace(/[^+0-9]/g, "")}`}>{current.phone}</a>
-                    </dd>
-                  </div>
+                  <a href={`tel:${current.phone.replace(/[^+0-9]/g, "")}`}>Call traveller ↗</a>
                 )}
-                <div>
-                  <dt>Preferred contact</dt>
-                  <dd>{current.contact_preference || "Not supplied"}</dd>
-                </div>
-                <div>
-                  <dt>Country</dt>
-                  <dd>{current.residence || "Not supplied"}</dd>
-                </div>
-              </dl>
-              <div className="enquiry-workflow">
-                <label>
-                  Status
-                  <AppSelect
-                    value={current.status}
-                    disabled={working}
-                    onChange={(e) => void update(current.id, { status: e.target.value as Status })}
-                  >
-                    {statuses.map((status) => (
-                      <option key={status.value} value={status.value}>
-                        {status.label}
-                      </option>
-                    ))}
-                  </AppSelect>
-                </label>
-                <label>
-                  Assigned to
-                  <AppSelect
-                    value={current.assigned_to ?? ""}
-                    disabled={working || directoryError}
-                    onChange={(e) =>
-                      void update(current.id, { assigned_to: e.target.value || null })
-                    }
-                  >
-                    <option value="">Unassigned</option>
-                    {current.assigned_to &&
-                      !directory.some((person) => person.user_id === current.assigned_to) && (
-                        <option value={current.assigned_to}>Team member</option>
-                      )}
-                    {directory.map((person) => (
-                      <option key={person.user_id} value={person.user_id}>
-                        {person.email}
-                      </option>
-                    ))}
-                  </AppSelect>
-                </label>
-                <label>
-                  Follow up on
-                  <input
-                    type="date"
-                    disabled={working}
-                    value={current.follow_up_on ?? ""}
-                    onChange={(e) =>
-                      void update(current.id, { follow_up_on: e.target.value || null })
-                    }
-                  />
-                </label>
               </div>
-              {directoryError && (
-                <p className="enquiry-inline-feedback" role="alert">
-                  The staff list could not be loaded. Refresh to retry.
-                </p>
-              )}
+              <details className="enquiry-extra" key={current.id}>
+                <summary>Contact & follow-up details</summary>
+                <p className="enquiry-reference mt-4">{reference(current)}</p>
+                <dl className="enquiry-contact-grid">
+                  {current.email && (
+                    <div>
+                      <dt>Email</dt>
+                      <dd>
+                        <a href={`mailto:${current.email}`}>{current.email}</a>
+                      </dd>
+                    </div>
+                  )}
+                  {current.phone && (
+                    <div>
+                      <dt>Phone / WhatsApp</dt>
+                      <dd>
+                        <a href={`tel:${current.phone.replace(/[^+0-9]/g, "")}`}>{current.phone}</a>
+                      </dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt>Preferred contact</dt>
+                    <dd>{current.contact_preference || "Not supplied"}</dd>
+                  </div>
+                  <div>
+                    <dt>Country</dt>
+                    <dd>{current.residence || "Not supplied"}</dd>
+                  </div>
+                </dl>
+                <div className="enquiry-workflow">
+                  <label>
+                    Assigned to
+                    <AppSelect
+                      value={current.assigned_to ?? ""}
+                      disabled={working || directoryError}
+                      onChange={(e) =>
+                        void update(current.id, { assigned_to: e.target.value || null })
+                      }
+                    >
+                      <option value="">Unassigned</option>
+                      {current.assigned_to &&
+                        !directory.some((person) => person.user_id === current.assigned_to) && (
+                          <option value={current.assigned_to}>Team member</option>
+                        )}
+                      {directory.map((person) => (
+                        <option key={person.user_id} value={person.user_id}>
+                          {person.email}
+                        </option>
+                      ))}
+                    </AppSelect>
+                  </label>
+                  <label>
+                    Follow up on
+                    <input
+                      type="date"
+                      disabled={working}
+                      value={current.follow_up_on ?? ""}
+                      onChange={(e) =>
+                        void update(current.id, { follow_up_on: e.target.value || null })
+                      }
+                    />
+                  </label>
+                </div>
+                {directoryError && (
+                  <p className="enquiry-inline-feedback" role="alert">
+                    The staff list could not be loaded. Refresh to retry.
+                  </p>
+                )}
+              </details>
               {feedback[current.id] && (
                 <p
                   className="enquiry-inline-feedback"
@@ -599,7 +604,7 @@ function Dashboard() {
                 <TabsList aria-label="Enquiry details">
                   <TabsTrigger value="brief">Traveller’s message</TabsTrigger>
                   <TabsTrigger value="notes">Team notes{notesChanged ? " •" : ""}</TabsTrigger>
-                  <TabsTrigger value="history">Activity</TabsTrigger>
+                  <TabsTrigger value="history">More details</TabsTrigger>
                 </TabsList>
                 <TabsContent value="brief" className="enquiry-tab-content">
                   <h3 className="sr-only">Traveller’s message</h3>

@@ -32,6 +32,7 @@ it("saves a package draft, publishes explicitly and retains input on failed save
   vi.spyOn(window, "confirm").mockReturnValue(true);
   render(<ContentEditor kind="package" userId="staff" />);
   await waitFor(() => expect(screen.queryByText("Loading your content…")).not.toBeInTheDocument());
+  fireEvent.click(screen.getByRole("button", { name: "New package" }));
   fireEvent.change(screen.getByLabelText("Package name"), { target: { value: "Etosha journey" } });
   fireEvent.change(screen.getByLabelText("Short description"), {
     target: { value: "Explore Etosha" },
@@ -90,9 +91,39 @@ it("validates catalogue destinations, approved prices, image paths and required 
   ).toThrow();
 });
 
-it("carries only a valid package reference into the enquiry planning search",async()=>{
- const {planningSearch}=await import("../lib/safari-discovery");
- const id="33333333-3333-4333-8333-333333333333";
- expect(planningSearch({package:id,destinations:"etosha"})).toMatchObject({package:id,destinations:"etosha"});
- expect(planningSearch({package:"<script>"})).not.toHaveProperty("package");
+it("carries only a valid package reference into the enquiry planning search", async () => {
+  const { planningSearch } = await import("../lib/safari-discovery");
+  const id = "33333333-3333-4333-8333-333333333333";
+  expect(planningSearch({ package: id, destinations: "etosha" })).toMatchObject({
+    package: id,
+    destinations: "etosha",
+  });
+  expect(planningSearch({ package: "<script>" })).not.toHaveProperty("package");
+});
+
+it("browses packages in bounded pages and opens only the chosen editor", async () => {
+  mocks.load.mockResolvedValue(
+    Array.from({ length: 15 }, (_, index) => ({
+      id: `package-${index}`,
+      kind: "package",
+      revision: 1,
+      draft: {
+        ...blankPackage(),
+        title: `Journey ${index}`,
+        summary: "Safari",
+        description: "Details",
+      },
+      published: null,
+    })),
+  );
+  render(<ContentEditor kind="package" userId="staff" />);
+  await screen.findByRole("heading", { name: "Journey 0" });
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.queryByRole("heading", { name: "Journey 12" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Next" }));
+  expect(screen.getByRole("heading", { name: "Journey 12" })).toBeVisible();
+  fireEvent.change(screen.getByLabelText("Search content"), { target: { value: "Journey 14" } });
+  fireEvent.click(screen.getByRole("button", { name: /Journey 14/ }));
+  expect(screen.getByRole("dialog")).toBeVisible();
+  expect(screen.getByLabelText("Package name")).toHaveValue("Journey 14");
 });

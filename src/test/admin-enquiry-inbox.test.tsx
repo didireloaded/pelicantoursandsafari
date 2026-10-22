@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within, waitFor } from "@testing-library/react";
 import { afterEach, it, expect, vi } from "vitest";
 import type { ReactNode } from "react";
 const mocks = vi.hoisted(() => ({
@@ -82,23 +82,42 @@ it("shows one focused enquiry and clears details when filters have no matches", 
   mocks.rows = [row("one", "Guest One"), row("two", "Guest Two")];
   const Page = Route.options.component!;
   render(<Page />);
-  await screen.findByText("Message from Guest One");
-  expect(screen.queryByText("Message from Guest Two")).toBeNull();
+  await within(await screen.findByLabelText("Selected enquiry")).findByText(
+    "Message from Guest One",
+  );
+  expect(
+    within(screen.getByLabelText("Selected enquiry")).queryByText("Message from Guest Two"),
+  ).toBeNull();
+  expect(screen.getByRole("link", { name: /Reply by email/ })).toHaveAttribute(
+    "href",
+    "mailto:one@example.com",
+  );
+  expect(screen.getByText("Contact & follow-up details").closest("details")).not.toHaveAttribute(
+    "open",
+  );
   fireEvent.click(screen.getByRole("button", { name: /Guest Two/ }));
-  expect(screen.getByText("Message from Guest Two")).toBeVisible();
-  expect(screen.queryByText("Message from Guest One")).toBeNull();
+  expect(
+    within(screen.getByLabelText("Selected enquiry")).getByText("Message from Guest Two"),
+  ).toBeVisible();
+  expect(
+    within(screen.getByLabelText("Selected enquiry")).queryByText("Message from Guest One"),
+  ).toBeNull();
   fireEvent.change(screen.getByLabelText("Search enquiries"), {
     target: { value: "does not match" },
   });
   expect(screen.getByText("No enquiries match your filters.")).toBeVisible();
-  expect(screen.queryByText("Message from Guest Two")).toBeNull();
+  expect(
+    within(screen.getByLabelText("Selected enquiry")).queryByText("Message from Guest Two"),
+  ).toBeNull();
   expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
 });
 it("retains failed note drafts, compares refreshed notes and saves against the new revision", async () => {
   mocks.rows = [row("one", "Guest One")];
   const Page = Route.options.component!;
   render(<Page />);
-  await screen.findByText("Message from Guest One");
+  await within(await screen.findByLabelText("Selected enquiry")).findByText(
+    "Message from Guest One",
+  );
   openNotes();
   fireEvent.change(screen.getByLabelText("Private team notes"), { target: { value: "My draft" } });
   fireEvent.click(screen.getByRole("button", { name: "Save notes" }));
