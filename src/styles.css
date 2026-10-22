@@ -391,7 +391,8 @@
   position: absolute;
   right: 0;
   top: calc(100% + 10px);
-  background: var(--card);
+  background: color-mix(in oklab, var(--card) 80%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 10px 30px #0001;
@@ -440,6 +441,8 @@
 .admin-panel {
   background: color-mix(in oklab, var(--card) 40%, transparent);
   backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   min-width: 0;
 }
 .admin-panel-heading {
@@ -722,9 +725,8 @@
   justify-content: flex-end;
 }
 .admin-sheet-panel {
-  background: var(--card);
-  padding: 28px;
-  width: 490px;
+  background: color-mix(in oklab, var(--card) 80%, transparent);
+  backdrop-filter: blur(16px) saturate(150%);
   max-width: 100%;
   height: 100%;
   overflow-y: auto;
