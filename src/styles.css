@@ -261,6 +261,7 @@
   line-height: 1.55;
 }
 .admin-sidebar {
+  overflow-y: auto;
   position: fixed;
   inset: 0 auto 0 0;
   width: 226px;

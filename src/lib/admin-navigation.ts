@@ -1,63 +1,14 @@
 export const adminLinks = [
-  {
-    to: "/admin",
-    label: "Overview",
-    description: "Your reservations, recent enquiries and next steps.",
-  },
-  {
-    to: "/admin/preview",
-    label: "Demo preview",
-    description: "Explore a fictional, read-only example of the workspace.",
-  },
-  {
-    to: "/admin/clients",
-    label: "Clients",
-    description: "Client profiles, countries, sources and recorded spending.",
-  },
-  {
-    to: "/admin/bookings",
-    label: "Reservations",
-    description: "Bookings, dates and travel calendar.",
-  },
-  {
-    to: "/admin/analytics",
-    label: "Analytics",
-    description: "Traffic, leads, trip value and audience.",
-  },
-  {
-    to: "/admin/packages",
-    label: "Packages",
-    description: "Create journeys, itineraries and seasonal prices.",
-  },
-  { to: "/admin/gallery", label: "Gallery", description: "Destination albums and photographs." },
-  {
-    to: "/dashboard",
-    label: "Enquiries",
-    description: "Read, assign and follow up traveller requests.",
-  },
-  {
-    to: "/content-manage",
-    label: "Travel information",
-    description: "Verified guidance and catalogue details.",
-  },
-  {
-    to: "/admin/team",
-    label: "Team",
-    description: "Five-seat team access, managed by an administrator.",
-  },
-  {
-    to: "/admin/staff",
-    label: "Staff directory",
-    description: "Private staff names and profile photos.",
-  },
-  {
-    to: "/admin/profile",
-    label: "Your profile",
-    description: "Edit your display name and private staff photo.",
-  },
-  {
-    to: "/admin/account",
-    label: "Settings",
-    description: "Your sign-in, authenticator and account.",
-  },
+  { to: "/admin", section: "WORKSPACE", label: "Overview", description: "Upcoming trips, enquiries and daily priorities." },
+  { to: "/dashboard", section: "WORKSPACE", label: "Enquiries", description: "Incoming requests, follow-ups and traveller briefs." },
+  { to: "/admin/clients", section: "WORKSPACE", label: "Clients", description: "Client profiles, origins and linked journeys." },
+  { to: "/admin/bookings", section: "WORKSPACE", label: "Reservations", description: "Booking records, dates and travel calendar." },
+  { to: "/trips-manage", section: "WORKSPACE", label: "Trip management", description: "Maintain traveller-assigned trips and itineraries." },
+  { to: "/admin/analytics", section: "WORKSPACE", label: "Analytics", description: "Traffic, enquiries, trip values and audience." },
+  { to: "/admin/packages", section: "WEBSITE CONTENT", label: "Packages", description: "Draft and publish safari packages." },
+  { to: "/admin/gallery", section: "WEBSITE CONTENT", label: "Gallery", description: "Destination albums and images." },
+  { to: "/content-manage", section: "WEBSITE CONTENT", label: "Travel information", description: "Review facts and catalogue details." },
+  { to: "/admin/team", section: "PEOPLE & ACCESS", label: "Team", description: "Staff profiles, roles and permissions." },
+  { to: "/admin/profile", section: "PEOPLE & ACCESS", label: "Your profile", description: "Your display name and staff photo." },
+  { to: "/admin/account", section: "PEOPLE & ACCESS", label: "Settings", description: "Sign-in and authenticator settings." },
 ] as const;

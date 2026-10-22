@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAdminSampleMode } from "./admin-sample-mode";
+import { sampleWorkspace } from "./admin-sample-data";
 import { supabase } from "@/integrations/supabase/client";
 import {
   addDays,
@@ -81,13 +83,18 @@ export async function loadWorkspace(
   };
 }
 export function useWorkspace() {
-  return useQuery({
+  const sample = useAdminSampleMode();
+  const query = useQuery({
     queryKey: ["admin-workspace"],
     queryFn: () => loadWorkspace(),
+    enabled: !sample,
     staleTime: 15000,
-    refetchInterval: 60000,
+    refetchInterval: sample ? false : 60000,
     retry: 1,
   });
+  return sample
+    ? { ...query, data: sampleWorkspace(), isPending: false, isError: false }
+    : query;
 }
 export async function saveClient(id: string, revision: number, value: ClientInput) {
   const payload = clientSchema.parse(value);

@@ -1,10 +1,11 @@
 import { useStaffProfiles } from "@/lib/staff-profiles";
+import { AdminSampleModeProvider } from "@/lib/admin-sample-mode";
 import { StaffAvatar } from "./staff-avatar";
 import { Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
-  PanelsTopLeft,
+  ClipboardList,
   Users,
   CalendarDays,
   BarChart3,
@@ -24,19 +25,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { adminLinks } from "@/lib/admin-navigation";
 const icons = [
-  LayoutDashboard,
-  PanelsTopLeft,
-  Users,
-  CalendarDays,
-  BarChart3,
-  Map,
-  Image,
-  Mail,
-  BookOpen,
-  Users,
-  Users,
-  UserRound,
-  Settings,
+  LayoutDashboard, Mail, Users, CalendarDays, ClipboardList, BarChart3,
+  Map, Image, BookOpen, Users, UserRound, Settings,
 ];
 export function WorkspaceShell({
   children,
@@ -53,6 +43,7 @@ export function WorkspaceShell({
   const [open, setOpen] = useState(false);
   const [teamOpen, setTeamOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [sampleMode, setSampleMode] = useState(false);
   const sidebar = useRef<HTMLElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -124,16 +115,20 @@ export function WorkspaceShell({
       {adminLinks.map((item, i) => {
         const Icon = icons[i] ?? BookOpen;
         return (
-          <Link
-            to={item.to}
-            key={item.to}
-            activeOptions={{ exact: true }}
-            activeProps={{ className: "is-current", "aria-current": "page" }}
-            className="admin-nav-link"
-          >
-            <Icon size={18} strokeWidth={1.7} />
-            <span>{item.label}</span>
-          </Link>
+          <Fragment key={item.to}>
+            {(i === 0 || adminLinks[i - 1]?.section !== item.section) && (
+              <p className="admin-nav-caption">{item.section}</p>
+            )}
+            <Link
+              to={item.to}
+              activeOptions={{ exact: true }}
+              activeProps={{ className: "is-current", "aria-current": "page" }}
+              className="admin-nav-link"
+            >
+              <Icon size={18} strokeWidth={1.7} />
+              <span>{item.label}</span>
+            </Link>
+          </Fragment>
         );
       })}
     </>
@@ -147,6 +142,7 @@ export function WorkspaceShell({
       )
     : [];
   return (
+    <AdminSampleModeProvider enabled={sampleMode}>
     <div className="pelican-admin">
       <aside
         ref={sidebar}
@@ -164,8 +160,21 @@ export function WorkspaceShell({
             </span>
           </span>
         </Link>
-        <p className="admin-nav-caption">WORKSPACE</p>
         <nav aria-label="Pelican administration">{nav}</nav>
+        <div className="mx-2 my-4 border-t border-border pt-4">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={sampleMode}
+            onClick={() => setSampleMode((value) => !value)}
+            className="flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm hover:bg-secondary focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            <span><strong className="block font-medium">Sample data</strong><small className="block text-xs text-muted-foreground">Read-only presentation</small></span>
+            <span aria-hidden="true" className={`inline-flex h-6 w-11 items-center rounded-full p-1 transition-colors ${sampleMode ? "bg-primary" : "bg-muted"}`}>
+              <span className={`h-4 w-4 rounded-full bg-white transition-transform ${sampleMode ? "translate-x-5" : ""}`} />
+            </span>
+          </button>
+        </div>
         <div className="admin-sidebar-bottom">
           <a href="/" target="_blank" rel="noreferrer" className="admin-nav-link">
             <ExternalLink size={17} />
@@ -275,11 +284,18 @@ export function WorkspaceShell({
             )}
           </div>
         </header>
+        {sampleMode && (
+          <div className="mx-5 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/25 bg-secondary px-4 py-3 text-sm" role="status">
+            <span><strong>Sample data is on.</strong> Fictional clients, trips and staff. Changes are disabled. No real records or payments are affected.</span>
+            <button type="button" className="font-semibold text-primary underline underline-offset-4" onClick={() => setSampleMode(false)}>Return to live data</button>
+          </div>
+        )}
         <div className="admin-page">{children}</div>
         <footer className="admin-footer">
           Pelican Tours and Safaris <span>Private workspace · Namibia</span>
         </footer>
       </div>
     </div>
+    </AdminSampleModeProvider>
   );
 }
