@@ -42,6 +42,9 @@ function BookPage() {
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"sent" | "failed" | "not_provided">(
+    "not_provided",
+  );
   const [error, setError] = useState("");
   const pending = useRef<{ fingerprint: string; id: string } | null>(null);
   const field = "booking-input";
@@ -97,8 +100,10 @@ function BookPage() {
     setBusy(true);
     try {
       const r = await sendBooking({ data: parsed.data });
-      if (r.bookingRef) setRef(r.bookingRef);
-      else setError(r.error ?? "Request not confirmed. Please retry.");
+      if (r.bookingRef) {
+        setRef(r.bookingRef);
+        setEmailStatus(r.emailStatus ?? (email.trim() ? "failed" : "not_provided"));
+      } else setError(r.error ?? "Request not confirmed. Please retry.");
     } catch {
       setError(
         "We could not confirm your request. Your details are still here; retry without creating a duplicate, or WhatsApp Pelican.",
@@ -148,6 +153,13 @@ function BookPage() {
                 Keep this reference to check your request using the same email or phone number.
               </small>
             </div>
+            <p className="text-sm text-muted-foreground">
+              {emailStatus === "sent"
+                ? `We’ve emailed your reference to ${email.trim()}. Check your inbox and spam folder.`
+                : emailStatus === "failed"
+                  ? "Your request is saved, but we couldn’t send your reference email. Please keep the reference above and contact Pelican if you need help."
+                  : "No email address was supplied. Please keep the reference above to check your booking."}
+            </p>
             <p className="text-sm text-muted-foreground">
               Your request is not a confirmed reservation. Pelican will send a written price and
               terms before confirmation.

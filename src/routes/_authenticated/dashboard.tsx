@@ -160,7 +160,16 @@ function Dashboard() {
         return false;
       }
       setRows((r) => r.map((x) => (x.id === id ? data : x)));
-      setFeedback((previous) => ({ ...previous, [id]: { ok: true, text: "Saved" } }));
+      setFeedback((previous) => ({
+        ...previous,
+        [id]: {
+          ok: true,
+          text:
+            patch.status === "confirmed" && data.booking_ref
+              ? "Booking confirmed. The traveller will see Confirmed when checking this reference."
+              : "Saved",
+        },
+      }));
       return true;
     } catch {
       toast.error("This change was not saved. Check your connection and try again.");
@@ -508,7 +517,17 @@ function Dashboard() {
                   aria-label="Enquiry status"
                   value={current.status}
                   disabled={working}
-                  onChange={(e) => void update(current.id, { status: e.target.value as Status })}
+                  onChange={(e) => {
+                    const status = e.target.value as Status;
+                    if (
+                      status !== "confirmed" ||
+                      !current.booking_ref ||
+                      window.confirm(
+                        `Confirm booking ${current.booking_ref}? Availability, price and terms must be agreed.`,
+                      )
+                    )
+                      void update(current.id, { status });
+                  }}
                 >
                   {statuses.map((status) => (
                     <option key={status.value} value={status.value}>
@@ -517,6 +536,33 @@ function Dashboard() {
                   ))}
                 </AppSelect>
               </header>
+              {current.booking_ref && (
+                <div className="px-6 pb-4">
+                  <p className="mb-3 text-xs text-muted-foreground">
+                    Booking {current.booking_ref} ·{" "}
+                    {current.status === "confirmed"
+                      ? "Confirmed — visible in the traveller’s booking status."
+                      : current.status === "closed"
+                        ? "Closed — visible in the traveller’s booking status."
+                        : "Confirm here once availability, price and terms have been agreed. The traveller’s status updates when saved."}
+                  </p>
+                  {current.status !== "confirmed" && current.status !== "closed" && (
+                    <Button
+                      disabled={working}
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `Confirm booking ${current.booking_ref} for ${current.name}? Only confirm after availability, price and terms have been agreed.`,
+                          )
+                        )
+                          void update(current.id, { status: "confirmed" });
+                      }}
+                    >
+                      {working ? "Saving…" : "Confirm booking"}
+                    </Button>
+                  )}
+                </div>
+              )}
               <div className="enquiry-reply-actions">
                 {current.email && <a href={`mailto:${current.email}`}>Reply by email ↗</a>}
                 {current.phone && (

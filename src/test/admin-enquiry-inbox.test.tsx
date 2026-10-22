@@ -138,3 +138,24 @@ it("retains failed note drafts, compares refreshed notes and saves against the n
   expect(mocks.eq).toHaveBeenCalledWith("updated_at", "version-2");
   expect(screen.getByLabelText("Private team notes")).toHaveValue("My draft");
 });
+
+it("confirms a booking only after staff approval and keeps the optimistic revision check", async () => {
+  const booking = { ...row("one", "Guest One"), booking_ref: "ENP1-ABCD" };
+  mocks.rows = [booking];
+  mocks.updates = [
+    { data: { ...booking, status: "confirmed", updated_at: "version-2" }, error: null },
+  ];
+  const consent = vi.spyOn(window, "confirm").mockReturnValue(false);
+  const Page = Route.options.component!;
+  render(<Page />);
+  fireEvent.click(await screen.findByRole("button", { name: "Confirm booking" }));
+  expect(mocks.eq).not.toHaveBeenCalledWith("updated_at", "version-1");
+  consent.mockReturnValue(true);
+  fireEvent.click(screen.getByRole("button", { name: "Confirm booking" }));
+  await screen.findByText(
+    "Booking confirmed. The traveller will see Confirmed when checking this reference.",
+  );
+  expect(mocks.eq).toHaveBeenCalledWith("updated_at", "version-1");
+  expect(screen.queryByRole("button", { name: "Confirm booking" })).toBeNull();
+  consent.mockRestore();
+});

@@ -141,7 +141,11 @@ function BookingLookupPage() {
                 </ol>
               )}
               <p className="mt-6 text-sm text-muted-foreground">
-                Only Pelican’s written confirmation confirms your booking.
+                {result.stage === "Confirmed"
+                  ? "Pelican has confirmed your booking. Contact the team for any changes to your agreed travel arrangements."
+                  : result.stage === "Closed"
+                    ? "Contact Pelican if you would like to discuss another trip."
+                    : "Your request is being reviewed. It becomes confirmed once Pelican accepts your booking."}
               </p>
             </section>
           )}

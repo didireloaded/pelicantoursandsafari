@@ -104,3 +104,17 @@ Overview, Analytics and public site styling are unchanged. Traveller-side profil
 photo upload and automatic conversion of booking requests into client records
 are not implemented by this layout change; staff can already add private photos
 and link client reservations through the existing protected tools.
+
+### Accepting a website booking request
+
+Open **Enquiries**, select the traveller's booking reference, then choose **Confirm
+booking** only after agreeing availability, price and terms. Approve the confirmation
+prompt. A successful save makes **Check my booking** display **Confirmed** for that
+reference plus the traveller's matching email/phone. A failed or conflicting save
+must be retried after refreshing; it does not confirm the request. Staff can close
+requests or move them back under review with the existing status selector.
+
+**Reservations** is the staff-maintained calendar. It links to Enquiries for accepting
+website requests; changing a standalone calendar reservation does not silently
+confirm a different booking request. Traveller reference emails go out at submission
+when an email is supplied; they acknowledge receipt, not acceptance of the booking.

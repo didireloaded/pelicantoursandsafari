@@ -137,6 +137,15 @@ export function Bookings() {
           New reservation
         </Button>
       </div>
+      <div className="admin-panel mb-5 flex flex-wrap items-center justify-between gap-3 p-4 text-xs">
+        <p>
+          Website booking requests are accepted in Enquiries. Calendar reservations are maintained
+          separately.
+        </p>
+        <Button asChild variant="outline">
+          <Link to="/dashboard">Review booking requests →</Link>
+        </Button>
+      </div>
       <WorkspaceState
         loading={query.isPending}
         error={query.isError}
