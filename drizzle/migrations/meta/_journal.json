@@ -29,6 +29,13 @@
       "when": 1792658120158,
       "tag": "0003_client_admin_content",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792663545950,
+      "tag": "0004_private_admin_workspace",
+      "breakpoints": true
     }
   ]
 }

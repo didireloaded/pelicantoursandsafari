@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          archived: boolean
+          avatar_path: string | null
+          country: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          notes: string
+          phone: string
+          revision: number
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          archived?: boolean
+          avatar_path?: string | null
+          country?: string
+          created_at?: string
+          email?: string
+          id: string
+          name: string
+          notes?: string
+          phone?: string
+          revision?: number
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          archived?: boolean
+          avatar_path?: string | null
+          country?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string
+          phone?: string
+          revision?: number
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       enquiries: {
         Row: {
           assigned_to: string | null
@@ -315,6 +360,42 @@ export type Database = {
           },
         ]
       }
+      site_daily_views: {
+        Row: {
+          day: string
+          path: string
+          views: number
+        }
+        Insert: {
+          day: string
+          path: string
+          views?: number
+        }
+        Update: {
+          day?: string
+          path?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      staff_presence: {
+        Row: {
+          display_name: string
+          last_seen: string
+          user_id: string
+        }
+        Insert: {
+          display_name: string
+          last_seen: string
+          user_id: string
+        }
+        Update: {
+          display_name?: string
+          last_seen?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       travel_details: {
         Row: {
           approved: boolean
@@ -359,36 +440,53 @@ export type Database = {
       }
       trips: {
         Row: {
+          client_id: string | null
           created_at: string
           id: string
+          paid_nad: number | null
           starts_on: string
           status: string
           stops: Json
           title: string
-          traveller_id: string
+          total_nad: number | null
+          traveller_id: string | null
           updated_at: string
         }
         Insert: {
+          client_id?: string | null
           created_at?: string
           id?: string
+          paid_nad?: number | null
           starts_on: string
           status?: string
           stops: Json
           title: string
-          traveller_id: string
+          total_nad?: number | null
+          traveller_id?: string | null
           updated_at?: string
         }
         Update: {
+          client_id?: string | null
           created_at?: string
           id?: string
+          paid_nad?: number | null
           starts_on?: string
           status?: string
           stops?: Json
           title?: string
-          traveller_id?: string
+          total_nad?: number | null
+          traveller_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trips_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -414,6 +512,7 @@ export type Database = {
     }
     Functions: {
       can_manage_site: { Args: never; Returns: boolean }
+      consume_admin_help: { Args: never; Returns: undefined }
       consume_ai_draft_request: { Args: never; Returns: boolean }
       consume_routing_request: {
         Args: { network_hash: string }
@@ -444,6 +543,18 @@ export type Database = {
           updated_at: string
         }[]
       }
+      record_page_view: {
+        Args: { _network_hash: string; _path: string }
+        Returns: undefined
+      }
+      save_admin_client: {
+        Args: { _data: Json; _id: string; _revision: number }
+        Returns: Json
+      }
+      save_admin_trip: {
+        Args: { _data: Json; _id: string; _updated_at: string }
+        Returns: Json
+      }
       save_site_content: {
         Args: {
           _action: string
@@ -465,6 +576,7 @@ export type Database = {
         Args: { network_hash: string; payload: Json }
         Returns: string
       }
+      touch_staff_presence: { Args: never; Returns: undefined }
       valid_trip_stops: { Args: { stops: Json }; Returns: boolean }
     }
     Enums: {
