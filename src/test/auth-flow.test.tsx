@@ -94,7 +94,9 @@ it("resends confirmation with a normalized email and cooldown without claiming d
     email: "lauryn@example.com",
     options: { emailRedirectTo: `${window.location.origin}/admin` },
   });
-  expect(screen.getByRole("button", { name: "Wait a minute before resending" })).toBeDisabled();
+  expect(
+    await screen.findByRole("button", { name: "Wait a minute before resending" }),
+  ).toBeDisabled();
 });
 it("handles a rate-limited confirmation request without saying it was sent", async () => {
   mocks.resend.mockResolvedValue({ error: { status: 429 } });
@@ -102,7 +104,9 @@ it("handles a rate-limited confirmation request without saying it was sent", asy
   fireEvent.change(screen.getByLabelText("Email"), { target: { value: "guest@example.com" } });
   fireEvent.click(screen.getByRole("button", { name: "Resend confirmation email" }));
   expect(await screen.findByRole("status")).toHaveTextContent("Please wait a minute");
-  expect(screen.getByRole("button", { name: "Wait a minute before resending" })).toBeDisabled();
+  expect(
+    await screen.findByRole("button", { name: "Wait a minute before resending" }),
+  ).toBeDisabled();
 });
 it("requires an address and retains a retry after network failure", async () => {
   mocks.resend.mockRejectedValue(new Error("offline"));
