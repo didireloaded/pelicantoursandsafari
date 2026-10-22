@@ -235,10 +235,18 @@ export function TeamSettings({ verified, userId }: { verified: boolean; userId: 
           </form>
         </>
       ) : canManage === false ? (
-        <p className="mt-4 text-xs leading-relaxed">
-          A team administrator manages approved accounts here. Signing up does not automatically
-          give access to private staff tools.
-        </p>
+        <div className="mt-4 space-y-2 text-xs leading-relaxed">
+          <p>
+            A team administrator manages approved accounts here. Signing up does not automatically
+            give access to private staff tools.
+          </p>
+          <p className="text-muted-foreground">
+            An administrator must be configured before anyone can add or remove members. If your
+            team has no administrator yet, the business owner needs to be set up as the first one;
+            after that they manage all five seats from this page.
+          </p>
+          <p className="text-muted-foreground">Seat limit: 5 accounts, including administrators.</p>
+        </div>
       ) : null}
       {error && (
         <p role="alert" className="mt-4 text-xs">

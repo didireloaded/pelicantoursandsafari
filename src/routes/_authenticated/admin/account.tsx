@@ -1,5 +1,4 @@
-import { TeamSettings } from "@/components/admin/team-settings";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -137,7 +136,13 @@ function Account() {
             </form>
           )}
       </section>
-      <TeamSettings verified={verifiedSession} userId={user.id} />
+      <p className="mt-6 max-w-xl text-xs text-muted-foreground">
+        Team access now lives on the{" "}
+        <Link to="/admin/team" className="text-primary underline">
+          Team page
+        </Link>
+        .
+      </p>
       <div className="admin-panel mt-6 flex max-w-xl flex-wrap gap-4 p-6">
         <Button
           variant="outline"
