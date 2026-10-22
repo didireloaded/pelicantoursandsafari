@@ -18,6 +18,8 @@ const paths = [
   "/shortlist",
   "/tailor-made",
   "/travel-guide",
+  "/book",
+  "/booking",
   "/auth",
   "/reset-password",
   "/trips",

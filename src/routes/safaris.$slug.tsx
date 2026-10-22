@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { PageHero, Section, Strip, PlanCTA, meta } from "@/components/site";
 import { getSafari, getDestination, whatsapp, stays, travelGuidance } from "@/lib/pelican";
+import { tripCodeFor } from "@/lib/booking";
 
 import { JourneyMap } from "@/components/journey-map";
 import { JourneyDistances } from "@/components/journey-distances";
@@ -67,8 +68,10 @@ function SafariPage() {
               </li>
             ))}
           </ul>
+          {tripCodeFor(safari.slug) && <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-clay">Trip code: {tripCodeFor(safari.slug)}</p>}
           <div className="mt-8 flex flex-col gap-3">
             <a href={whatsapp(`Hello Pelican, I'm interested in the ${safari.name}.`)} target="_blank" rel="noreferrer" className="rounded-lg bg-primary px-6 py-3.5 text-center text-sm font-semibold text-primary-foreground">Enquire on WhatsApp</a>
+            {tripCodeFor(safari.slug) && <Link to="/book" search={{ trip: tripCodeFor(safari.slug) }} className="rounded-lg border border-foreground/20 px-6 py-3.5 text-center text-sm font-semibold">Request to book</Link>}
             <Link to="/tailor-made" search={{ safari: safari.slug }} className="rounded-lg border border-foreground/20 px-6 py-3.5 text-center text-sm font-semibold">Plan this Safari</Link>
           </div>
         </aside>

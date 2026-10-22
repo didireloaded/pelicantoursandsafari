@@ -191,7 +191,7 @@ function Dashboard() {
         (!!r.follow_up_on &&
           r.follow_up_on < today &&
           !["confirmed", "closed"].includes(r.status))) &&
-      [r.name, r.email, r.phone, r.id, r.brief].some((v) =>
+      [r.name, r.email, r.phone, r.id, r.brief, r.booking_ref, r.trip_code].some((v) =>
         v?.toLowerCase().includes(query.toLowerCase()),
       ),
   );
@@ -264,6 +264,7 @@ function Dashboard() {
             <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_auto]">
               <button className="text-left" onClick={() => void showHistory(r.id)}>
                 <span className="text-lg font-medium">{r.name}</span>
+                {r.booking_ref && <span className="ml-3 text-sm font-semibold text-clay">{r.booking_ref}</span>}
                 <span className="ml-3 text-sm text-muted-foreground">
                   {new Date(r.created_at).toLocaleString()} · {r.contact_preference}
                 </span>
