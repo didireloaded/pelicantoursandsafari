@@ -71,6 +71,13 @@
       "when": 1792688658318,
       "tag": "0009_staff_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792689506729,
+      "tag": "0010_confirmed_booking_calendar",
+      "breakpoints": true
     }
   ]
 }
