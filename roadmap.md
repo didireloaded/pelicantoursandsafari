@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Fix the booking/enquiry preview-origin rejection; complete short-reference booking email and status-page links; verify existing staff payment recording without changing public styling or sending real emails.
+
 - [x] Switch all three AI features to Lovable AI and remove the unused Google AI Studio secret. Both legacy functions redeployed; all three gateway request shapes returned verified answers; 25 regression tests passed. Website appearance unchanged.
 - [ ] Operational AI end-to-end verification: traveller planner is blocked by missing public.consume_traveller_plan_request (PGRST202), and localhost is not in the configured origin allowlist. Private staff flows still require staff plus authenticator verification; no security bypass or unrelated migration applied.
 
