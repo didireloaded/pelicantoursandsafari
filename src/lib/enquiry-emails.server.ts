@@ -22,7 +22,8 @@ export interface EnquiryEmailResult {
  */
 export async function sendEnquiryEmails(
   data: unknown,
-  reference: string
+  reference: string,
+  displayRef: string = reference
 ): Promise<EnquiryEmailResult> {
   const parsed = enquiryInput.safeParse(data)
   if (!parsed.success) {
@@ -45,13 +46,13 @@ export async function sendEnquiryEmails(
     try {
       const element = React.createElement(EnquiryConfirmationEmail, {
         name: input.name,
-        reference,
+        reference: displayRef,
         contactPreference: input.contact_preference,
         safariName,
       })
       const confirmation = await sendResendEmail({
         to: input.email,
-        subject: `We received your safari enquiry — ${reference}`,
+        subject: `We received your safari enquiry — ${displayRef}`,
         html: await render(element),
         text: await render(element, { plainText: true }),
         replyTo: NOTIFICATION_TO,
@@ -68,7 +69,7 @@ export async function sendEnquiryEmails(
 
   try {
     const element = React.createElement(EnquiryNotificationEmail, {
-      reference,
+      reference: displayRef,
       name: input.name,
       email: input.email,
       phone: input.phone,
@@ -81,7 +82,7 @@ export async function sendEnquiryEmails(
       to: NOTIFICATION_TO,
       idempotencyKey: `enquiry/${reference}/pelican`,
       ...(input.email ? { replyTo: input.email } : {}),
-      subject: `New safari enquiry ${reference} — ${input.name}`,
+      subject: `New safari enquiry ${displayRef} — ${input.name}`,
       html: await render(element),
       text: await render(element, { plainText: true }),
     })
