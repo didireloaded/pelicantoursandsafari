@@ -86,7 +86,7 @@ export function Analytics() {
     <>
       <div className="admin-page-heading">
         <div>
-          <p className="admin-eyebrow">A CLEARER PICTURE</p>
+          <p className="admin-eyebrow">REPORTING</p>
           <h1 className="mt-2">Website & business analytics</h1>
           <p>
             Traffic, enquiries and the journeys behind the numbers. All figures come from recorded
@@ -158,11 +158,11 @@ export function Analytics() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="admin-panel-heading">Performance</h2>
-                <p className="mt-1 text-[10px] text-muted-foreground">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Daily page views and submitted enquiries.
                 </p>
               </div>
-              <div className="flex gap-4 text-[10px]">
+              <div className="flex gap-4 text-xs">
                 <span className="text-primary">● Views</span>
                 <span className="text-clay">● Enquiries</span>
               </div>
@@ -178,7 +178,7 @@ export function Analytics() {
                     <CartesianGrid stroke="var(--border)" vertical={false} />
                     <XAxis
                       dataKey="day"
-                      tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
+                      tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                       tickLine={false}
                       axisLine={false}
                       minTickGap={28}
@@ -186,7 +186,7 @@ export function Analytics() {
                     <YAxis
                       yAxisId="views"
                       allowDecimals={false}
-                      tick={{ fontSize: 9, fill: "var(--primary)" }}
+                      tick={{ fontSize: 11, fill: "var(--primary)" }}
                       tickLine={false}
                       axisLine={false}
                     />
@@ -194,7 +194,7 @@ export function Analytics() {
                       yAxisId="leads"
                       orientation="right"
                       allowDecimals={false}
-                      tick={{ fontSize: 9, fill: "var(--clay)" }}
+                      tick={{ fontSize: 11, fill: "var(--clay)" }}
                       tickLine={false}
                       axisLine={false}
                     />
@@ -233,14 +233,14 @@ export function Analytics() {
                 Traffic and enquiry trends will appear as activity is recorded.
               </div>
             )}
-            <p className="mt-3 text-[9px] text-muted-foreground">
+            <p className="mt-3 text-xs text-muted-foreground">
               Page views start when measurement is deployed. No historical traffic is invented.
               Privacy opt-outs are respected; these are not unique-person counts.
             </p>
           </section>
           <section className="admin-panel p-6">
             <h2 className="admin-panel-heading">Audience</h2>
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               Client countries of origin, supplied by staff.
             </p>
             {countries.length ? (
@@ -273,7 +273,7 @@ export function Analytics() {
                 </div>
                 <ul className="space-y-3">
                   {countries.map((c, i) => (
-                    <li className="flex items-center justify-between text-[10px]" key={c.name}>
+                    <li className="flex items-center justify-between text-xs" key={c.name}>
                       <span className="flex items-center gap-2">
                         <span
                           className="h-2 w-2 rounded-full"
@@ -289,14 +289,14 @@ export function Analytics() {
             ) : (
               <p className="admin-empty">Add client countries to build this view.</p>
             )}
-            <p className="mt-5 text-[9px] text-muted-foreground">
+            <p className="mt-5 text-xs text-muted-foreground">
               This describes your client directory, not the location or demographics of every
               website visitor.
             </p>
           </section>
           <section className="admin-panel p-6">
             <h2 className="admin-panel-heading">Sales · confirmed trip value</h2>
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               NAD by departure day. Values are agreed totals, not processed payments.
             </p>
             {known ? (
@@ -310,13 +310,13 @@ export function Analytics() {
                     <CartesianGrid stroke="var(--border)" vertical={false} />
                     <XAxis
                       dataKey="day"
-                      tick={{ fontSize: 9 }}
+                      tick={{ fontSize: 11 }}
                       minTickGap={30}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis
-                      tick={{ fontSize: 9 }}
+                      tick={{ fontSize: 11 }}
                       tickFormatter={(v) => (v >= 1000 ? `${v / 1000}k` : String(v))}
                       tickLine={false}
                       axisLine={false}
@@ -341,12 +341,12 @@ export function Analytics() {
           </section>
           <section className="admin-panel p-6">
             <h2 className="admin-panel-heading">Client sources</h2>
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               Recorded origin of current client relationships.
             </p>
             {sources.length ? (
               sources.map(([name, count]) => (
-                <div className="admin-row text-[11px]" key={name}>
+                <div className="admin-row text-xs" key={name}>
                   <span>{name}</span>
                   <strong className="ml-auto font-medium">{count}</strong>
                 </div>

@@ -122,7 +122,7 @@ export function Bookings() {
     <>
       <div className="admin-page-heading">
         <div>
-          <p className="admin-eyebrow">DATES, GUESTS & THE DETAILS</p>
+          <p className="admin-eyebrow">RESERVATION CALENDAR</p>
           <h1 className="mt-2">Reservations</h1>
           <p>Your confirmed bookings, with travellers and travel dates in one calendar.</p>
         </div>
@@ -221,7 +221,7 @@ export function Bookings() {
                       </span>
                       <span className="min-w-0 flex-1">
                         <strong className="block truncate text-xs font-medium">{trip.title}</strong>
-                        <small className="text-[10px] text-muted-foreground">
+                        <small className="text-xs text-muted-foreground">
                           {trip.starts_on} — {tripEnd(trip)}
                         </small>
                       </span>
@@ -259,7 +259,7 @@ export function Bookings() {
                           <h3 className="text-sm font-medium">
                             {client?.name ?? "Traveller account"}
                           </h3>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {client?.country || "Country not supplied"}
                           </p>
                         </div>
@@ -268,7 +268,7 @@ export function Bookings() {
                       <span className={`admin-status mt-3 inline-block ${current.status}`}>
                         {current.status}
                       </span>
-                      <dl className="mt-6 space-y-4 text-[11px]">
+                      <dl className="mt-6 space-y-4 text-xs">
                         {[
                           ["Departure", current.starts_on],
                           ["Return", tripEnd(current)],
@@ -292,9 +292,9 @@ export function Bookings() {
                         ))}
                       </dl>
                       <div className="mt-6 border-t border-border pt-5">
-                        <h4 className="text-[10px] font-medium">Journey stops</h4>
+                        <h4 className="text-xs font-medium">Journey stops</h4>
                         {validateJourney(current.stops).map((stop, i) => (
-                          <p className="mt-2 text-[11px] text-muted-foreground" key={i}>
+                          <p className="mt-2 text-xs text-muted-foreground" key={i}>
                             {destinations.find((d) => d.slug === stop.destination)?.name} ·{" "}
                             {stop.nights} {stop.nights === 1 ? "night" : "nights"}
                           </p>
@@ -313,11 +313,11 @@ export function Bookings() {
                 </section>
                 <section className="admin-panel p-5">
                   <h2 className="admin-panel-heading">Before confirming</h2>
-                  <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
                     Confirm supplier availability and written price/payment terms with the
                     traveller. This calendar does not check live availability or process payments.
                   </p>
-                  <Link to="/admin/clients" className="mt-4 inline-block text-[11px] text-primary">
+                  <Link to="/admin/clients" className="mt-4 inline-block text-xs text-primary">
                     Open client directory →
                   </Link>
                 </section>
@@ -470,7 +470,7 @@ export function Bookings() {
                   </label>
                 ))}
               </div>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Amounts are staff records only. No payment is collected here.
               </p>
               <fieldset className="space-y-4 rounded-xl border border-border p-4">
@@ -563,7 +563,7 @@ export function Bookings() {
                       </button>
                       <button
                         type="button"
-                        className="text-[10px] text-muted-foreground"
+                        className="text-xs text-muted-foreground"
                         onClick={() => change({ stops: form.stops.filter((_, j) => i !== j) })}
                       >
                         Remove stop
@@ -594,7 +594,7 @@ export function Bookings() {
                     onChange={(e) => change({ traveller_id: e.target.value || null })}
                   />
                 </label>
-                <p className="mt-2 text-[10px] text-muted-foreground">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Only link an account after checking the traveller’s identity. Offline clients can
                   leave this empty. Linking makes confirmed/cancelled trips visible to that account.
                 </p>

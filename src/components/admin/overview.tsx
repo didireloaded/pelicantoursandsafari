@@ -4,7 +4,6 @@ import { useWorkspace } from "@/lib/admin-workspace-api";
 import { dayUtc, isActiveTrip, tripEnd, initials } from "@/lib/admin-workspace";
 import { WorkspaceState } from "./workspace-state";
 import { HelpPanel } from "./help-panel";
-import { ContentPhoto } from "@/components/content-photo";
 export function Overview() {
   const query = useWorkspace();
   const data = query.data;
@@ -16,13 +15,15 @@ export function Overview() {
   const clients = data?.clients.filter((c) => !c.archived) ?? [];
   const leads = data?.leads ?? [];
   const open = leads.filter((l) => !["closed", "confirmed"].includes(l.status));
+  const overdueFollowUps = open.filter((lead) => lead.follow_up_on && lead.follow_up_on < today);
+  const todayFollowUps = open.filter((lead) => lead.follow_up_on === today);
   return (
     <>
       <div className="admin-page-heading">
         <div>
-          <p className="admin-eyebrow">YOUR PELICAN WORKSPACE</p>
-          <h1 className="mt-2">A good day for a new journey.</h1>
-          <p>Your guests, upcoming safaris and the details that need your attention.</p>
+          <p className="admin-eyebrow">PELICAN OPERATIONS</p>
+          <h1 className="mt-2">Overview</h1>
+          <p>Review upcoming trips, outstanding enquiries and client records.</p>
         </div>
         <Link
           to="/admin/bookings"
@@ -40,30 +41,30 @@ export function Overview() {
         <div className="admin-stats">
           {[
             {
-              label: "Active bookings",
+              label: "Active trips",
               value: trips.filter((t) => isActiveTrip(t, today)).length,
-              note: "Confirmed trips travelling today",
+              note: "Confirmed trips active today",
               Icon: Compass,
               to: "/admin/bookings",
             },
             {
               label: "Upcoming departures",
               value: upcoming.filter((t) => t.starts_on > today).length,
-              note: "Confirmed, future journeys",
+              note: "Future confirmed trip records",
               Icon: CalendarDays,
               to: "/admin/bookings",
             },
             {
               label: "Open enquiries",
               value: open.length,
-              note: "Requests waiting to become journeys",
+              note: "Enquiries awaiting review or follow-up",
               Icon: Mail,
               to: "/dashboard",
             },
             {
               label: "Clients",
               value: clients.length,
-              note: "Your current client directory",
+              note: "Current client profiles",
               Icon: Users,
               to: "/admin/clients",
             },
@@ -84,11 +85,11 @@ export function Overview() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="admin-panel-heading">Upcoming journeys</h2>
-                  <p className="mt-1 text-[10px] text-muted-foreground">
-                    A clear view of the next departures.
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Confirmed trips recorded in Reservations.
                   </p>
                 </div>
-                <Link to="/admin/bookings" className="text-[10px] text-primary">
+                <Link to="/admin/bookings" className="text-xs text-primary">
                   View calendar →
                 </Link>
               </div>
@@ -100,7 +101,7 @@ export function Overview() {
                       <span className="admin-avatar">{initials(client?.name ?? trip.title)}</span>
                       <span className="min-w-0 flex-1">
                         <strong className="block truncate text-xs font-medium">{trip.title}</strong>
-                        <small className="block text-[10px] text-muted-foreground">
+                        <small className="block text-xs text-muted-foreground">
                           {client?.name ?? "Traveller account"} · {trip.starts_on} — {tripEnd(trip)}
                         </small>
                       </span>
@@ -122,7 +123,7 @@ export function Overview() {
             <section className="admin-panel p-6">
               <div className="flex items-center justify-between">
                 <h2 className="admin-panel-heading">Recent enquiries</h2>
-                <Link to="/dashboard" className="text-[10px] text-primary">
+                <Link to="/dashboard" className="text-xs text-primary">
                   Open inbox →
                 </Link>
               </div>
@@ -132,12 +133,12 @@ export function Overview() {
                   .slice(0, 4)
                   .map((lead) => (
                     <Link to="/dashboard" key={lead.id} className="admin-row">
-                      <span className="admin-avatar !h-8 !w-8 !text-[10px]">
+                      <span className="admin-avatar !h-8 !w-8 !text-xs">
                         {initials(lead.name)}
                       </span>
                       <div className="flex-1">
                         <strong className="block text-xs font-medium">{lead.name}</strong>
-                        <small className="text-[10px] text-muted-foreground">
+                        <small className="text-xs text-muted-foreground">
                           {lead.created_at.slice(0, 10)} ·{" "}
                           {lead.residence || "Country not supplied"}
                         </small>
@@ -151,35 +152,30 @@ export function Overview() {
             </section>
           </div>
           <aside className="admin-detail-rail">
-            <section className="admin-panel p-5">
-              <h2 className="admin-panel-heading">A little closer to the wild.</h2>
-              <div className="mt-4 overflow-hidden rounded-xl">
-                <img
-                  src="/images/rhino-640.webp"
-                  alt="Rhino in Namibia"
-                  width="640"
-                  height="427"
-                  className="h-32 w-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-              <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-                Build the journeys your guests will remember. Start with the details, then make them
-                your own.
+            <section className="admin-panel p-5" aria-label="Enquiry follow-ups">
+              <h2 className="admin-panel-heading">Follow-ups</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Open enquiries with scheduled follow-up dates.
               </p>
-              <Link
-                to="/admin/packages"
-                className="mt-4 inline-block text-[11px] font-medium text-primary"
-              >
-                Manage packages →
+              <div className="mt-5 grid grid-cols-2 gap-3 border-y border-border py-4">
+                <div>
+                  <p className="text-2xl font-semibold tabular-nums">{todayFollowUps.length}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Due today</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-semibold tabular-nums">{overdueFollowUps.length}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Overdue</p>
+                </div>
+              </div>
+              <Link to="/dashboard" className="mt-4 inline-block text-sm font-medium text-primary">
+                Review enquiries →
               </Link>
             </section>
             <HelpPanel />
             <section className="admin-panel p-5">
-              <h2 className="admin-panel-heading">Ready to publish?</h2>
-              <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-                Save a draft, preview it, then publish. Your website updates without a code
-                deployment.
+              <h2 className="admin-panel-heading">Website content</h2>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                Save drafts, review changes and publish packages or photos when they are ready.
               </p>
               <div className="mt-4 flex gap-3">
                 <Link to="/admin/gallery" className="admin-pill">
