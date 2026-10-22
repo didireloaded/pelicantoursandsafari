@@ -600,7 +600,12 @@
   color: var(--destructive);
 }
 .admin-help {
-  background: linear-gradient(135deg, var(--card), var(--secondary));
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--card) 40%, transparent),
+    color-mix(in oklab, var(--secondary) 40%, transparent)
+  );
+  backdrop-filter: blur(18px) saturate(150%);
   padding: 21px;
 }
 .admin-help textarea {
