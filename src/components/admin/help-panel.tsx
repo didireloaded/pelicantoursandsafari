@@ -37,7 +37,7 @@ export function HelpPanel() {
         <MessageCircle size={17} className="text-primary" />
         <h2 className="admin-panel-heading">How can I help?</h2>
       </div>
-      <p className="mt-2 text-[11px] text-muted-foreground">
+      <p className="mt-2 text-xs text-muted-foreground">
         Ask about your bookings, enquiries or website.
       </p>
       <div className="my-4 flex flex-wrap gap-2">
@@ -49,7 +49,7 @@ export function HelpPanel() {
               setQuestion(q);
               void ask(q);
             }}
-            className="rounded-lg border border-border bg-card px-3 py-2 text-left text-[10px]"
+            className="rounded-lg border border-border bg-card px-3 py-2 text-left text-xs"
           >
             {q}
           </button>
