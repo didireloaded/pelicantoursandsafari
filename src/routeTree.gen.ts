@@ -26,6 +26,7 @@ import { Route as ShortlistRouteImport } from './routes/shortlist'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
 import { Route as TravelGuideRouteImport } from './routes/travel-guide'
 import { Route as TripsRouteImport } from './routes/trips'
+import { Route as AuthenticatedAccessRequestRouteImport } from './routes/_authenticated/access-request'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedContentManageRouteImport } from './routes/_authenticated/content-manage'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -134,6 +135,12 @@ const TripsRoute = TripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccessRequestRoute =
+  AuthenticatedAccessRequestRouteImport.update({
+    id: '/access-request',
+    path: '/access-request',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -277,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/access-request': typeof AuthenticatedAccessRequestRoute
   '/content-manage': typeof AuthenticatedContentManageRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips-manage': typeof AuthenticatedTripsManageRoute
@@ -317,6 +325,7 @@ export interface FileRoutesByTo {
   '/tailor-made': typeof TailorMadeRoute
   '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
+  '/access-request': typeof AuthenticatedAccessRequestRoute
   '/content-manage': typeof AuthenticatedContentManageRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips-manage': typeof AuthenticatedTripsManageRoute
@@ -360,6 +369,7 @@ export interface FileRoutesById {
   '/travel-guide': typeof TravelGuideRoute
   '/trips': typeof TripsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/access-request': typeof AuthenticatedAccessRequestRoute
   '/_authenticated/content-manage': typeof AuthenticatedContentManageRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/trips-manage': typeof AuthenticatedTripsManageRoute
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/travel-guide'
     | '/trips'
     | '/admin'
+    | '/access-request'
     | '/content-manage'
     | '/dashboard'
     | '/trips-manage'
@@ -443,6 +454,7 @@ export interface FileRouteTypes {
     | '/tailor-made'
     | '/travel-guide'
     | '/trips'
+    | '/access-request'
     | '/content-manage'
     | '/dashboard'
     | '/trips-manage'
@@ -485,6 +497,7 @@ export interface FileRouteTypes {
     | '/travel-guide'
     | '/trips'
     | '/_authenticated/admin'
+    | '/_authenticated/access-request'
     | '/_authenticated/content-manage'
     | '/_authenticated/dashboard'
     | '/_authenticated/trips-manage'
@@ -660,6 +673,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/trips'
       preLoaderRoute: typeof TripsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/access-request': {
+      id: '/_authenticated/access-request'
+      path: '/access-request'
+      fullPath: '/access-request'
+      preLoaderRoute: typeof AuthenticatedAccessRequestRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
@@ -855,6 +875,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedAccessRequestRoute: typeof AuthenticatedAccessRequestRoute
   AuthenticatedContentManageRoute: typeof AuthenticatedContentManageRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedTripsManageRoute: typeof AuthenticatedTripsManageRoute
@@ -862,6 +883,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedAccessRequestRoute: AuthenticatedAccessRequestRoute,
   AuthenticatedContentManageRoute: AuthenticatedContentManageRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedTripsManageRoute: AuthenticatedTripsManageRoute,
