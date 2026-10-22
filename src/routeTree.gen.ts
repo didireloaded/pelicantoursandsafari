@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as BookingRouteImport } from './routes/booking'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as JourneyRouteImport } from './routes/journey'
@@ -64,6 +66,16 @@ const AboutRoute = AboutRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingRoute = BookingRouteImport.update({
+  id: '/booking',
+  path: '/booking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -245,6 +257,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
+  '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
@@ -283,6 +297,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
+  '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
@@ -322,6 +338,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
+  '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/journey': typeof JourneyRoute
@@ -362,6 +380,8 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/book'
+    | '/booking'
     | '/contact'
     | '/gallery'
     | '/journey'
@@ -400,6 +420,8 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/book'
+    | '/booking'
     | '/contact'
     | '/gallery'
     | '/journey'
@@ -438,6 +460,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/auth'
+    | '/book'
+    | '/booking'
     | '/contact'
     | '/gallery'
     | '/journey'
@@ -478,6 +502,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  BookRoute: typeof BookRoute
+  BookingRoute: typeof BookingRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   JourneyRoute: typeof JourneyRoute
@@ -530,6 +556,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking': {
+      id: '/booking'
+      path: '/booking'
+      fullPath: '/booking'
+      preLoaderRoute: typeof BookingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -814,6 +854,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  BookRoute: BookRoute,
+  BookingRoute: BookingRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   JourneyRoute: JourneyRoute,

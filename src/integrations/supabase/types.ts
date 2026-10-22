@@ -62,6 +62,7 @@ export type Database = {
       enquiries: {
         Row: {
           assigned_to: string | null
+          booking_ref: string | null
           brief: string
           contact_preference: string | null
           created_at: string
@@ -76,10 +77,12 @@ export type Database = {
           safari_slug: string | null
           staff_notes: string | null
           status: Database["public"]["Enums"]["enquiry_status"]
+          trip_code: string | null
           updated_at: string
         }
         Insert: {
           assigned_to?: string | null
+          booking_ref?: string | null
           brief: string
           contact_preference?: string | null
           created_at?: string
@@ -94,10 +97,12 @@ export type Database = {
           safari_slug?: string | null
           staff_notes?: string | null
           status?: Database["public"]["Enums"]["enquiry_status"]
+          trip_code?: string | null
           updated_at?: string
         }
         Update: {
           assigned_to?: string | null
+          booking_ref?: string | null
           brief?: string
           contact_preference?: string | null
           created_at?: string
@@ -112,6 +117,7 @@ export type Database = {
           safari_slug?: string | null
           staff_notes?: string | null
           status?: Database["public"]["Enums"]["enquiry_status"]
+          trip_code?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -511,6 +517,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_booking_ref: {
+        Args: { _enquiry: string; _trip_code: string }
+        Returns: string
+      }
       can_manage_site: { Args: never; Returns: boolean }
       consume_admin_help: { Args: never; Returns: undefined }
       consume_ai_draft_request: { Args: never; Returns: boolean }
@@ -526,6 +536,14 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      lookup_booking: {
+        Args: { _contact: string; _network_hash: string; _ref: string }
+        Returns: {
+          created_at: string
+          status: Database["public"]["Enums"]["enquiry_status"]
+          trip_code: string
+        }[]
+      }
       publish_proposal: {
         Args: {
           _details: Json
