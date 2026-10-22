@@ -175,6 +175,40 @@ export const travelGuidance = {
       source: "https://botswanatourism.co.bw/travel-info",
     },
   ],
+  // Trip tips paraphrased from UK travel advice, checked 22 October 2026.
+  tipsChecked: "22 October 2026",
+  tips: [
+    {
+      title: "Driving on gravel roads",
+      body: "Accidents are common on gravel and dirt roads. In the January–April rains many gravel roads deteriorate: keep below 80 km/h, carry two spare tyres and plenty of water, and check road conditions before setting off.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/safety-and-security",
+    },
+    {
+      title: "Avoid driving at night",
+      body: "Outside towns, wildlife and livestock on the road are serious hazards after dark. Plan driving days to arrive before nightfall.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/safety-and-security",
+    },
+    {
+      title: "Keep valuables out of sight",
+      body: "Theft from vehicles is common, particularly at service stations. Don't leave the vehicle unattended at fuel stops, keep doors locked and windows shut in heavy traffic, and keep valuables off the seats.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/safety-and-security",
+    },
+    {
+      title: "Watch your card when paying",
+      body: "There have been cases of card skimming at some hotels and lodges. Keep your card in sight when paying and check your statements.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/safety-and-security",
+    },
+    {
+      title: "Wildlife souvenirs",
+      body: "Buying, selling or trading protected wild animals or their parts without a licence is illegal, including ivory and rhino horn. Offenders can face fines or prison.",
+      source: "https://www.gov.uk/foreign-travel-advice/namibia/safety-and-security",
+    },
+    {
+      title: "Pack for heat and cold",
+      body: "Inland summer days can be very hot, winter nights very cold, and the coast is often cool and foggy. Bring sun protection and warm layers whatever the month.",
+      source: "https://visitnamibia.com.na/climate/",
+    },
+  ],
   faq: [
     {
       title: "Where is Pelican Tours and Safaris based?",

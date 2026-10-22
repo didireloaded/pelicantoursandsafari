@@ -32,6 +32,19 @@ function TravelGuide() {
           </a>
         </article>
       ))}
+      <h2 className="mt-10 text-3xl">Trip tips</h2>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Sources checked {travelGuidance.tipsChecked}. Check current advice before departure.
+      </p>
+      {travelGuidance.tips.map((x) => (
+        <article key={x.title} className="border-b py-6">
+          <h3 className="text-xl">{x.title}</h3>
+          <p className="my-3 max-w-3xl">{x.body}</p>
+          <a className="underline" href={x.source} target="_blank" rel="noreferrer">
+            Official source →
+          </a>
+        </article>
+      ))}
       <h2 className="mt-10 text-3xl">Travel questions</h2>
       {travelGuidance.faq.map((x) => (
         <Fragment key={x.title}><details className="border-b py-5 print:hidden">
