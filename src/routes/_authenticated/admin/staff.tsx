@@ -1,5 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { StaffDirectory } from "@/components/admin/staff-directory";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 export const Route = createFileRoute("/_authenticated/admin/staff")({
   head: () => ({
     meta: [
@@ -7,20 +6,7 @@ export const Route = createFileRoute("/_authenticated/admin/staff")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: Directory,
+  beforeLoad: () => {
+    throw redirect({ to: "/admin/team" });
+  },
 });
-function Directory() {
-  const { user, adminAssurance } = Route.useRouteContext();
-  return (
-    <>
-      <div className="admin-page-heading">
-        <div>
-          <p className="admin-eyebrow">YOUR PEOPLE</p>
-          <h1 className="mt-2">Staff directory</h1>
-          <p>Names and photos, visible only to verified staff.</p>
-        </div>
-      </div>
-      <StaffDirectory userId={user.id} verified={adminAssurance === "aal2"} />
-    </>
-  );
-}
