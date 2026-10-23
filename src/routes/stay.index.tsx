@@ -1,7 +1,7 @@
 import { AppSelect } from "@/components/ui/app-select";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Section } from "@/components/site";
+import { Photo, Section } from "@/components/site";
 import { destinations, getDestination, stays } from "@/lib/pelican";
 
 export const Route = createFileRoute("/stay/")({
@@ -74,20 +74,35 @@ function StayIndex() {
       <Link to="/journey" className="text-primary underline">
         Explore and plan on the map →
       </Link>
-      <div className="mt-8 divide-y border-y border-border">
+      <p aria-live="polite" className="mt-8 text-sm text-muted-foreground">
+        {matches.length} {matches.length === 1 ? "place" : "places"} to explore
+      </p>
+      <div className="mt-5 grid gap-x-8 gap-y-10 md:grid-cols-2">
         {matches.map((stay) => (
           <Link
             key={stay.slug}
             to="/stay/$slug"
             params={{ slug: stay.slug }}
-            className="block py-8"
+            className="group block"
           >
-            <p className="text-sm text-clay">
-              {getDestination(stay.destination)?.name} · {stay.collection}
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold">{stay.name}</h2>
-            <p className="mt-3 max-w-2xl text-muted-foreground">{stay.description}</p>
-            <span className="mt-4 block text-primary">View stay →</span>
+            <div className="overflow-hidden rounded-r-[4rem] bg-muted">
+              <Photo
+                name={getDestination(stay.destination)?.image ?? "nature-landscape"}
+                alt={`${getDestination(stay.destination)?.name ?? stay.name} landscape`}
+                sizes="(min-width: 768px) 46vw, calc(100vw - 40px)"
+                className="discovery-card-image h-48 w-full object-cover md:h-56"
+              />
+            </div>
+            <div className="pt-5">
+              <p className="text-sm text-clay">
+                {getDestination(stay.destination)?.name} · {stay.type}
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight group-hover:text-clay md:text-3xl">
+                {stay.name}
+              </h2>
+              <p className="mt-3 line-clamp-2 text-muted-foreground">{stay.description}</p>
+              <span className="mt-4 block font-medium text-primary">View stay →</span>
+            </div>
           </Link>
         ))}
         {!matches.length && (
