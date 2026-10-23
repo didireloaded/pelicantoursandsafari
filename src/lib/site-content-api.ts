@@ -8,6 +8,8 @@ import {
   type ContentData,
 } from "./site-content";
 
+export const PUBLISHED_CONTENT_STALE_TIME = 5 * 60_000;
+
 export async function publishedContent(kind: ContentKind) {
   const { data, error } = await supabase
     .rpc("published_site_content", { _kind: kind })
@@ -20,9 +22,8 @@ export function usePublishedContent(kind: ContentKind, enabled = true) {
     queryKey: ["site-content", kind],
     enabled,
     queryFn: () => publishedContent(kind),
-    staleTime: 0,
-    refetchInterval: 30000,
-    refetchOnWindowFocus: true,
+    staleTime: PUBLISHED_CONTENT_STALE_TIME,
+    refetchOnWindowFocus: false,
     retry: 1,
   });
 }

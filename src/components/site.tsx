@@ -22,7 +22,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 md:h-20 md:px-10">
         <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setOpen(false)}>
-          <img src="/pelican-logo.png" alt="" className="h-11 w-11 object-contain" /> Pelican
+          <img src="/pelican-logo.png" alt="" width="204" height="198" decoding="async" className="h-11 w-11 object-contain" /> Pelican
         </Link>
         <nav aria-label="Main navigation" className="hidden items-center gap-7 text-sm font-medium lg:flex">
           {nav.slice(1).map((n) => (
@@ -61,7 +61,7 @@ export function Footer() {
     <footer className="border-t border-border/60 bg-background pb-24 md:pb-0">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-14 md:grid-cols-2 md:px-10 lg:grid-cols-4">
         <div className="md:col-span-2">
-          <p className="flex items-center gap-3 text-lg font-semibold"><img src="/pelican-logo.png" alt="" className="h-12 w-12 object-contain" />{company.name}</p>
+          <p className="flex items-center gap-3 text-lg font-semibold"><img src="/pelican-logo.png" alt="" width="204" height="198" loading="lazy" decoding="async" className="h-12 w-12 object-contain" />{company.name}</p>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">Proudly Namibian, professionally guided safaris and tours.</p>
         </div>
         <div className="text-sm leading-7">

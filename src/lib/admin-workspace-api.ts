@@ -17,6 +17,8 @@ import {
 } from "./admin-workspace";
 import type { Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
+export const ADMIN_WORKSPACE_STALE_TIME = 60_000;
+export const ADMIN_WORKSPACE_REFRESH_INTERVAL = 120_000;
 async function allRows<T>(
   page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
 ) {
@@ -88,8 +90,9 @@ export function useWorkspace() {
     queryKey: ["admin-workspace", sample ? "sample" : "live"],
     queryFn: () => loadWorkspace(),
     enabled: !sample,
-    staleTime: 15000,
-    refetchInterval: sample ? false : 60000,
+    staleTime: ADMIN_WORKSPACE_STALE_TIME,
+    refetchInterval: sample ? false : ADMIN_WORKSPACE_REFRESH_INTERVAL,
+    refetchIntervalInBackground: false,
     retry: 1,
   });
   return sample ? { ...query, data: sampleWorkspace(), isPending: false, isError: false } : query;

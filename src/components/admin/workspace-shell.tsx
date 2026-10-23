@@ -185,7 +185,7 @@ export function WorkspaceShell({
           aria-label="Administration sidebar"
         >
           <Link to="/admin" className="admin-brand">
-            <img src="/pelican-logo.png" alt="" />
+            <img src="/pelican-logo.png" alt="" width="204" height="198" decoding="async" />
             <span>
               Pelican
               <span className="block text-xs font-normal uppercase tracking-[.2em] opacity-60">

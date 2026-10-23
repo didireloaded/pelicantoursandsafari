@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { publishedContent } from "@/lib/site-content-api";
+import { PUBLISHED_CONTENT_STALE_TIME, publishedContent } from "@/lib/site-content-api";
 import { useQuery } from "@tanstack/react-query";
 import { Section, PageHero, meta } from "@/components/site";
 import { ContentPhoto } from "@/components/content-photo";
@@ -51,8 +51,8 @@ function PackagePage() {
     queryKey: ["site-content", "package", id],
     queryFn: async () => (await publishedContent("package")).find((item) => item.id === id) ?? null,
     initialData: initial,
-    staleTime: 0,
-    refetchInterval: 30000,
+    staleTime: PUBLISHED_CONTENT_STALE_TIME,
+    refetchOnWindowFocus: false,
     retry: 1,
   });
   const row = query.data;
