@@ -48,7 +48,7 @@ it("lists active staff, uses saved names and allows editing only one's own profi
   });
   show();
   expect(await screen.findByRole("heading", { name: "My name" })).toBeVisible();
-  expect(screen.getByRole("heading", { name: "Colleague" })).toBeVisible();
+  expect(screen.getByText("Colleague")).toBeVisible();
   expect(screen.queryByText("Former staff")).toBeNull();
   expect(screen.getAllByRole("link", { name: "Edit your profile" })).toHaveLength(1);
   expect(screen.getByRole("link", { name: "Edit your profile" })).toHaveAttribute(

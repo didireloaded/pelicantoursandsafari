@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Plus, ArrowUpRight, ArrowUp, ArrowDown } from "lucide-react";
 import { ZodError } from "zod";
 import { useWorkspace, saveBooking } from "@/lib/admin-workspace-api";
+import { useAdminSampleMode } from "@/lib/admin-sample-mode";
 import {
   dayUtc,
   tripEnd,
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/sheet";
 import { WorkspaceState } from "./workspace-state";
 export function Bookings() {
+  const sample = useAdminSampleMode();
   const query = useWorkspace();
   const cache = useQueryClient();
   const data = query.data;
@@ -68,6 +70,7 @@ export function Bookings() {
     setDirty(true);
   };
   const edit = (trip?: AdminTrip) => {
+    if (sample) return;
     setDetailOpen(false);
     setEditing(trip);
     setForm(
@@ -90,6 +93,7 @@ export function Bookings() {
     setOpen(true);
   };
   async function save() {
+    if (sample) return;
     if (lock.current) return;
     lock.current = true;
     setBusy(true);
@@ -130,7 +134,7 @@ export function Bookings() {
           <Button asChild variant="outline">
             <Link to="/dashboard">Review requests</Link>
           </Button>
-          <Button className="gap-2 !text-xs" onClick={() => edit()}>
+          <Button disabled={sample} className="gap-2 !text-xs" onClick={() => edit()}>
             <Plus size={15} />
             New reservation
           </Button>
@@ -300,7 +304,11 @@ export function Bookings() {
                           </p>
                         ))}
                       </div>
-                      <Button className="mt-6 w-full gap-2 !text-xs" onClick={() => edit(current)}>
+                      <Button
+                        disabled={sample}
+                        className="mt-6 w-full gap-2 !text-xs"
+                        onClick={() => edit(current)}
+                      >
                         Edit reservation
                         <ArrowUpRight size={14} />
                       </Button>
@@ -355,19 +363,25 @@ export function Bookings() {
               <p>
                 {request.confirmed_starts_on} — {request.confirmed_ends_on}
               </p>
-              {request.email && (
-                <a className="block text-primary" href={`mailto:${request.email}`}>
-                  {request.email}
-                </a>
-              )}
-              {request.phone && (
-                <a
-                  className="block text-primary"
-                  href={`tel:${request.phone.replace(/[^+0-9]/g, "")}`}
-                >
-                  {request.phone}
-                </a>
-              )}
+              {request.email &&
+                (sample ? (
+                  <span className="block text-muted-foreground">{request.email}</span>
+                ) : (
+                  <a className="block text-primary" href={`mailto:${request.email}`}>
+                    {request.email}
+                  </a>
+                ))}
+              {request.phone &&
+                (sample ? (
+                  <span className="block text-muted-foreground">{request.phone}</span>
+                ) : (
+                  <a
+                    className="block text-primary"
+                    href={`tel:${request.phone.replace(/[^+0-9]/g, "")}`}
+                  >
+                    {request.phone}
+                  </a>
+                ))}
               <p className="whitespace-pre-wrap">{request.brief}</p>
               <Button asChild variant="outline">
                 <Link to="/dashboard">Open enquiries</Link>

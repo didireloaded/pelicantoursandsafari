@@ -1,15 +1,17 @@
 import { useRef, useState } from "react";
+import { useAdminSampleMode } from "@/lib/admin-sample-mode";
 import { ArrowUp, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { askWorkspaceHelp } from "@/lib/admin-help.functions";
 export function HelpPanel() {
+  const sample = useAdminSampleMode();
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
   async function ask(text = question) {
-    if (lock.current || !text.trim()) return;
+    if (sample || lock.current || !text.trim()) return;
     lock.current = true;
     setBusy(true);
     setError("");
@@ -31,6 +33,15 @@ export function HelpPanel() {
       setBusy(false);
     }
   }
+  if (sample)
+    return (
+      <section className="admin-panel p-5">
+        <h2 className="admin-panel-heading">Workspace help</h2>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Return to live data to ask about real bookings and enquiries.
+        </p>
+      </section>
+    );
   return (
     <section className="admin-panel admin-help">
       <div className="flex items-center gap-2">

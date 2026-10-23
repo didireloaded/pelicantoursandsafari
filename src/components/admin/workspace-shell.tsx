@@ -1,4 +1,5 @@
 import { useStaffProfiles } from "@/lib/staff-profiles";
+import { AdminSampleModeProvider } from "@/lib/admin-sample-mode";
 import { StaffAvatar } from "./staff-avatar";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -61,6 +62,7 @@ export function WorkspaceShell({
   const [open, setOpen] = useState(false);
   const [teamOpen, setTeamOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [sampleMode, setSampleMode] = useState(false);
   const sidebar = useRef<HTMLElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -101,10 +103,10 @@ export function WorkspaceShell({
     setOpen(false);
     setSearch("");
   }, [location.pathname]);
-  const profiles = useStaffProfiles(ready);
+  const profiles = useStaffProfiles(ready && !sampleMode);
   const team = useQuery({
     queryKey: ["staff-presence"],
-    enabled: ready,
+    enabled: ready && !sampleMode,
     queryFn: async () => {
       if (document.visibilityState === "visible") {
         const ping = await supabase.rpc("touch_staff_presence");
@@ -119,7 +121,7 @@ export function WorkspaceShell({
       if (rows.error) throw rows.error;
       return rows.data ?? [];
     },
-    refetchInterval: 60000,
+    refetchInterval: sampleMode ? false : 60000,
     refetchIntervalInBackground: false,
     retry: 0,
   });
@@ -161,137 +163,197 @@ export function WorkspaceShell({
         (item.label + " " + item.description).toLowerCase().includes(search.trim().toLowerCase()),
       )
     : [];
+  const sampleSupported = new Set([
+    "/admin",
+    "/dashboard",
+    "/admin/clients",
+    "/admin/bookings",
+    "/admin/analytics",
+    "/admin/team",
+    "/admin/follow-ups",
+    "/admin/payments",
+  ]).has(location.pathname);
+  useEffect(() => {
+    if (!sampleSupported) setSampleMode(false);
+  }, [sampleSupported]);
   return (
-    <div className="pelican-admin">
-      <aside
-        ref={sidebar}
-        role={open ? "dialog" : undefined}
-        aria-modal={open || undefined}
-        className={`admin-sidebar ${open ? "is-open" : ""}`}
-        aria-label="Administration sidebar"
-      >
-        <Link to="/admin" className="admin-brand">
-          <img src="/pelican-logo.png" alt="" />
-          <span>
-            Pelican
-            <span className="block text-xs font-normal uppercase tracking-[.2em] opacity-60">
-              Tours & safaris
+    <AdminSampleModeProvider enabled={sampleMode}>
+      <div className="pelican-admin">
+        <aside
+          ref={sidebar}
+          role={open ? "dialog" : undefined}
+          aria-modal={open || undefined}
+          className={`admin-sidebar ${open ? "is-open" : ""}`}
+          aria-label="Administration sidebar"
+        >
+          <Link to="/admin" className="admin-brand">
+            <img src="/pelican-logo.png" alt="" />
+            <span>
+              Pelican
+              <span className="block text-xs font-normal uppercase tracking-[.2em] opacity-60">
+                Tours & safaris
+              </span>
             </span>
-          </span>
-        </Link>
-        <nav aria-label="Pelican administration">{nav}</nav>
-        <div className="admin-sidebar-bottom">
-          <a href="/" target="_blank" rel="noreferrer" className="admin-nav-link">
-            <ExternalLink size={17} />
-            View website
-          </a>
-          <Link to="/admin/profile" className="admin-profile">
-            <span className="admin-avatar">
-              <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
-            </span>
-            <span className="min-w-0">
-              <strong className="block truncate text-xs">{name}</strong>
-              <span className="block text-xs text-muted-foreground">Staff account</span>
-            </span>
-            <ChevronDown size={14} className="ml-auto" />
           </Link>
-        </div>
-      </aside>
-      {open && (
-        <button
-          aria-label="Close navigation"
-          className="admin-backdrop"
-          onClick={() => setOpen(false)}
-        />
-      )}
-      <div className="admin-workspace">
-        <header className="admin-topbar">
-          <button
-            ref={menuButton}
-            className="admin-mobile-menu"
-            aria-label={open ? "Close navigation" : "Open navigation"}
-            aria-expanded={open}
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-          <div className="admin-team-circles relative">
+          <nav aria-label="Pelican administration">{nav}</nav>
+          <div className="mx-2 my-4 border-t border-border pt-4">
             <button
-              className="flex items-center gap-1"
-              aria-label="Recently active staff"
-              aria-expanded={teamOpen}
-              onClick={() => setTeamOpen(!teamOpen)}
+              type="button"
+              role="switch"
+              aria-checked={sampleMode}
+              disabled={!sampleSupported}
+              onClick={() => setSampleMode((value) => !value)}
+              className="flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {people.length ? (
-                people.slice(0, 5).map((person) => (
-                  <span
-                    key={person.user_id}
-                    className="admin-avatar admin-team-avatar"
-                    title={person.display_name}
-                  >
-                    <StaffAvatar path={person.avatar_path ?? null} name={person.display_name} />
-                  </span>
-                ))
-              ) : (
-                <span className="admin-avatar admin-team-avatar">
-                  <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
-                </span>
-              )}
-              <span className="ml-2 hidden text-xs text-muted-foreground xl:block">Your team</span>
+              <span>
+                <strong className="block font-medium">Sample data</strong>
+                <small className="block text-xs text-muted-foreground">
+                  {sampleSupported ? "Read-only presentation" : "Unavailable on this page"}
+                </small>
+              </span>
+              <span
+                aria-hidden="true"
+                className={`inline-flex h-6 w-11 items-center rounded-full p-1 transition-colors ${sampleMode ? "bg-primary" : "bg-muted"}`}
+              >
+                <span
+                  className={`h-4 w-4 rounded-full bg-white transition-transform ${sampleMode ? "translate-x-5" : ""}`}
+                />
+              </span>
             </button>
-            {teamOpen && (
-              <div className="admin-team-popover">
-                <strong className="text-xs">Recently active team</strong>
-                <p className="my-2 text-xs text-muted-foreground">
-                  Activity within the last two minutes.
-                </p>
-                {team.isError ? (
-                  <p className="text-xs">Team activity unavailable.</p>
-                ) : people.length ? (
-                  people.map((person) => (
-                    <p className="py-1 text-xs" key={person.user_id}>
-                      {person.display_name}
-                    </p>
+          </div>
+          <div className="admin-sidebar-bottom">
+            <a href="/" target="_blank" rel="noreferrer" className="admin-nav-link">
+              <ExternalLink size={17} />
+              View website
+            </a>
+            <Link to="/admin/profile" className="admin-profile">
+              <span className="admin-avatar">
+                <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
+              </span>
+              <span className="min-w-0">
+                <strong className="block truncate text-xs">{name}</strong>
+                <span className="block text-xs text-muted-foreground">Staff account</span>
+              </span>
+              <ChevronDown size={14} className="ml-auto" />
+            </Link>
+          </div>
+        </aside>
+        {open && (
+          <button
+            aria-label="Close navigation"
+            className="admin-backdrop"
+            onClick={() => setOpen(false)}
+          />
+        )}
+        <div className="admin-workspace">
+          <header className="admin-topbar">
+            <button
+              ref={menuButton}
+              className="admin-mobile-menu"
+              aria-label={open ? "Close navigation" : "Open navigation"}
+              aria-expanded={open}
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+            <div className="admin-team-circles relative">
+              <button
+                className="flex items-center gap-1"
+                aria-label="Recently active staff"
+                aria-expanded={teamOpen}
+                onClick={() => setTeamOpen(!teamOpen)}
+              >
+                {people.length ? (
+                  people.slice(0, 5).map((person) => (
+                    <span
+                      key={person.user_id}
+                      className="admin-avatar admin-team-avatar"
+                      title={person.display_name}
+                    >
+                      <StaffAvatar path={person.avatar_path ?? null} name={person.display_name} />
+                    </span>
                   ))
                 ) : (
-                  <p className="text-xs">Your current session</p>
+                  <span className="admin-avatar admin-team-avatar">
+                    <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
+                  </span>
                 )}
-              </div>
-            )}
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Workspace <span className="mx-2 opacity-40">/</span>
-            <span className="font-medium text-foreground">{current}</span>
-          </div>
-          <div className="admin-search">
-            <Search size={16} />
-            <input
-              aria-label="Find a section"
-              placeholder="Find a section…"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-            {search && (
-              <div className="admin-search-results">
-                {filtered.length ? (
-                  filtered.map((item) => (
-                    <Link key={item.to} to={item.to}>
-                      {item.label}
-                      <small>{item.description}</small>
-                    </Link>
-                  ))
-                ) : (
-                  <p>No matching sections.</p>
-                )}
-              </div>
-            )}
-          </div>
-        </header>
-        <div className="admin-page">{children}</div>
-        <footer className="admin-footer">
-          Pelican Tours and Safaris <span>Private workspace · Namibia</span>
-        </footer>
+                <span className="ml-2 hidden text-xs text-muted-foreground xl:block">
+                  Your team
+                </span>
+              </button>
+              {teamOpen && (
+                <div className="admin-team-popover">
+                  <strong className="text-xs">Recently active team</strong>
+                  <p className="my-2 text-xs text-muted-foreground">
+                    Activity within the last two minutes.
+                  </p>
+                  {team.isError ? (
+                    <p className="text-xs">Team activity unavailable.</p>
+                  ) : people.length ? (
+                    people.map((person) => (
+                      <p className="py-1 text-xs" key={person.user_id}>
+                        {person.display_name}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-xs">Your current session</p>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Workspace <span className="mx-2 opacity-40">/</span>
+              <span className="font-medium text-foreground">{current}</span>
+            </div>
+            <div className="admin-search">
+              <Search size={16} />
+              <input
+                aria-label="Find a section"
+                placeholder="Find a section…"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+              {search && (
+                <div className="admin-search-results">
+                  {filtered.length ? (
+                    filtered.map((item) => (
+                      <Link key={item.to} to={item.to}>
+                        {item.label}
+                        <small>{item.description}</small>
+                      </Link>
+                    ))
+                  ) : (
+                    <p>No matching sections.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </header>
+          {sampleMode && (
+            <div
+              className="mx-5 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/25 bg-secondary px-4 py-3 text-sm"
+              role="status"
+            >
+              <span>
+                <strong>Sample data is on.</strong> These fictional records are read-only and never
+                touch live data.
+              </span>
+              <button
+                type="button"
+                className="font-semibold text-primary underline underline-offset-4"
+                onClick={() => setSampleMode(false)}
+              >
+                Return to live data
+              </button>
+            </div>
+          )}
+          <div className="admin-page">{children}</div>
+          <footer className="admin-footer">
+            Pelican Tours and Safaris <span>Private workspace · Namibia</span>
+          </footer>
+        </div>
       </div>
-    </div>
+    </AdminSampleModeProvider>
   );
 }

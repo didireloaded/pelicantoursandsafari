@@ -7,13 +7,6 @@ export const adminLinks = [
     icon: "overview",
   },
   {
-    to: "/admin/preview",
-    label: "Demo preview",
-    description: "Explore a fictional, read-only example of the workspace.",
-    group: "Workspace",
-    icon: "preview",
-  },
-  {
     to: "/dashboard",
     label: "Enquiries",
     description: "Read, assign and follow up traveller requests.",
@@ -96,13 +89,6 @@ export const adminLinks = [
     description: "Five-seat team access, managed by an administrator.",
     group: "Administration",
     icon: "team",
-  },
-  {
-    to: "/admin/staff",
-    label: "Staff directory",
-    description: "Private staff names and profile photos.",
-    group: "Administration",
-    icon: "staff",
   },
   {
     to: "/admin/profile",

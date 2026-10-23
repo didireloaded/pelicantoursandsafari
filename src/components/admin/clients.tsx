@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useBlocker } from "@tanstack/react-router";
 import { ZodError } from "zod";
 import { useWorkspace, saveClient } from "@/lib/admin-workspace-api";
+import { useAdminSampleMode } from "@/lib/admin-sample-mode";
 import {
   blankClient,
   clientPaid,
@@ -27,6 +28,7 @@ import { PhotoUpload } from "./photo-upload";
 import { HelpPanel } from "./help-panel";
 import { WorkspaceState } from "./workspace-state";
 export function Clients({ userId }: { userId: string }) {
+  const sample = useAdminSampleMode();
   const query = useWorkspace();
   const data = query.data;
   const cache = useQueryClient();
@@ -56,6 +58,7 @@ export function Clients({ userId }: { userId: string }) {
   );
   const current = rows.find((c) => c.id === selected) ?? rows[0];
   const edit = (client?: Client) => {
+    if (sample) return;
     setEditing(client);
     setForm(
       client
@@ -81,6 +84,7 @@ export function Clients({ userId }: { userId: string }) {
     setDirty(true);
   };
   async function save() {
+    if (sample) return;
     if (lock.current || uploading) return;
     lock.current = true;
     setBusy(true);
@@ -117,7 +121,7 @@ export function Clients({ userId }: { userId: string }) {
           <h1 className="mt-2">Your clients</h1>
           <p>The people behind every journey. Select a client to see their details.</p>
         </div>
-        <Button className="gap-2 !text-xs" onClick={() => edit()}>
+        <Button disabled={sample} className="gap-2 !text-xs" onClick={() => edit()}>
           <Plus size={15} />
           Add client
         </Button>
@@ -215,7 +219,7 @@ export function Clients({ userId }: { userId: string }) {
                     : "Add a real client, then link their reservations to see recorded spending."}
                 </p>
                 {!search && !source && (
-                  <button className="mt-4 text-primary" onClick={() => edit()}>
+                  <button disabled={sample} className="mt-4 text-primary" onClick={() => edit()}>
                     Add your first client →
                   </button>
                 )}
@@ -266,15 +270,21 @@ export function Clients({ userId }: { userId: string }) {
                     payment feed.
                   </p>
                   <div className="mt-5 space-y-3 border-t border-border pt-5 text-xs">
-                    {current.email && (
-                      <a
-                        className="flex items-center gap-2 break-all"
-                        href={`mailto:${current.email}`}
-                      >
-                        <Mail size={14} />
-                        {current.email}
-                      </a>
-                    )}
+                    {current.email &&
+                      (sample ? (
+                        <span className="flex items-center gap-2 break-all">
+                          <Mail size={14} />
+                          {current.email}
+                        </span>
+                      ) : (
+                        <a
+                          className="flex items-center gap-2 break-all"
+                          href={`mailto:${current.email}`}
+                        >
+                          <Mail size={14} />
+                          {current.email}
+                        </a>
+                      ))}
                     {current.phone && (
                       <p className="flex items-center gap-2">
                         <Phone size={14} />
@@ -319,6 +329,7 @@ export function Clients({ userId }: { userId: string }) {
                   </section>
                   <button
                     className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-xs font-medium text-primary-foreground"
+                    disabled={sample}
                     onClick={() => edit(current)}
                   >
                     Edit client <ArrowUpRight size={13} />
