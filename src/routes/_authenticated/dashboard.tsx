@@ -18,6 +18,8 @@ import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRef } from "react";
+import { useAdminSampleMode } from "@/lib/admin-sample-mode";
+import { SampleEnquiries } from "@/components/admin/sample-enquiries";
 
 type Enquiry = Database["public"]["Tables"]["enquiries"]["Row"];
 type Status = Database["public"]["Enums"]["enquiry_status"];
@@ -56,6 +58,11 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
+  const sample = useAdminSampleMode();
+  return sample ? <SampleEnquiries /> : <LiveDashboard />;
+}
+
+function LiveDashboard() {
   const [rows, setRows] = useState<Enquiry[]>([]);
   const [staff, setStaff] = useState<boolean | null>(null);
   const [filter, setFilter] = useState<Status | "all">("all");

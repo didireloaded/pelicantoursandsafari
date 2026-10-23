@@ -63,10 +63,42 @@ const interests = [
 ] as const;
 
 export const sampleStaff = [
-  { id: "sample-team-1", name: "Naledi Mbeki", role: "Administrator", title: "Operations lead", initials: "NM", email: "naledi@example.com", bio: "Coordinates bookings and manages access to the private workspace." },
-  { id: "sample-team-2", name: "Daniel Strauss", role: "Team member", title: "Reservations coordinator", initials: "DS", email: "daniel@example.com", bio: "Reviews incoming requests and keeps travel dates up to date." },
-  { id: "sample-team-3", name: "Fiona Banda", role: "Team member", title: "Guest relations", initials: "FB", email: "fiona@example.com", bio: "Supports client communication and travel preparation." },
-  { id: "sample-team-4", name: "Tariq Dube", role: "Team member", title: "Content coordinator", initials: "TD", email: "tariq@example.com", bio: "Prepares package drafts and manages destination imagery." },
+  {
+    id: "sample-team-1",
+    name: "Naledi Mbeki",
+    role: "Administrator",
+    title: "Operations lead",
+    initials: "NM",
+    email: "naledi@example.com",
+    bio: "Coordinates bookings and manages access to the private workspace.",
+  },
+  {
+    id: "sample-team-2",
+    name: "Daniel Strauss",
+    role: "Team member",
+    title: "Reservations coordinator",
+    initials: "DS",
+    email: "daniel@example.com",
+    bio: "Reviews incoming requests and keeps travel dates up to date.",
+  },
+  {
+    id: "sample-team-3",
+    name: "Fiona Banda",
+    role: "Team member",
+    title: "Guest relations",
+    initials: "FB",
+    email: "fiona@example.com",
+    bio: "Supports client communication and travel preparation.",
+  },
+  {
+    id: "sample-team-4",
+    name: "Tariq Dube",
+    role: "Team member",
+    title: "Content coordinator",
+    initials: "TD",
+    email: "tariq@example.com",
+    bio: "Prepares package drafts and manages destination imagery.",
+  },
 ] as const;
 
 export function sampleWorkspace(today = dayUtc()): Workspace {
@@ -84,19 +116,21 @@ export function sampleWorkspace(today = dayUtc()): Workspace {
     created_at: `${addDays(today, -(i + 3) * 3)}T09:00:00.000Z`,
     updated_at: `${today}T09:00:00.000Z`,
   }));
-  const trips: Workspace["trips"] = examples.map(([title, destination, nights, offset, status, total, paid], i) => ({
-    id: `sample-trip-${i + 1}`,
-    client_id: clients[i]!.id,
-    traveller_id: null,
-    title,
-    starts_on: addDays(today, offset),
-    status,
-    stops: [{ destination, nights }],
-    total_nad: total,
-    paid_nad: paid,
-    created_at: `${addDays(today, -24 + i)}T10:00:00.000Z`,
-    updated_at: `${today}T10:00:00.000Z`,
-  }));
+  const trips: Workspace["trips"] = examples.map(
+    ([title, destination, nights, offset, status, total, paid], i) => ({
+      id: `sample-trip-${i + 1}`,
+      client_id: clients[i]!.id,
+      traveller_id: null,
+      title,
+      starts_on: addDays(today, offset),
+      status,
+      stops: [{ destination, nights }],
+      total_nad: total,
+      paid_nad: paid,
+      created_at: `${addDays(today, -24 + i)}T10:00:00.000Z`,
+      updated_at: `${today}T10:00:00.000Z`,
+    }),
+  );
   const leads: Workspace["leads"] = clients.map((client, i) => {
     const status = enquiryStatuses[i]!;
     return {
@@ -109,16 +143,17 @@ export function sampleWorkspace(today = dayUtc()): Workspace {
       confirmed_ends_on: status === "confirmed" ? addDays(today, 12) : null,
       status,
       created_at: `${addDays(today, -i - 1)}T11:00:00.000Z`,
-      follow_up_on: status === "closed" || status === "confirmed" ? null : addDays(today, i % 3 - 1),
+      follow_up_on:
+        status === "closed" || status === "confirmed" ? null : addDays(today, (i % 3) - 1),
       residence: client.country,
-      brief: interests[i],
+      brief: interests[i]!,
       trip_code: null,
     };
   });
   const visits: Workspace["visits"] = Array.from({ length: 60 }, (_, i) => ({
     day: addDays(today, i - 59),
     path: i % 3 === 0 ? "/safaris" : "/",
-    views: 14 + (i * 7) % 33,
+    views: 14 + ((i * 7) % 33),
   }));
   return { clients, trips, leads, visits };
 }
