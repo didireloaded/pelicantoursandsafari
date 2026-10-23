@@ -15,6 +15,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 vi.mock("@/components/site", () => ({
   PageHero: () => <div />,
+  Photo: ({ alt }: { alt: string }) => <img alt={alt} />,
   Section: ({ children }: { children: ReactNode }) => <section>{children}</section>,
   meta: () => [],
 }));
