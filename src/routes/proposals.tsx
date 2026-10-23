@@ -24,11 +24,26 @@ export const Route = createFileRoute("/proposals")({
   beforeLoad: async ({ location }) => {
     const { data, error } = await checkTravellerSession(() => supabase.auth.getUser());
     if (error || !data.user) throw redirect({ to: "/auth", search: { next: location.href } });
-    return { user: data.user };
+    const role = await supabase.rpc("can_manage_site");
+    if (!role.error && role.data) {
+      const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      return {
+        user: data.user,
+        adminAssurance: assurance.error ? undefined : assurance.data.currentLevel,
+      };
+    }
+    return { user: data.user, adminAssurance: undefined };
   },
   component: Proposals,
   pendingMs: 0,
-  pendingComponent: () => <Section><h1 className="text-5xl font-bold">Private proposals</h1><p className="mt-8" role="status">Checking your sign-in…</p></Section>,
+  pendingComponent: () => (
+    <Section>
+      <h1 className="text-5xl font-bold">Private proposals</h1>
+      <p className="mt-8" role="status">
+        Checking your sign-in…
+      </p>
+    </Section>
+  ),
 });
 const textFields = ["itinerary", "accommodation", "inclusions", "exclusions", "terms"] as const;
 const labels = {

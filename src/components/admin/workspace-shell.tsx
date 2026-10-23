@@ -19,25 +19,33 @@ import {
   ExternalLink,
   Search,
   ChevronDown,
+  FileText,
+  ListTodo,
+  HandCoins,
+  Route as RouteIcon,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { adminLinks } from "@/lib/admin-navigation";
-const icons = [
-  LayoutDashboard,
-  PanelsTopLeft,
-  Users,
-  CalendarDays,
-  BarChart3,
-  Map,
-  Image,
-  Mail,
-  BookOpen,
-  Users,
-  Users,
-  UserRound,
-  Settings,
-];
+import { adminGroups, adminLinks } from "@/lib/admin-navigation";
+const icons = {
+  overview: LayoutDashboard,
+  preview: PanelsTopLeft,
+  enquiries: Mail,
+  clients: Users,
+  reservations: CalendarDays,
+  proposals: FileText,
+  tasks: ListTodo,
+  trips: RouteIcon,
+  payments: HandCoins,
+  analytics: BarChart3,
+  packages: Map,
+  gallery: Image,
+  content: BookOpen,
+  team: Users,
+  staff: Users,
+  profile: UserRound,
+  settings: Settings,
+} as const;
 export function WorkspaceShell({
   children,
   email,
@@ -121,21 +129,28 @@ export function WorkspaceShell({
   }));
   const nav = (
     <>
-      {adminLinks.map((item, i) => {
-        const Icon = icons[i] ?? BookOpen;
-        return (
-          <Link
-            to={item.to}
-            key={item.to}
-            activeOptions={{ exact: true }}
-            activeProps={{ className: "is-current", "aria-current": "page" }}
-            className="admin-nav-link"
-          >
-            <Icon size={18} strokeWidth={1.7} />
-            <span>{item.label}</span>
-          </Link>
-        );
-      })}
+      {adminGroups.map((group) => (
+        <div key={group} className="admin-nav-group">
+          <p className="admin-nav-caption">{group}</p>
+          {adminLinks
+            .filter((item) => item.group === group)
+            .map((item) => {
+              const Icon = icons[item.icon];
+              return (
+                <Link
+                  to={item.to}
+                  key={item.to}
+                  activeOptions={{ exact: true }}
+                  activeProps={{ className: "is-current", "aria-current": "page" }}
+                  className="admin-nav-link"
+                >
+                  <Icon size={18} strokeWidth={1.7} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+        </div>
+      ))}
     </>
   );
   const current = adminLinks.find((item) => item.to === location.pathname)?.label ?? "Workspace";
@@ -164,7 +179,6 @@ export function WorkspaceShell({
             </span>
           </span>
         </Link>
-        <p className="admin-nav-caption">WORKSPACE</p>
         <nav aria-label="Pelican administration">{nav}</nav>
         <div className="admin-sidebar-bottom">
           <a href="/" target="_blank" rel="noreferrer" className="admin-nav-link">
@@ -223,9 +237,7 @@ export function WorkspaceShell({
                   <StaffAvatar path={ownProfile?.avatar_path ?? null} name={name} />
                 </span>
               )}
-              <span className="ml-2 hidden text-xs text-muted-foreground xl:block">
-                Your team
-              </span>
+              <span className="ml-2 hidden text-xs text-muted-foreground xl:block">Your team</span>
             </button>
             {teamOpen && (
               <div className="admin-team-popover">

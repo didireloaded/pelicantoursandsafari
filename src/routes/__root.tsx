@@ -172,7 +172,8 @@ function RootComponent() {
   const privatePage =
     current.path === "/admin" ||
     current.path.startsWith("/admin/") ||
-    ["/dashboard", "/content-manage", "/trips-manage"].includes(current.path);
+    ["/dashboard", "/content-manage", "/trips-manage"].includes(current.path) ||
+    (current.path === "/proposals" && current.context?.adminAssurance === "aal2");
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
