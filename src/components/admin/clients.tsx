@@ -29,7 +29,7 @@ import { HelpPanel } from "./help-panel";
 import { WorkspaceState } from "./workspace-state";
 export function Clients({ userId }: { userId: string }) {
   const sample = useAdminSampleMode();
-  const query = useWorkspace();
+  const query = useWorkspace("clients");
   const data = query.data;
   const cache = useQueryClient();
   const [search, setSearch] = useState("");

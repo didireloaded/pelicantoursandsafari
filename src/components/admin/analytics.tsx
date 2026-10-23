@@ -27,7 +27,7 @@ const colors = [
   "var(--muted-foreground)",
 ];
 export function Analytics() {
-  const query = useWorkspace();
+  const query = useWorkspace("analytics");
   const data = query.data;
   const [period, setPeriod] = useState(30);
   const today = dayUtc();

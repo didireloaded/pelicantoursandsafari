@@ -5,7 +5,7 @@ import { dayUtc, initials } from "@/lib/admin-workspace";
 import { WorkspaceState } from "./workspace-state";
 
 export function FollowUps() {
-  const query = useWorkspace();
+  const query = useWorkspace("follow-ups");
   const today = dayUtc();
   const rows = (query.data?.leads ?? [])
     .filter((lead) => !["closed", "confirmed"].includes(lead.status))

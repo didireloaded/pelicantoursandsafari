@@ -31,7 +31,7 @@ import {
 import { WorkspaceState } from "./workspace-state";
 export function Bookings({ initialReservation }: { initialReservation?: string }) {
   const sample = useAdminSampleMode();
-  const query = useWorkspace();
+  const query = useWorkspace("bookings");
   const cache = useQueryClient();
   const data = query.data;
   const today = dayUtc();
