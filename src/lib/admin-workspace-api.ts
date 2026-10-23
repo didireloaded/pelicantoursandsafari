@@ -19,6 +19,17 @@ import type { Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 export const ADMIN_WORKSPACE_STALE_TIME = 60_000;
 export const ADMIN_WORKSPACE_REFRESH_INTERVAL = 120_000;
+export type WorkspaceScope =
+  "all" | "overview" | "follow-ups" | "bookings" | "clients" | "payments" | "analytics";
+const WORKSPACE_SCOPE_FIELDS: Record<WorkspaceScope, ReadonlySet<keyof Workspace>> = {
+  all: new Set(["clients", "trips", "leads", "visits"]),
+  overview: new Set(["clients", "trips", "leads"]),
+  "follow-ups": new Set(["leads"]),
+  bookings: new Set(["clients", "trips", "leads"]),
+  clients: new Set(["clients", "trips"]),
+  payments: new Set(["clients", "trips"]),
+  analytics: new Set(["clients", "trips", "leads", "visits"]),
+};
 async function allRows<T>(
   page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
 ) {
@@ -34,44 +45,54 @@ async function allRows<T>(
 }
 export async function loadWorkspace(
   client: SupabaseClient<Database> = supabase,
+  scope: WorkspaceScope = "all",
 ): Promise<Workspace> {
+  const fields = WORKSPACE_SCOPE_FIELDS[scope];
   const [clients, trips, leads, visits] = await Promise.all([
-    allRows((a, b) =>
-      client
-        .from("clients")
-        .select("*")
-        .order("id")
-        .range(a, b)
-        .abortSignal(AbortSignal.timeout(10000)),
-    ),
-    allRows((a, b) =>
-      client
-        .from("trips")
-        .select("*")
-        .order("id")
-        .range(a, b)
-        .abortSignal(AbortSignal.timeout(10000)),
-    ),
-    allRows((a, b) =>
-      client
-        .from("enquiries")
-        .select(
-          "id,name,status,created_at,follow_up_on,residence,booking_ref,confirmed_starts_on,confirmed_ends_on,email,phone,brief,trip_code",
+    fields.has("clients")
+      ? allRows((a, b) =>
+          client
+            .from("clients")
+            .select("*")
+            .order("id")
+            .range(a, b)
+            .abortSignal(AbortSignal.timeout(10000)),
         )
-        .order("id")
-        .range(a, b)
-        .abortSignal(AbortSignal.timeout(10000)),
-    ),
-    allRows((a, b) =>
-      client
-        .from("site_daily_views")
-        .select("*")
-        .gte("day", addDays(dayUtc(), -90))
-        .order("day")
-        .order("path")
-        .range(a, b)
-        .abortSignal(AbortSignal.timeout(10000)),
-    ),
+      : Promise.resolve([]),
+    fields.has("trips")
+      ? allRows((a, b) =>
+          client
+            .from("trips")
+            .select("*")
+            .order("id")
+            .range(a, b)
+            .abortSignal(AbortSignal.timeout(10000)),
+        )
+      : Promise.resolve([]),
+    fields.has("leads")
+      ? allRows((a, b) =>
+          client
+            .from("enquiries")
+            .select(
+              "id,name,status,created_at,follow_up_on,residence,booking_ref,confirmed_starts_on,confirmed_ends_on,email,phone,brief,trip_code",
+            )
+            .order("id")
+            .range(a, b)
+            .abortSignal(AbortSignal.timeout(10000)),
+        )
+      : Promise.resolve([]),
+    fields.has("visits")
+      ? allRows((a, b) =>
+          client
+            .from("site_daily_views")
+            .select("*")
+            .gte("day", addDays(dayUtc(), -90))
+            .order("day")
+            .order("path")
+            .range(a, b)
+            .abortSignal(AbortSignal.timeout(10000)),
+        )
+      : Promise.resolve([]),
   ]);
   return {
     clients: clients as Client[],
@@ -84,11 +105,11 @@ export async function loadWorkspace(
     visits: visits.map((v) => ({ ...v, views: Number(v.views) })) as Visit[],
   };
 }
-export function useWorkspace() {
+export function useWorkspace(scope: WorkspaceScope = "all") {
   const sample = useAdminSampleMode();
   const query = useQuery({
-    queryKey: ["admin-workspace", sample ? "sample" : "live"],
-    queryFn: () => loadWorkspace(),
+    queryKey: ["admin-workspace", sample ? "sample" : "live", scope],
+    queryFn: () => loadWorkspace(supabase, scope),
     enabled: !sample,
     staleTime: ADMIN_WORKSPACE_STALE_TIME,
     refetchInterval: sample ? false : ADMIN_WORKSPACE_REFRESH_INTERVAL,

@@ -5,7 +5,7 @@ import { dayUtc, isActiveTrip, tripEnd, initials } from "@/lib/admin-workspace";
 import { WorkspaceState } from "./workspace-state";
 import { HelpPanel } from "./help-panel";
 export function Overview() {
-  const query = useWorkspace();
+  const query = useWorkspace("overview");
   const data = query.data;
   const today = dayUtc();
   const trips = data?.trips ?? [];

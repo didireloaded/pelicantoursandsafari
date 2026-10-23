@@ -12,7 +12,7 @@ export function paymentStatus(total: number | null, paid: number | null) {
 }
 
 export function Payments() {
-  const query = useWorkspace();
+  const query = useWorkspace("payments");
   const trips = query.data?.trips ?? [];
   const recorded = trips.filter((trip) => trip.total_nad !== null || trip.paid_nad !== null);
   const total = recorded.reduce((sum, trip) => sum + (trip.total_nad ?? 0), 0);
