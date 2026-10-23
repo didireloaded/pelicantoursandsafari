@@ -2,6 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import {
+  clearStaffDeviceTrust,
+  trustStaffDevice,
+  trustedStaffDeviceExpiry,
+} from "@/lib/trusted-staff-device";
 export const Route = createFileRoute("/_authenticated/admin/account")({ component: Account });
 function Account() {
   const { user, adminAssurance } = Route.useRouteContext();
@@ -12,6 +17,7 @@ function Account() {
   const [factors, setFactors] = useState<{ id: string; status: string }[]>([]);
   const [enrollment, setEnrollment] = useState<{ id: string; qr: string }>();
   const [code, setCode] = useState("");
+  const [rememberDevice, setRememberDevice] = useState(true);
   useEffect(() => {
     void supabase.auth.mfa.listFactors().then((result) => {
       if (result.error) setMessage("Security status could not be loaded.");
@@ -26,6 +32,7 @@ function Account() {
     try {
       const result = await supabase.auth.mfa.challengeAndVerify({ factorId: id, code });
       if (result.error) throw result.error;
+      trustStaffDevice(user.id, rememberDevice);
       setEnrollment(undefined);
       setCode("");
       setFactors([{ id, status: "verified" }]);
@@ -63,9 +70,15 @@ function Account() {
       <section className="admin-panel mt-6 max-w-xl space-y-5 p-6">
         <h2 className="admin-panel-heading">Sign-in security</h2>
         {verifiedSession ? (
-          <p className="text-sm text-primary">
-            Your sign-in is verified. Your account is protected.
-          </p>
+          <div className="space-y-2 text-sm text-primary">
+            <p>Your sign-in is verified. Your account is protected.</p>
+            {trustedStaffDeviceExpiry(user.id) && (
+              <p className="text-xs text-muted-foreground">
+                This device is trusted until{" "}
+                {new Date(trustedStaffDeviceExpiry(user.id)!).toLocaleDateString("en-GB")}.
+              </p>
+            )}
+          </div>
         ) : (
           <p className="text-sm text-muted-foreground">
             Verify your authenticator to manage the workspace.
@@ -137,6 +150,20 @@ function Account() {
                   onChange={(event) => setCode(event.target.value)}
                 />
               </label>
+              <label className="flex items-start gap-3 text-sm">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 accent-primary"
+                  checked={rememberDevice}
+                  onChange={(event) => setRememberDevice(event.target.checked)}
+                />
+                <span>
+                  <strong className="block font-medium">Trust this device for 30 days</strong>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Use this only on a private device. Signing out removes this trust.
+                  </span>
+                </span>
+              </label>
               <Button disabled={busy}>Verify code</Button>
             </form>
           )}
@@ -172,6 +199,7 @@ function Account() {
           disabled={busy}
           onClick={async () => {
             setBusy(true);
+            clearStaffDeviceTrust();
             const result = await supabase.auth.signOut();
             if (result.error) {
               setMessage("Sign-out failed. Please retry.");
