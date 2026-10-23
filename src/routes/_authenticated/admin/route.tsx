@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect, useLocation, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/site";
+import { isStaffDeviceTrusted } from "@/lib/trusted-staff-device";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async ({ context }) => {
@@ -11,7 +12,12 @@ export const Route = createFileRoute("/_authenticated/admin")({
     if (!result.data) throw redirect({ to: "/access-request" });
     const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (assurance.error) throw new Error("Security check unavailable.");
-    return { adminAssurance: assurance.data.currentLevel };
+    return {
+      adminAssurance:
+        assurance.data.currentLevel === "aal2" && isStaffDeviceTrusted(context.user.id)
+          ? "aal2"
+          : "aal1",
+    };
   },
   head: () => ({
     meta: [{ title: "Administration — Pelican" }, { name: "robots", content: "noindex" }],

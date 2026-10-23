@@ -6,6 +6,7 @@ import { Section } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { checkTravellerSession } from "@/lib/traveller-session";
+import { isStaffDeviceTrusted } from "@/lib/trusted-staff-device";
 import type { Database } from "@/integrations/supabase/types";
 type Tables = Database["public"]["Tables"];
 type Proposal = Tables["proposals"]["Row"];
@@ -29,7 +30,12 @@ export const Route = createFileRoute("/proposals")({
       const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       return {
         user: data.user,
-        adminAssurance: assurance.error ? undefined : assurance.data.currentLevel,
+        adminAssurance:
+          !assurance.error &&
+          assurance.data.currentLevel === "aal2" &&
+          isStaffDeviceTrusted(data.user.id)
+            ? "aal2"
+            : undefined,
       };
     }
     return { user: data.user, adminAssurance: undefined };
