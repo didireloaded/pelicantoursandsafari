@@ -7,6 +7,11 @@ describe("admin workflow wiring", () => {
     expect(adminLinks.find((link) => link.to === "/proposals")?.label).toBe("Quotes");
   });
 
+  it("keeps confirmed trip management in Reservations", () => {
+    expect(adminLinks.find((link) => link.to === "/admin/bookings")?.label).toBe("Reservations");
+    expect(adminLinks.map((link) => String(link.to))).not.toContain("/trips-manage");
+  });
+
   it.each([
     [null, null, "Needs amounts"],
     [1000, null, "Needs amounts"],

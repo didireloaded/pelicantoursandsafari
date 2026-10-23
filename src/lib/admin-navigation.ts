@@ -42,13 +42,6 @@ export const adminLinks = [
     icon: "tasks",
   },
   {
-    to: "/trips-manage",
-    label: "Trip management",
-    description: "Manage confirmed journeys in Reservations.",
-    group: "Tour operations",
-    icon: "trips",
-  },
-  {
     to: "/admin/payments",
     label: "Payments & invoices",
     description: "Track recorded trip totals, receipts and outstanding balances.",

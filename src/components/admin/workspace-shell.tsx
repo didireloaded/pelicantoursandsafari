@@ -23,7 +23,6 @@ import {
   FileText,
   ListTodo,
   HandCoins,
-  Route as RouteIcon,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,7 +35,6 @@ const icons = {
   reservations: CalendarDays,
   proposals: FileText,
   tasks: ListTodo,
-  trips: RouteIcon,
   payments: HandCoins,
   analytics: BarChart3,
   packages: Map,

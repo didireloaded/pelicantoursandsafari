@@ -373,11 +373,11 @@ function LiveDashboard() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="pelican-select-menu">
               <DropdownMenuItem asChild>
-                <Link to="/trips-manage">Manage trips</Link>
+                <Link to="/admin/bookings">Reservations</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/proposals" search={{}}>
-                  Proposals
+                  Quotes
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
