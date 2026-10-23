@@ -29,8 +29,8 @@ export const adminLinks = [
   },
   {
     to: "/proposals",
-    label: "Quotes & proposals",
-    description: "Prepare, publish and track personalised traveller proposals.",
+    label: "Quotes",
+    description: "Prepare and share private personalised quotes.",
     group: "Workspace",
     icon: "proposals",
   },
@@ -44,7 +44,7 @@ export const adminLinks = [
   {
     to: "/trips-manage",
     label: "Trip management",
-    description: "Maintain traveller itineraries and confirmed accommodation.",
+    description: "Manage confirmed journeys in Reservations.",
     group: "Tour operations",
     icon: "trips",
   },

@@ -199,7 +199,7 @@ export function Clients({ userId }: { userId: string }) {
                         <strong>{client.source}</strong>
                       </div>
                       <div>
-                        <small>Recorded spend</small>
+                        <small>Payments received</small>
                         <strong>{paid === null ? "Not recorded" : formatNad(paid)}</strong>
                       </div>
                     </div>
@@ -253,7 +253,7 @@ export function Clients({ userId }: { userId: string }) {
                       <dd>{current.source}</dd>
                     </div>
                     <div className="flex justify-between gap-4">
-                      <dt className="text-muted-foreground">Recorded spend</dt>
+                      <dt className="text-muted-foreground">Payments received</dt>
                       <dd>
                         {clientPaid(current.id, data?.trips ?? []) === null
                           ? "Not recorded"

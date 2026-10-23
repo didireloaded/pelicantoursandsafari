@@ -54,6 +54,12 @@ export function StaffProfile({
       <p className="mt-2 text-xs text-muted-foreground">
         Your name and optional photo appear in the team circles. Only staff can see them.
       </p>
+      <dl className="mt-4 border-y border-border py-3 text-xs">
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted-foreground">Sign-in email</dt>
+          <dd className="truncate">{email}</dd>
+        </div>
+      </dl>
       {!verified ? (
         <p className="mt-4 text-sm">Verify your authenticator before editing your profile.</p>
       ) : profile.isError ? (

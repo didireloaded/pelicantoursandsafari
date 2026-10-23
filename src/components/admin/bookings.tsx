@@ -29,7 +29,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { WorkspaceState } from "./workspace-state";
-export function Bookings() {
+export function Bookings({ initialReservation }: { initialReservation?: string }) {
   const sample = useAdminSampleMode();
   const query = useWorkspace();
   const cache = useQueryClient();
@@ -38,7 +38,7 @@ export function Bookings() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [requestId, setRequestId] = useState("");
   const [view, setView] = useState<"calendar" | "list">("calendar");
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState(initialReservation ?? "");
   const [status, setStatus] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<AdminTrip>();

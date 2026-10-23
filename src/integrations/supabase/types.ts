@@ -624,6 +624,16 @@ export type Database = {
         }[]
       }
       pending_team_requests: { Args: never; Returns: Json }
+      quote_recipients: {
+        Args: never
+        Returns: {
+          client_id: string
+          traveller_id: string
+          enquiry_id: string | null
+          name: string
+          email: string
+        }[]
+      }
       publish_proposal: {
         Args: {
           _details: Json
