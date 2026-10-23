@@ -1,4 +1,5 @@
 import type { PublishedContent } from "@/lib/site-content";
+import "@/lib/openui-observability";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
