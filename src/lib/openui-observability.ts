@@ -1,10 +1,22 @@
 import * as Observability from "@openuidev/observability-cloud";
+import { getOpenUiObservabilityConfig } from "./openui-observability.functions";
 
-const apiKey = import.meta.env["VITE_OPENUI_OBSERVABILITY_API_KEY"];
+let initialization: Promise<void> | undefined;
 
-if (apiKey?.startsWith("pk-th-")) {
-  Observability.init({
-    apiKey,
-    capture: "minimal",
-  });
+export function initializeOpenUiObservability() {
+  if (typeof window === "undefined") return Promise.resolve();
+
+  initialization ??= getOpenUiObservabilityConfig()
+    .then(({ apiKey }) => {
+      if (!apiKey) return;
+      Observability.init({
+        apiKey,
+        capture: "minimal",
+      });
+    })
+    .catch(() => {
+      // Reliability monitoring must never interrupt the application.
+    });
+
+  return initialization;
 }

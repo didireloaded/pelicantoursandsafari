@@ -1,5 +1,5 @@
 import type { PublishedContent } from "@/lib/site-content";
-import "@/lib/openui-observability";
+import { initializeOpenUiObservability } from "@/lib/openui-observability";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -24,6 +24,8 @@ const WorkspaceShell = lazy(() =>
   })),
 );
 import { reportLovableError } from "../lib/lovable-error-reporting";
+
+void initializeOpenUiObservability();
 
 function NotFoundComponent() {
   return (
