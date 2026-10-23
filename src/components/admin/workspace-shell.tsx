@@ -23,7 +23,6 @@ import {
   FileText,
   ListTodo,
   HandCoins,
-  Route as RouteIcon,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,7 +35,6 @@ const icons = {
   reservations: CalendarDays,
   proposals: FileText,
   tasks: ListTodo,
-  trips: RouteIcon,
   payments: HandCoins,
   analytics: BarChart3,
   packages: Map,
@@ -187,7 +185,7 @@ export function WorkspaceShell({
           aria-label="Administration sidebar"
         >
           <Link to="/admin" className="admin-brand">
-            <img src="/pelican-logo.png" alt="" />
+            <img src="/pelican-logo.png" alt="" width="204" height="198" decoding="async" />
             <span>
               Pelican
               <span className="block text-xs font-normal uppercase tracking-[.2em] opacity-60">

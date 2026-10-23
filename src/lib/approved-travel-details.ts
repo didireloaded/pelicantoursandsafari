@@ -2,6 +2,8 @@ import { readApprovedPackages } from "@/lib/safari-package";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+export const APPROVED_TRAVEL_DETAILS_STALE_TIME = 5 * 60_000;
+
 /** Public approved content only; cached across discovery, package and trust surfaces. */
 export function useApprovedTravelDetails() {
   const query = useQuery({
@@ -13,7 +15,7 @@ export function useApprovedTravelDetails() {
       if (result.error) throw new Error("Approved information is unavailable.");
       return result.data ?? [];
     },
-    staleTime: 60_000,
+    staleTime: APPROVED_TRAVEL_DETAILS_STALE_TIME,
     retry: 1,
   });
   return {

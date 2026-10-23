@@ -71,7 +71,8 @@ const empty = {
   valid_until: "",
 };
 function Proposals() {
-  const { user } = Route.useRouteContext();
+  const { user, adminAssurance } = Route.useRouteContext();
+  const adminView = adminAssurance === "aal2";
   const search = Route.useSearch();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [versions, setVersions] = useState<Version[]>([]);
@@ -139,23 +140,29 @@ function Proposals() {
     }
   }
   return (
-    <Section>
-      <h1 className="font-display text-5xl">Private quotes</h1>
-      <p className="mt-6 text-muted-foreground">
-        Only quotes assigned to your signed-in account appear here. A quote is not a confirmed
-        booking.
-      </p>
-      <p role="status" className="mt-4">
+    <Section className="quote-workspace">
+      <div className="quote-workspace-heading">
+        <div>
+          {adminView && <p className="admin-eyebrow">PRICING & ITINERARIES</p>}
+          <h1 className="font-display text-5xl">Private quotes</h1>
+          <p className="text-muted-foreground">
+            {adminView
+              ? "Prepare verified trip details for the assigned traveller. A quote is not a confirmed booking."
+              : "Only quotes assigned to your signed-in account appear here. A quote is not a confirmed booking."}
+          </p>
+        </div>
+        <Button variant="outline" disabled={busy || loading} onClick={load}>
+          Reload quotes
+        </Button>
+      </div>
+      <p role="status" className="quote-workspace-message">
         {message}
       </p>
-      <Button className="mt-4" variant="outline" disabled={busy || loading} onClick={load}>
-        Reload quotes
-      </Button>
       {loading ? (
         <p className="mt-6">Loading…</p>
       ) : (
         <>
-          <label className="mt-8 block">
+          <label className="quote-workspace-picker">
             Select quote
             <AppSelect
               className="mt-2 w-full border-b bg-transparent py-3"
@@ -194,7 +201,7 @@ function Proposals() {
                 Copy private link
               </Button>
               {viewing ? (
-                <article className="mt-8">
+                <article className="quote-document">
                   <h2 className="text-3xl">{current.title}</h2>
                   <label className="mt-4 block">
                     Quote version
@@ -277,9 +284,9 @@ function Proposals() {
           )}
           {staff && (
             <>
-              <h2 className="mt-12 text-3xl">Create quote</h2>
+              <h2 className="quote-section-title">Create quote</h2>
               <form
-                className="mt-6 grid gap-6"
+                className="quote-editor grid gap-6"
                 onSubmit={(e) => {
                   e.preventDefault();
                   void perform(async () => {
@@ -347,7 +354,7 @@ function Proposals() {
               )}
               {current && (
                 <form
-                  className="mt-12 space-y-6"
+                  className="quote-editor mt-6 space-y-6"
                   onSubmit={(e) => {
                     e.preventDefault();
                     void perform(async () => {
