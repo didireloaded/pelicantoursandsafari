@@ -15,10 +15,18 @@ export function SampleTeam() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {sampleStaff.map((member, index) => (
-          <button key={member.id} type="button" aria-pressed={selected === member.id}
+          <button
+            key={member.id}
+            type="button"
+            aria-pressed={selected === member.id}
             className="admin-panel p-5 text-left transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-primary"
-            onClick={() => setSelected(member.id)}>
-            <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-border text-xl font-semibold text-primary" style={{ backgroundColor: index % 2 ? "var(--secondary)" : "var(--background)" }} aria-label={`Example avatar for ${member.name}`}>
+            onClick={() => setSelected(member.id)}
+          >
+            <span
+              className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-border text-xl font-semibold text-primary"
+              style={{ backgroundColor: index % 2 ? "var(--secondary)" : "var(--background)" }}
+              aria-label={`Example avatar for ${member.name}`}
+            >
               {member.initials}
             </span>
             <strong className="block text-base">{member.name}</strong>
@@ -33,12 +41,26 @@ export function SampleTeam() {
           <p className="admin-eyebrow">TEAM MEMBER DETAILS</p>
           <h2 className="mt-2 text-xl font-semibold">{current.name}</h2>
           <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
-            <div><dt className="text-muted-foreground">Access</dt><dd className="mt-1 font-medium">{current.role}</dd></div>
-            <div><dt className="text-muted-foreground">Responsibility</dt><dd className="mt-1 font-medium">{current.title}</dd></div>
-            <div><dt className="text-muted-foreground">Sample contact</dt><dd className="mt-1">{current.email}</dd></div>
-            <div><dt className="text-muted-foreground">Account status</dt><dd className="mt-1">Presentation record only</dd></div>
+            <div>
+              <dt className="text-muted-foreground">Access</dt>
+              <dd className="mt-1 font-medium">{current.role}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Responsibility</dt>
+              <dd className="mt-1 font-medium">{current.title}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Sample contact</dt>
+              <dd className="mt-1">{current.email}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Account status</dt>
+              <dd className="mt-1">Presentation record only</dd>
+            </div>
           </dl>
-          <p className="mt-5 border-t border-border pt-5 text-sm text-muted-foreground">{current.bio}</p>
+          <p className="mt-5 border-t border-border pt-5 text-sm text-muted-foreground">
+            {current.bio}
+          </p>
         </section>
       )}
     </>
