@@ -1,6 +1,6 @@
 import { AppSelect } from "@/components/ui/app-select";
 import { AdminNavigation } from "@/components/admin/navigation";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Section } from "@/components/site";
 import { Button } from "@/components/ui/button";
@@ -68,11 +68,13 @@ function Manage() {
       {staff && <AdminNavigation />}
       <h1 className="font-display text-5xl">Approved information</h1>
       <p className="mt-6">
-        Publish only verified facts with a source. For itineraries, include day-by-day activities,
-        overnight stops, travel expectations and exclusions. For accommodation, verify room types,
-        photos, family suitability and accessibility. Never invent reviews, qualifications or
-        prices.
+        Approved entries appear in the public Travel Guide, safari planning guidance and relevant
+        safari pages. Draft entries stay private. Publish only verified facts with a source; never
+        invent reviews, qualifications or prices.
       </p>
+      <Link to="/travel-guide" className="mt-4 inline-block text-primary underline">
+        View the public Travel Guide →
+      </Link>
       <p role="status" className="mt-4">
         {message}
       </p>

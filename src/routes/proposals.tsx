@@ -12,6 +12,7 @@ type Tables = Database["public"]["Tables"];
 type Proposal = Tables["proposals"]["Row"];
 type Version = Tables["proposal_versions"]["Row"];
 type Request = Tables["proposal_requests"]["Row"];
+type QuoteRecipient = Database["public"]["Functions"]["quote_recipients"]["Returns"][number];
 export const Route = createFileRoute("/proposals")({
   ssr: false,
   validateSearch: (s: Record<string, unknown>): { id?: string } =>
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/proposals")({
       ? { id: s["id"] }
       : {},
   head: () => ({
-    meta: [{ title: "Private proposals — Pelican" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Private quotes — Pelican" }, { name: "robots", content: "noindex" }],
   }),
   beforeLoad: async ({ location }) => {
     const { data, error } = await checkTravellerSession(() => supabase.auth.getUser());
@@ -44,7 +45,7 @@ export const Route = createFileRoute("/proposals")({
   pendingMs: 0,
   pendingComponent: () => (
     <Section>
-      <h1 className="text-5xl font-bold">Private proposals</h1>
+      <h1 className="text-5xl font-bold">Private quotes</h1>
       <p className="mt-8" role="status">
         Checking your sign-in…
       </p>
@@ -82,9 +83,9 @@ function Proposals() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
-  const [traveller, setTraveller] = useState("");
+  const [recipients, setRecipients] = useState<QuoteRecipient[]>([]);
+  const [recipient, setRecipient] = useState("");
   const [title, setTitle] = useState("");
-  const [enquiry, setEnquiry] = useState("");
   const [draft, setDraft] = useState(empty);
   const [revision, setRevision] = useState("");
   const current = proposals.find((p) => p.id === selected) ?? proposals[0];
@@ -97,17 +98,20 @@ function Proposals() {
       const role = await supabase.rpc("can_manage_site");
       if (role.error) throw role.error;
       setStaff(!!role.data);
-      const [p, v, r] = await Promise.all([
+      const [p, v, r, people] = await Promise.all([
         supabase.from("proposals").select("*").order("created_at", { ascending: false }),
         supabase.from("proposal_versions").select("*").order("version", { ascending: false }),
         supabase.from("proposal_requests").select("*").order("created_at", { ascending: false }),
+        role.data ? supabase.rpc("quote_recipients") : Promise.resolve({ data: [], error: null }),
       ]);
-      if (p.error || v.error || r.error) throw p.error || v.error || r.error;
+      if (p.error || v.error || r.error || people.error)
+        throw p.error || v.error || r.error || people.error;
       setProposals(p.data ?? []);
       setVersions(v.data ?? []);
       setRequests(r.data ?? []);
+      setRecipients((people.data ?? []) as QuoteRecipient[]);
     } catch {
-      setMessage("Proposals could not be loaded. Please retry.");
+      setMessage("Quotes could not be loaded. Please retry.");
     } finally {
       setLoading(false);
     }
@@ -136,24 +140,23 @@ function Proposals() {
   }
   return (
     <Section>
-      <h1 className="font-display text-5xl">Private proposals</h1>
+      <h1 className="font-display text-5xl">Private quotes</h1>
       <p className="mt-6 text-muted-foreground">
-        Only proposals assigned to your signed-in account appear here. A proposal is not a confirmed
+        Only quotes assigned to your signed-in account appear here. A quote is not a confirmed
         booking.
       </p>
-      <p className="mt-3 text-sm">Your account ID: {user.id}</p>
       <p role="status" className="mt-4">
         {message}
       </p>
       <Button className="mt-4" variant="outline" disabled={busy || loading} onClick={load}>
-        Reload proposals
+        Reload quotes
       </Button>
       {loading ? (
         <p className="mt-6">Loading…</p>
       ) : (
         <>
           <label className="mt-8 block">
-            Select proposal
+            Select quote
             <AppSelect
               className="mt-2 w-full border-b bg-transparent py-3"
               value={current?.id ?? ""}
@@ -170,9 +173,7 @@ function Proposals() {
             </AppSelect>
           </label>
           {!current && (
-            <p className="mt-6">
-              No proposals yet. Contact Pelican to have your proposal assigned.
-            </p>
+            <p className="mt-6">No quotes yet. Contact Pelican to have a private quote prepared.</p>
           )}
           {current && (
             <>
@@ -196,7 +197,7 @@ function Proposals() {
                 <article className="mt-8">
                   <h2 className="text-3xl">{current.title}</h2>
                   <label className="mt-4 block">
-                    Proposal version
+                    Quote version
                     <AppSelect
                       className="ml-4 border-b bg-transparent py-2"
                       value={viewing.id}
@@ -216,7 +217,7 @@ function Proposals() {
                   </p>
                   {viewing.valid_until < new Date().toISOString().slice(0, 10) && (
                     <p className="mt-3">
-                      This proposal has expired. Ask Pelican for an updated quote.
+                      This quote has expired. Ask Pelican for an updated quote.
                     </p>
                   )}
                   {textFields.map((key) => (
@@ -276,18 +277,20 @@ function Proposals() {
           )}
           {staff && (
             <>
-              <h2 className="mt-12 text-3xl">Create proposal</h2>
+              <h2 className="mt-12 text-3xl">Create quote</h2>
               <form
                 className="mt-6 grid gap-6"
                 onSubmit={(e) => {
                   e.preventDefault();
                   void perform(async () => {
+                    const person = recipients.find((item) => item.client_id === recipient);
+                    if (!person) throw new Error("Choose a client");
                     const result = await supabase
                       .from("proposals")
                       .insert({
-                        traveller_id: traveller,
+                        traveller_id: person.traveller_id,
                         title: title.trim(),
-                        enquiry_id: enquiry || null,
+                        enquiry_id: person.enquiry_id,
                       })
                       .select()
                       .single();
@@ -295,28 +298,32 @@ function Proposals() {
                     setSelected(result.data.id);
                     await load();
                     setTitle("");
-                    setMessage("Proposal created. Publish the verified details below.");
+                    setRecipient("");
+                    setMessage("Quote created. Publish the verified details below.");
                   });
                 }}
               >
                 <label>
-                  Traveller account ID
-                  <input
+                  Client
+                  <AppSelect
                     required
-                    pattern="[0-9a-fA-F-]{36}"
                     className="mt-2 w-full border-b bg-transparent py-3"
-                    value={traveller}
-                    onChange={(e) => setTraveller(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Enquiry reference (optional)
-                  <input
-                    pattern="[0-9a-fA-F-]{36}"
-                    className="mt-2 w-full border-b bg-transparent py-3"
-                    value={enquiry}
-                    onChange={(e) => setEnquiry(e.target.value)}
-                  />
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
+                  >
+                    <option value="">Choose a client with a verified traveller account</option>
+                    {recipients.map((person) => (
+                      <option key={person.client_id} value={person.client_id}>
+                        {person.name} · {person.email}
+                      </option>
+                    ))}
+                  </AppSelect>
+                  {!recipients.length && (
+                    <span className="mt-2 block text-sm text-muted-foreground">
+                      Add the client first. Their client email must match a verified traveller
+                      sign-in.
+                    </span>
+                  )}
                 </label>
                 <label>
                   Title
@@ -328,7 +335,7 @@ function Proposals() {
                     onChange={(e) => setTitle(e.target.value)}
                   />
                 </label>
-                <Button disabled={busy}>Create proposal</Button>
+                <Button disabled={busy || !recipient}>Create quote</Button>
               </form>
               {current && (
                 <ItineraryDraft
@@ -351,9 +358,7 @@ function Proposals() {
                       });
                       if (result.error) throw result.error;
                       await load();
-                      setMessage(
-                        "A new immutable proposal version was published to the traveller.",
-                      );
+                      setMessage("A new immutable quote version was published to the traveller.");
                     });
                   }}
                 >

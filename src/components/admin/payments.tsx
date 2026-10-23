@@ -4,6 +4,13 @@ import { useWorkspace } from "@/lib/admin-workspace-api";
 import { formatNad } from "@/lib/safari-package";
 import { WorkspaceState } from "./workspace-state";
 
+export function paymentStatus(total: number | null, paid: number | null) {
+  if (total === null || paid === null) return "Needs amounts";
+  if (total > 0 && paid >= total) return "Paid";
+  if (paid > 0) return "Part-paid";
+  return "Outstanding";
+}
+
 export function Payments() {
   const query = useWorkspace();
   const trips = query.data?.trips ?? [];
@@ -65,7 +72,13 @@ export function Payments() {
                   ? trip.total_nad - trip.paid_nad
                   : null;
               return (
-                <div className="admin-row admin-payment-row" key={trip.id}>
+                <Link
+                  to="/admin/bookings"
+                  search={{ reservation: trip.id }}
+                  className="admin-row admin-payment-row"
+                  key={trip.id}
+                  aria-label={`Open ${trip.title} reservation`}
+                >
                   <span className="min-w-0 flex-1">
                     <strong className="block truncate text-xs font-medium">{trip.title}</strong>
                     <small className="block text-xs text-muted-foreground">
@@ -88,7 +101,8 @@ export function Payments() {
                       <dd>{balance === null ? "Not available" : formatNad(balance)}</dd>
                     </div>
                   </dl>
-                </div>
+                  <span className="admin-pill">{paymentStatus(trip.total_nad, trip.paid_nad)}</span>
+                </Link>
               );
             })
           ) : (

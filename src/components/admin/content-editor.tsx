@@ -152,9 +152,15 @@ export function ContentEditor({ kind, userId }: { kind: ContentKind; userId: str
           <h1 className="mt-2">{kind === "package" ? "Packages" : "Gallery"}</h1>
           <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
             {kind === "package"
-              ? "Your packages, ready to edit and publish."
-              : "Choose a destination to manage its photographs."}
+              ? "Published packages appear in the public Safaris catalogue. Draft changes stay private until you publish them."
+              : "Published photographs appear in the public destination gallery. Draft changes stay private until you publish them."}
           </p>
+          <a
+            href={kind === "package" ? "/safaris" : "/gallery"}
+            className="mt-3 inline-block text-xs font-medium text-primary"
+          >
+            View the public {kind === "package" ? "safari catalogue" : "gallery"} →
+          </a>
         </div>
       </div>
       <p role="status" className="my-5 text-sm">
