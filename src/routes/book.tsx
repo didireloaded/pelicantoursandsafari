@@ -411,7 +411,6 @@ function BookPage() {
               alt={safari?.name ?? "Namibian landscape"}
               className="booking-trip-photo"
               sizes="(min-width: 1024px) 380px, 100vw"
-              loading="eager"
               pan={false}
             />
             <div className="booking-trip-copy">

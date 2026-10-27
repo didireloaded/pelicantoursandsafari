@@ -1,6 +1,5 @@
 import { readApprovedPackages } from "@/lib/safari-package";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export const APPROVED_TRAVEL_DETAILS_STALE_TIME = 5 * 60_000;
 
@@ -9,6 +8,9 @@ export function useApprovedTravelDetails() {
   const query = useQuery({
     queryKey: ["approved-travel-details"],
     queryFn: async ({ signal }) => {
+      // Keep the comparatively large database SDK out of the initial public route bundle.
+      // Approved details enhance the fixed catalogue and can load after the first render.
+      const { supabase } = await import("@/integrations/supabase/client");
       const result = await supabase.from("travel_details").select("*")
         .eq("approved", true).order("updated_at", { ascending: false })
         .abortSignal(AbortSignal.any([signal, AbortSignal.timeout(10000)]));
@@ -16,6 +18,7 @@ export function useApprovedTravelDetails() {
       return result.data ?? [];
     },
     staleTime: APPROVED_TRAVEL_DETAILS_STALE_TIME,
+    refetchOnWindowFocus: false,
     retry: 1,
   });
   return {

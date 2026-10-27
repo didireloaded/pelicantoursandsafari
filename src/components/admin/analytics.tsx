@@ -32,32 +32,44 @@ export function Analytics() {
   const [period, setPeriod] = useState(30);
   const today = dayUtc();
   const summary = data ? periodSummary(data, period, today) : null;
-  const firstMeasuredDay =
-    data?.visits.reduce<string | null>(
-      (first, visit) => (!first || visit.day < first ? visit.day : first),
-      null,
-    ) ?? null;
   const series = useMemo(
-    () =>
-      Array.from({ length: period }, (_, index) => {
+    () => {
+      const viewsByDay = new Map<string, number>();
+      const leadsByDay = new Map<string, number>();
+      const tripsByDay = new Map<string, { total: number; hasKnownTotal: boolean }>();
+      let firstMeasuredDay: string | null = null;
+      for (const visit of data?.visits ?? []) {
+        viewsByDay.set(visit.day, (viewsByDay.get(visit.day) ?? 0) + visit.views);
+        if (!firstMeasuredDay || visit.day < firstMeasuredDay) firstMeasuredDay = visit.day;
+      }
+      for (const lead of data?.leads ?? []) {
+        const day = lead.created_at.slice(0, 10);
+        leadsByDay.set(day, (leadsByDay.get(day) ?? 0) + 1);
+      }
+      for (const trip of data?.trips ?? []) {
+        if (trip.status !== "confirmed") continue;
+        const current = tripsByDay.get(trip.starts_on) ?? { total: 0, hasKnownTotal: false };
+        if (trip.total_nad !== null) {
+          current.total += Number(trip.total_nad);
+          current.hasKnownTotal = true;
+        }
+        tripsByDay.set(trip.starts_on, current);
+      }
+      return Array.from({ length: period }, (_, index) => {
         const day = addDays(today, index + 1 - period);
-        const trips =
-          data?.trips.filter((t) => t.status === "confirmed" && t.starts_on === day) ?? [];
+        const trips = tripsByDay.get(day);
         return {
           day: day.slice(5),
           views:
             firstMeasuredDay && day >= firstMeasuredDay
-              ? (data?.visits.filter((v) => v.day === day).reduce((sum, v) => sum + v.views, 0) ??
-                0)
+              ? (viewsByDay.get(day) ?? 0)
               : null,
-          leads: data?.leads.filter((l) => l.created_at.startsWith(day)).length ?? 0,
-          value:
-            trips.length && !trips.some((t) => t.total_nad !== null)
-              ? null
-              : trips.reduce((sum, t) => sum + Number(t.total_nad ?? 0), 0),
+          leads: leadsByDay.get(day) ?? 0,
+          value: trips && !trips.hasKnownTotal ? null : (trips?.total ?? 0),
         };
-      }),
-    [data, period, today, firstMeasuredDay],
+      });
+    },
+    [data, period, today],
   );
   const countries = useMemo(() => {
     const counts = new Map<string, number>();
