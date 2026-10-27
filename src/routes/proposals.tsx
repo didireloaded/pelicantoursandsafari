@@ -8,11 +8,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkTravellerSession } from "@/lib/traveller-session";
 import { isStaffDeviceTrusted } from "@/lib/trusted-staff-device";
 import type { Database } from "@/integrations/supabase/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
 type Tables = Database["public"]["Tables"];
 type Proposal = Tables["proposals"]["Row"];
 type Version = Tables["proposal_versions"]["Row"];
 type Request = Tables["proposal_requests"]["Row"];
-type QuoteRecipient = Database["public"]["Functions"]["quote_recipients"]["Returns"][number];
+// This RPC's migration may be awaiting deployment. Keep its contract local
+// rather than modifying generated types or bypassing its server authorization.
+type QuoteRecipient = {
+  client_id: string;
+  traveller_id: string;
+  enquiry_id: string | null;
+  name: string;
+  email: string;
+};
+type QuoteDatabase = Database & {
+  public: {
+    Functions: {
+      quote_recipients: {
+        Args: Record<string, never>;
+        Returns: QuoteRecipient[];
+      };
+    };
+  };
+};
+const quoteClient = supabase as SupabaseClient<QuoteDatabase>;
 export const Route = createFileRoute("/proposals")({
   ssr: false,
   validateSearch: (s: Record<string, unknown>): { id?: string } =>
@@ -21,7 +41,15 @@ export const Route = createFileRoute("/proposals")({
       ? { id: s["id"] }
       : {},
   head: () => ({
-    meta: [{ title: "Private quotes — Pelican" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "Private quotes — Pelican Tours and Safaris" },
+      { name: "description", content: "Review your private Pelican safari quotes and requested itinerary changes." },
+      { property: "og:title", content: "Private quotes — Pelican Tours and Safaris" },
+      { property: "og:description", content: "Review your private Pelican safari quotes and requested itinerary changes." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
   }),
   beforeLoad: async ({ location }) => {
     const { data, error } = await checkTravellerSession(() => supabase.auth.getUser());
@@ -103,14 +131,14 @@ function Proposals() {
         supabase.from("proposals").select("*").order("created_at", { ascending: false }),
         supabase.from("proposal_versions").select("*").order("version", { ascending: false }),
         supabase.from("proposal_requests").select("*").order("created_at", { ascending: false }),
-        role.data ? supabase.rpc("quote_recipients") : Promise.resolve({ data: [], error: null }),
+        role.data ? quoteClient.rpc("quote_recipients") : Promise.resolve({ data: [], error: null }),
       ]);
       if (p.error || v.error || r.error || people.error)
         throw p.error || v.error || r.error || people.error;
       setProposals(p.data ?? []);
       setVersions(v.data ?? []);
       setRequests(r.data ?? []);
-      setRecipients((people.data ?? []) as QuoteRecipient[]);
+      setRecipients(people.data ?? []);
     } catch {
       setMessage("Quotes could not be loaded. Please retry.");
     } finally {
