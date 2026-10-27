@@ -4,7 +4,7 @@ Existing Pelican styling, photography, navigation and page compositions were ret
 
 ## Changes
 
-- Contact accepts a required name, email and enquiry; trims/validates with the shared enquiry schema, submits through the same service-only RPC as the Safari Brief, and shows a saved reference only after database acknowledgement. Notification recipient remains info@pelicantoursandsafaris.com. This is the previously confirmed plural mailbox domain; the latest spoken address was treated as a transcription error.
+- Contact accepts a required name, email and enquiry; trims/validates with the shared enquiry schema, submits through the same service-only RPC as the Safari Brief, and shows a saved reference only after database acknowledgement. Notifications go to the owner mailbox, info@pelicantoursandsafari.com.
 - Pending submissions lock against double clicks. Failed attempts keep fields and reuse the same UUID; editing the enquiry creates a new UUID. Failure never displays success. The Contact and Safari Brief timeouts allow the existing database and email-call budgets.
 - Resend uses distinct deterministic idempotency keys for traveller and staff messages, based on the database reference. Actual rendered payload stability is tested. This prevents duplicate provider sends during its 24-hour idempotency window; it is not a durable delivery queue or a guarantee of inbox receipt.
 - Staff and proposal sign-in checks reuse the existing bounded session verifier and pending state. Staff redirects preserve the requested page instead of always returning to the dashboard. Staff roles and database authorization are unchanged.

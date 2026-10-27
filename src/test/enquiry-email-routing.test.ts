@@ -21,7 +21,7 @@ it("sends Pelican notifications to the client inbox and replies to the traveller
   expect(result.pelican.sent).toBe(true);
   expect(mocks.send).toHaveBeenCalledWith(
     expect.objectContaining({
-      to: "info@pelicantoursandsafaris.com",
+      to: "info@pelicantoursandsafari.com",
       replyTo: "traveller@example.com",
       subject: "New safari enquiry synthetic-reference — Routing test",
       idempotencyKey: "enquiry/synthetic-reference/pelican",
@@ -31,7 +31,7 @@ it("sends Pelican notifications to the client inbox and replies to the traveller
   expect(mocks.send).toHaveBeenCalledWith(
     expect.objectContaining({
       to: "traveller@example.com",
-      replyTo: "info@pelicantoursandsafaris.com",
+      replyTo: "info@pelicantoursandsafari.com",
       idempotencyKey: "enquiry/synthetic-reference/traveller",
     }),
   );
@@ -43,7 +43,7 @@ it("still notifies the client for phone-only requests without an invalid reply a
     "synthetic-reference",
   );
   expect(mocks.send).toHaveBeenCalledTimes(1);
-  expect(mocks.send.mock.calls[0]?.[0].to).toBe("info@pelicantoursandsafaris.com");
+  expect(mocks.send.mock.calls[0]?.[0].to).toBe("info@pelicantoursandsafari.com");
   expect(mocks.send.mock.calls[0]?.[0]).not.toHaveProperty("replyTo");
 });
 it("keeps each provider idempotency key and rendered payload stable across retries", async () => {

@@ -47,7 +47,7 @@ export const EnquiryConfirmationEmail = ({
         WhatsApp Kamwi Kays
       </Link>{" "}
       or{" "}
-      <Link style={emailStyles.link} href="mailto:info@pelicantoursandsafaris.com">
+      <Link style={emailStyles.link} href="mailto:info@pelicantoursandsafari.com">
         email us
       </Link>
       .

@@ -17,7 +17,7 @@ it("sends validated contact details through the existing protected enquiry servi
   await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("11111111-1111-4111-8111-111111111111"));
   expect(mocks.submit.mock.calls[0]?.[0].data).toEqual({ request_id: expect.any(String), name: "Traveller", email: "traveller@example.com", phone: null, residence: null, contact_preference: "Email", safari_slug: null, brief: "Please help plan my safari." });
   expect(screen.getByRole("button", { name: "Enquiry received" })).toBeDisabled();
-  expect(screen.getByRole("link")).toHaveAttribute("href", "mailto:info@pelicantoursandsafaris.com");
+  expect(screen.getByRole("link")).toHaveAttribute("href", "mailto:info@pelicantoursandsafari.com");
 });
 it("keeps input and retry UUID on failure, blocks duplicate clicks, and renews UUID after edits", async () => {
   let reject!: (error: Error) => void;

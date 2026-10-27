@@ -53,7 +53,7 @@ export const company = {
     { name: "Kamwi Kays", display: "+264 81 761 8297", tel: "264817618297" },
     { name: "Fiona Kays", display: "+264 81 339 4533", tel: "264813394533" },
   ],
-  email: "info@pelicantoursandsafaris.com",
+  email: "info@pelicantoursandsafari.com",
   facebook: "https://www.facebook.com/100076147358304",
   album: "https://photos.app.goo.gl/1erfm9vzeVDA91QDA",
   address: ["10 Fabri Street", "Pionierspark", "Windhoek", "Namibia"],
