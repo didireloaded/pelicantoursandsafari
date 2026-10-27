@@ -599,6 +599,7 @@ export type Database = {
         Args: { network_hash: string }
         Returns: undefined
       }
+      consume_traveller_plan_request: { Args: never; Returns: boolean }
       decide_team_request: {
         Args: {
           _approve: boolean
@@ -624,16 +625,6 @@ export type Database = {
         }[]
       }
       pending_team_requests: { Args: never; Returns: Json }
-      quote_recipients: {
-        Args: never
-        Returns: {
-          client_id: string
-          traveller_id: string
-          enquiry_id: string | null
-          name: string
-          email: string
-        }[]
-      }
       publish_proposal: {
         Args: {
           _details: Json
